@@ -45,7 +45,6 @@ DATA - Takes an dictionary, translate it to JSON and post it to the API, if fiel
 
 USER and PASS - To Login with.
 
-
 ### deleteData(TYPE, ID, USER, PASS)
 
 TYPE - Accepts 'passwords' or 'projects'.
@@ -53,7 +52,6 @@ TYPE - Accepts 'passwords' or 'projects'.
 ID - ID from the entry you want to delete.
 
 USER and PASS - To Login with.
-
 
 ### putCustomFields(ID, DATA, USER, PASS)
 
@@ -76,13 +74,10 @@ ID - ID from the entry you want to lock.
 
 USER and PASS - To Login with.
 
-
 ### unlockPassword(ID, USER, PASS)
 
 ID - ID from the entry you want to unlock.
 
 USER and PASS - To Login with.
-
-
 
 ## Examples
