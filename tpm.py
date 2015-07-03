@@ -1,7 +1,10 @@
 #! /usr/bin/env python
-"""This is a common script for API connection with Team Password Manager."""
-# see http://teampasswordmanager.com/docs/api/
-# for use, please install requests library: sudo easy_install requests
+"""This is a common script for API connection with Team Password Manager.
+
+see http://teampasswordmanager.com/docs/api/
+for use, please install requests library: sudo easy_install requests
+created by Andreas Hubert, censhare AG
+"""
 import json
 import requests
 import sys
