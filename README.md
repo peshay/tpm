@@ -19,41 +19,38 @@ This is an example how you can use it in a python script
 
     #! /usr/bin/env python
     import tpm
+    # set the address to your TeamPasswordManager
+    tpm.TPMURL = "https://myPasswordManager.example.com"
+    tpm.TPMAPI = "/index.php/api/v3/"
     # set a user and password to login
-    USER = 'MyUser'
-    PASS = 'Secret'
+    tpm.USER = 'MyUser'
+    tpm.PASS = 'Secret'
     # get a dictionary for all password entries
-    data = tpm.getData('passwords', USER, PASS)
+    data = tpm.getData('passwords')
     # show all names from the password entries
     for item in data:
         print item.get('name')
 
 ## Functions explained
-### getData(TYPE, USER, PASS, SEARCHSTRING='')
+### getData(TYPE, SEARCHSTRING='')
 
 TYPE - Accepts 'passwords' or 'projects'.
 
-USER and PASS - To Login with.
-
 SEARCHSTRING - optional, will return only values that matchin the SEARCHSTRING.
 
-### postData(TYPE, DATA, USER, PASS)
+### postData(TYPE, DATA)
 
 TYPE - Accepts 'passwords' or 'projects'.
 
 DATA - Takes an dictionary, translate it to JSON and post it to the API, if fields are wrong, the API will complain.
 
-USER and PASS - To Login with.
-
-### deleteData(TYPE, ID, USER, PASS)
+### deleteData(TYPE, ID)
 
 TYPE - Accepts 'passwords' or 'projects'.
 
 ID - ID from the entry you want to delete.
 
-USER and PASS - To Login with.
-
-### putCustomFields(ID, DATA, USER, PASS)
+### putCustomFields(ID, DATA)
 
 ID - ID from the entry you want to delete.
 
@@ -66,18 +63,12 @@ DATA - A dictionary that defines the custom fields e.g.:
                            'custom_label3': 'E-Mail',
                            'custom_type3': 'email'}
 
-USER and PASS - To Login with.
-
-### lockPassword(ID, USER, PASS)
+### lockPassword(ID)
 
 ID - ID from the entry you want to lock.
 
-USER and PASS - To Login with.
-
-### unlockPassword(ID, USER, PASS)
+### unlockPassword(ID)
 
 ID - ID from the entry you want to unlock.
-
-USER and PASS - To Login with.
 
 ## Examples
