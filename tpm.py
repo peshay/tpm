@@ -106,7 +106,20 @@ def getData(TYPE, SEARCHSTRING=''):
         URL = TPMURL + TPMAPI + TYPE + "/search/" + SEARCHSTRING + ".json"
     else:
         URL = TPMURL + TPMAPI + TYPE + ".json"
+    # return data dictionary
+    return getResults(URL)
 
+
+def getArchived(TYPE):
+    """Connect to TPM and returns Data Object."""
+    URL = TPMURL + TPMAPI + TYPE + "/archived.json"
+    # return data dictionary
+    return getResults(URL)
+
+
+def getFavorite(TYPE):
+    """Connect to TPM and returns Data Object."""
+    URL = TPMURL + TPMAPI + TYPE + "/favorite.json"
     # return data dictionary
     return getResults(URL)
 
@@ -114,7 +127,6 @@ def getData(TYPE, SEARCHSTRING=''):
 def getSecurity(ID):
     """List Users that have Access to a specific entry by ID."""
     URL = TPMURL + TPMAPI + 'passwords/' + ID + "/security.json"
-
     # return data dictionary
     return getResults(URL)
 
