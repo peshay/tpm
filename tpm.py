@@ -5,6 +5,9 @@ see http://teampasswordmanager.com/docs/api/
 for use, please install requests library: pip install requests
 created by Andreas Hubert, censhare AG
 """
+
+__version__ = '1.3'
+
 import json
 import requests
 import sys
@@ -38,7 +41,7 @@ PASS = ""
 header = {'content-type': 'application/json; charset=utf-8'}
 
 # create new empty data object to fill
-data = []
+global data
 
 
 def HandleRequestsException(e):
@@ -65,9 +68,33 @@ def checkType(TYPE):
     """Test if given type is correct."""
     # check if a valid type was added
     if TYPE is not 'passwords' and TYPE is not 'projects':
-        print(bcolors.WARNING + "connect type is neither " + \
-            "'passwords' nor 'projects'" + bcolors.ENDC)
+        print(bcolors.WARNING + "connect type is neither " +
+              "'passwords' nor 'projects'" + bcolors.ENDC)
         sys.exit()
+
+
+def getResults(URL):
+    """Get all results pagewise in a single dictionary."""
+    data = []
+    # get search results
+    while URL:
+        # try to connect and handle errors
+        try:
+            r = requests.get(URL, auth=(USER, PASS),
+                             headers=(header), stream=True, verify=False)
+            # Handle API Errors
+            HandleAPIErrors(r)
+            # check for rel next link
+            if 'link' in r.headers:
+                RELNEXT = r.links['next']
+                URL = RELNEXT['url']
+            else:
+                URL = ''
+        except requests.exceptions.RequestException as e:
+            HandleRequestsException(e)
+        # add data pagewise
+        data.extend(json.load(r.raw))
+        return data
 
 
 def getData(TYPE, SEARCHSTRING=''):
@@ -76,31 +103,20 @@ def getData(TYPE, SEARCHSTRING=''):
     checkType(TYPE)
     # Search or All
     if SEARCHSTRING:
-        NEXTURL = TPMURL + TPMAPI + TYPE + "/search/" + SEARCHSTRING + ".json"
+        URL = TPMURL + TPMAPI + TYPE + "/search/" + SEARCHSTRING + ".json"
     else:
-        NEXTURL = TPMURL + TPMAPI + TYPE + ".json"
+        URL = TPMURL + TPMAPI + TYPE + ".json"
 
-    # get search results
-    while NEXTURL:
-        # try to connect and handle errors
-        try:
-            r = requests.get(NEXTURL, auth=(USER, PASS),
-                             headers=(header), stream=True, verify=False)
-            # Handle API Errors
-            HandleAPIErrors(r)
-            # check for rel next link
-            if 'link' in r.headers:
-                RELNEXT = r.links['next']
-                NEXTURL = RELNEXT['url']
-            else:
-                NEXTURL = ''
-        except requests.exceptions.RequestException as e:
-            HandleRequestsException(e)
-        # add data pagewise
-        data.extend(json.load(r.raw))
+    # return data dictionary
+    return getResults(URL)
 
-    # return data object
-    return data
+
+def getSecurity(ID):
+    """List Users that have Access to a specific entry by ID."""
+    URL = TPMURL + TPMAPI + 'passwords/' + ID + "/security.json"
+
+    # return data dictionary
+    return getResults(URL)
 
 
 def postData(TYPE, DATA):
