@@ -4,14 +4,11 @@ A Python Module for the [TeamPasswordManager API](http://teampasswordmanager.com
 
 Requires: requests
 
-## Install requests
+## Install tpm.py
 
-You can install the requests library depending on your system either with
+You can install the tpm module via pip
 
-    sudo easy_install requests
-or
-
-    sudo pip install requests
+    pip install tpm
 
 ## How to Use
 
@@ -25,6 +22,7 @@ This is an example how you can use it in a python script
     # set a user and password to login
     tpm.USER = 'MyUser'
     tpm.PASS = 'Secret'
+    
     # get a dictionary for all password entries
     data = tpm.getData('passwords')
     # show all names from the password entries
