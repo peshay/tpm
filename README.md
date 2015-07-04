@@ -30,23 +30,62 @@ This is an example how you can use it in a python script
         print item.get('name')
 
 ## Functions explained
+#### Functions that get data from TeamPasswordManager
 ##### getData(TYPE, SEARCHSTRING='')
+
+Connect to TPM and returns found Entries in a dictionary.
 
 TYPE - Accepts 'passwords' or 'projects'.
 
 SEARCHSTRING - optional, will return only values that are matching the SEARCHSTRING.
 
+##### getArchived(TYPE)
+
+Return all archived entries from 'passwords' or 'projects'
+
+TYPE - Accepts 'passwords' or 'projects'.
+
+##### getFavorite(TYPE)
+
+Return all favorite entries from 'passwords' or 'projects'
+
+TYPE - Accepts 'passwords' or 'projects'.
+
+##### getSecurity(TYPE, ID)
+
+List Users that have Access to a specific entry by ID.
+
+TYPE - Accepts 'passwords' or 'projects'.
+
+ID - ID from the Entry you want to get the Users that have Access.
+
+#### Functions that create data to TeamPasswordManager
 ##### postData(TYPE, DATA)
 
 TYPE - Accepts 'passwords' or 'projects'.
 
 DATA - Takes an dictionary, translate it to JSON and post it to the API, if fields are wrong, the API will complain.
 
-##### deleteData(TYPE, ID)
+#### Functions that update data to TeamPasswordManager
+##### putData(TYPE, ID, DATA)
+
+Update an entry in TPM.
 
 TYPE - Accepts 'passwords' or 'projects'.
 
-ID - ID from the entry you want to delete.
+ID - ID from the Entry you want to update.
+
+DATA - Takes an dictionary, translate it to JSON and post it to the API, if fields are wrong, the API will complain.
+
+##### putSecurity(TYPE, ID, DATA)
+
+Update Security Access for an entry.
+
+TYPE - Accepts 'passwords' or 'projects'.
+
+ID - ID from the Entry you want to update.
+
+DATA - Takes an dictionary, translate it to JSON and post it to the API, if fields are wrong, the API will complain.
 
 ##### putCustomFields(ID, DATA)
 
@@ -70,5 +109,12 @@ ID - ID from the entry you want to lock.
 ID - ID from the entry you want to unlock.
 
 REASON - The Reason why you want to unlock.
+
+#### Functions that delete data from TeamPasswordManager
+##### deleteData(TYPE, ID)
+
+TYPE - Accepts 'passwords' or 'projects'.
+
+ID - ID from the entry you want to delete.
 
 ## Examples
