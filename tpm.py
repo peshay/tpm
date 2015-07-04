@@ -43,9 +43,9 @@ data = []
 
 def HandleRequestsException(e):
     """Handle Exception from request."""
-    print bcolors.FAIL + e[0][0]
-    print e[0][1]
-    print bcolors.ENDC
+    print(bcolors.FAIL + e[0][0])
+    print(e[0][1])
+    print(bcolors.ENDC)
     sys.exit()
 
 
@@ -54,10 +54,10 @@ def HandleAPIErrors(r):
     # Handle API Errors
     if r.status_code != 200 and r.status_code != 201 and r.status_code != 204:
         content = json.load(r.raw)
-        print bcolors.FAIL + 'Error:    ' + str(r.status_code)
-        print 'Type:     ' + content['type']
-        print 'Message:  ' + content['message']
-        print 'With URL: ' + r.url + bcolors.ENDC
+        print(bcolors.FAIL + 'Error:    ' + str(r.status_code))
+        print('Type:     ' + content['type'])
+        print('Message:  ' + content['message'])
+        print('With URL: ' + r.url + bcolors.ENDC)
         sys.exit()
 
 
@@ -65,8 +65,8 @@ def checkType(TYPE):
     """Test if given type is correct."""
     # check if a valid type was added
     if TYPE is not 'passwords' and TYPE is not 'projects':
-        print bcolors.WARNING + "connect type is neither " + \
-            "'passwords' nor 'projects'" + bcolors.ENDC
+        print(bcolors.WARNING + "connect type is neither " + \
+            "'passwords' nor 'projects'" + bcolors.ENDC)
         sys.exit()
 
 
