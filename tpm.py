@@ -139,6 +139,22 @@ def putCustomFields(ID, DATA):
         HandleRequestsException(e)
 
 
+def putData(ID, DATA):
+    """Update an entry in TPM."""
+    # build URL
+    URL = TPMURL + TPMAPI + "passwords" + "/" + ID + ".json"
+    # convert DATA to JSON
+    JSON = json.dumps(DATA)
+    # try to connect and handle errors
+    try:
+        r = requests.put(URL, data=JSON, auth=(USER, PASS),
+                         headers=(header), stream=True, verify=False)
+        # Handle request Errors
+        HandleAPIErrors(r)
+    except requests.exceptions.RequestException as e:
+        HandleRequestsException(e)
+
+
 def lockPassword(ID):
     """To Lock an entry."""
     # build URL
