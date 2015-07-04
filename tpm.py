@@ -2,7 +2,7 @@
 """This is a common script for API connection with Team Password Manager.
 
 see http://teampasswordmanager.com/docs/api/
-for use, please install requests library: sudo easy_install requests
+for use, please install requests library: pip install requests
 created by Andreas Hubert, censhare AG
 """
 import json
@@ -153,10 +153,12 @@ def lockPassword(ID):
         HandleRequestsException(e)
 
 
-def unlockPassword(ID):
+def unlockPassword(ID, REASON):
     """To Unlock an entry."""
     # build URL
     URL = TPMURL + TPMAPI + "passwords" + "/" + str(ID) + "/" + "unlock.json"
+    # add Unlock Reason to header
+    header['X-Unlock-Reason'] = REASON
     # try to connect and handle errors
     try:
         r = requests.put(URL, auth=(USER, PASS),

@@ -22,7 +22,7 @@ This is an example how you can use it in a python script
     # set a user and password to login
     tpm.USER = 'MyUser'
     tpm.PASS = 'Secret'
-    
+
     # get a dictionary for all password entries
     data = tpm.getData('passwords')
     # show all names from the password entries
@@ -68,5 +68,7 @@ ID - ID from the entry you want to lock.
 ##### unlockPassword(ID)
 
 ID - ID from the entry you want to unlock.
+
+REASON - The Reason why you want to unlock.
 
 ## Examples
