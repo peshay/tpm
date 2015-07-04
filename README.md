@@ -32,7 +32,7 @@ This is an example how you can use it in a python script
         print item.get('name')
 
 ## Functions explained
-#### getData(TYPE, SEARCHSTRING='')
+##### getData(TYPE, SEARCHSTRING='')
 
 TYPE - Accepts 'passwords' or 'projects'.
 
@@ -44,13 +44,13 @@ TYPE - Accepts 'passwords' or 'projects'.
 
 DATA - Takes an dictionary, translate it to JSON and post it to the API, if fields are wrong, the API will complain.
 
-### deleteData(TYPE, ID)
+##### deleteData(TYPE, ID)
 
 TYPE - Accepts 'passwords' or 'projects'.
 
 ID - ID from the entry you want to delete.
 
-### putCustomFields(ID, DATA)
+##### putCustomFields(ID, DATA)
 
 ID - ID from the entry you want to delete.
 
@@ -63,11 +63,11 @@ DATA - A dictionary that defines the custom fields e.g.:
             'custom_label3': 'E-Mail',
             'custom_type3': 'email'}
 
-### lockPassword(ID)
+##### lockPassword(ID)
 
 ID - ID from the entry you want to lock.
 
-### unlockPassword(ID)
+##### unlockPassword(ID)
 
 ID - ID from the entry you want to unlock.
 
