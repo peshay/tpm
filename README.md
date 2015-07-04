@@ -32,13 +32,13 @@ This is an example how you can use it in a python script
         print item.get('name')
 
 ## Functions explained
-### getData(TYPE, SEARCHSTRING='')
+#### getData(TYPE, SEARCHSTRING='')
 
 TYPE - Accepts 'passwords' or 'projects'.
 
-SEARCHSTRING - optional, will return only values that matchin the SEARCHSTRING.
+SEARCHSTRING - optional, will return only values that are matching the SEARCHSTRING.
 
-### postData(TYPE, DATA)
+##### postData(TYPE, DATA)
 
 TYPE - Accepts 'passwords' or 'projects'.
 
@@ -56,12 +56,12 @@ ID - ID from the entry you want to delete.
 
 DATA - A dictionary that defines the custom fields e.g.:
 
-    customFieldsDefault = {'custom_label1': 'IP',
-                           'custom_type1': 'text',
-                           'custom_label2': 'CNAME',
-                           'custom_type2': 'text',
-                           'custom_label3': 'E-Mail',
-                           'custom_type3': 'email'}
+    DATA = {'custom_label1': 'IP',
+            'custom_type1': 'text',
+            'custom_label2': 'CNAME',
+            'custom_type2': 'text',
+            'custom_label3': 'E-Mail',
+            'custom_type3': 'email'}
 
 ### lockPassword(ID)
 
