@@ -6,7 +6,7 @@ for use, please install requests library: pip install requests
 created by Andreas Hubert, censhare AG
 """
 
-__version__ = '1.4'
+__version__ = '1.5'
 
 import json
 import requests
@@ -94,7 +94,7 @@ def get(URL):
             HandleRequestsException(e)
         # add data pagewise
         data.extend(json.load(r.raw))
-        return data
+    return data
 
 
 def put(URL, DATA):
