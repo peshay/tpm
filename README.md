@@ -30,8 +30,9 @@ for item in data:
     print item.get('name')
 ```
 ## Functions explained
-#### Functions that get data from TeamPasswordManager
-##### getData(TYPE, SEARCHSTRING='')
+### Functions that get data from TeamPasswordManager
+---
+#### getData(TYPE, SEARCHSTRING='')
 
 *Connect to TPM and returns found Entries in a dictionary.*
 
@@ -39,19 +40,19 @@ for item in data:
 
 **SEARCHSTRING** - optional, will return only values that are matching the SEARCHSTRING.
 
-##### getArchived(TYPE)
+#### getArchived(TYPE)
 
 *Return all archived entries from 'passwords' or 'projects'*
 
 **TYPE** - Accepts 'passwords' or 'projects'.
 
-##### getFavorite(TYPE)
+#### getFavorite(TYPE)
 
 *Return all favorite entries from 'passwords' or 'projects'*
 
 **TYPE** - Accepts 'passwords' or 'projects'.
 
-##### getSecurity(TYPE, ID)
+#### getSecurity(TYPE, ID)
 
 *List Users that have Access to a specific entry by ID.*
 
@@ -59,8 +60,9 @@ for item in data:
 
 **ID** - ID from the Entry you want to get the Users that have Access.
 
-#### Functions that create data to TeamPasswordManager
-##### postData(TYPE, DATA)
+### Functions that create data to TeamPasswordManager
+---
+#### postData(TYPE, DATA)
 
 *Create a new entry in TeamPasswordManager.*
 
@@ -68,8 +70,9 @@ for item in data:
 
 **DATA** - Takes an dictionary, translate it to JSON and post it to the API, if fields are wrong, the API will complain.
 
-#### Functions that update data to TeamPasswordManager
-##### putData(TYPE, ID, DATA)
+### Functions that update data to TeamPasswordManager
+---
+#### putData(TYPE, ID, DATA)
 
 *Update an entry in TPM.*
 
@@ -79,7 +82,7 @@ for item in data:
 
 **DATA** - Takes an dictionary, translate it to JSON and post it to the API, if fields are wrong, the API will complain.
 
-##### putSecurity(TYPE, ID, DATA)
+#### putSecurity(TYPE, ID, DATA)
 
 *Update Security Access for an entry.*
 
@@ -89,7 +92,7 @@ for item in data:
 
 **DATA** - Takes an dictionary, translate it to JSON and post it to the API, if fields are wrong, the API will complain.
 
-##### putCustomFields(ID, DATA)
+#### putCustomFields(ID, DATA)
 
 *Update custom field labels for an entry.*
 
@@ -104,18 +107,19 @@ DATA = {'custom_label1': 'IP',
         'custom_label3': 'E-Mail',
         'custom_type3': 'email'}
 ```
-##### lockPassword(ID)
+#### lockPassword(ID)
 
 **ID** - ID from the entry you want to lock.
 
-##### unlockPassword(ID)
+#### unlockPassword(ID)
 
 **ID** - ID from the entry you want to unlock.
 
 **REASON** - The Reason why you want to unlock.
 
-#### Functions that delete data from TeamPasswordManager
-##### deleteData(TYPE, ID)
+### Functions that delete data from TeamPasswordManager
+---
+#### deleteData(TYPE, ID)
 
 **TYPE** - Accepts 'passwords' or 'projects'.
 
