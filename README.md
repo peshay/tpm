@@ -13,22 +13,22 @@ You can install the tpm module via pip
 ## How to Use
 
 This is an example how you can use it in a python script
+```python
+#! /usr/bin/env python
+import tpm
+# set the address to your TeamPasswordManager
+tpm.TPMURL = "https://myPasswordManager.example.com"
+tpm.TPMAPI = "/index.php/api/v3/"
+# set a user and password to login
+tpm.USER = 'MyUser'
+tpm.PASS = 'Secret'
 
-    #! /usr/bin/env python
-    import tpm
-    # set the address to your TeamPasswordManager
-    tpm.TPMURL = "https://myPasswordManager.example.com"
-    tpm.TPMAPI = "/index.php/api/v3/"
-    # set a user and password to login
-    tpm.USER = 'MyUser'
-    tpm.PASS = 'Secret'
-
-    # get a dictionary for all password entries
-    data = tpm.getData('passwords')
-    # show all names from the password entries
-    for item in data:
-        print item.get('name')
-
+# get a dictionary for all password entries
+data = tpm.getData('passwords')
+# show all names from the password entries
+for item in data:
+    print item.get('name')
+```
 ## Functions explained
 #### Functions that get data from TeamPasswordManager
 ##### getData(TYPE, SEARCHSTRING='')
@@ -92,14 +92,14 @@ DATA - Takes an dictionary, translate it to JSON and post it to the API, if fiel
 ID - ID from the entry you want to delete.
 
 DATA - A dictionary that defines the custom fields e.g.:
-
-    DATA = {'custom_label1': 'IP',
-            'custom_type1': 'text',
-            'custom_label2': 'CNAME',
-            'custom_type2': 'text',
-            'custom_label3': 'E-Mail',
-            'custom_type3': 'email'}
-
+```python
+DATA = {'custom_label1': 'IP',
+        'custom_type1': 'text',
+        'custom_label2': 'CNAME',
+        'custom_type2': 'text',
+        'custom_label3': 'E-Mail',
+        'custom_type3': 'email'}
+```
 ##### lockPassword(ID)
 
 ID - ID from the entry you want to lock.
