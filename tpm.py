@@ -6,7 +6,7 @@ for use, please install requests library: pip install requests
 created by Andreas Hubert, censhare AG
 """
 
-__version__ = '1.5'
+__version__ = '1.6'
 
 import json
 import requests
@@ -74,7 +74,7 @@ def checkType(TYPE):
 
 
 def get(URL):
-    """Return all results pagewise in a single dictionary."""
+    """Return all results pagewise in list of dictionaries."""
     data = []
     # get search results
     while URL:
@@ -84,6 +84,8 @@ def get(URL):
                              headers=(header), stream=True, verify=False)
             # Handle API Errors
             HandleAPIErrors(r)
+            # get results
+            result = json.load(r.raw)
             # check for rel next link
             if 'link' in r.headers:
                 RELNEXT = r.links['next']
@@ -93,7 +95,25 @@ def get(URL):
         except requests.exceptions.RequestException as e:
             HandleRequestsException(e)
         # add data pagewise
-        data.extend(json.load(r.raw))
+        data.extend(result)
+    return data
+
+
+def getSingle(URL):
+    """Return the single results in dictionary."""
+    data = {}
+    # get search results
+    # try to connect and handle errors
+    try:
+        r = requests.get(URL, auth=(USER, PASS),
+                         headers=(header), stream=True, verify=False)
+        # Handle API Errors
+        HandleAPIErrors(r)
+        # get results
+        data.update(json.load(r.raw))
+        # check for rel next link
+    except requests.exceptions.RequestException as e:
+        HandleRequestsException(e)
     return data
 
 
@@ -138,6 +158,15 @@ def getData(TYPE, SEARCHSTRING=''):
         URL = TPMURL + TPMAPI + TYPE + ".json"
     # return data dictionary
     return get(URL)
+
+
+def getDetailData(TYPE, ID):
+    """Get more Details from an Entry."""
+    # check if type is password or projects
+    checkType(TYPE)
+    URL = URL = TPMURL + TPMAPI + TYPE + "/" + str(ID) + ".json"
+    # return data dictionary
+    return getSingle(URL)
 
 
 def getArchived(TYPE):

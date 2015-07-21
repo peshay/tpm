@@ -34,11 +34,19 @@ for item in data:
 ---
 #### getData(TYPE, SEARCHSTRING='')
 
-*Connect to TPM and returns found Entries in a dictionary.*
+*Connect to TPM and return found Entries in a List of Dictionaries.*
 
 **TYPE** - Accepts 'passwords' or 'projects'.
 
 **SEARCHSTRING** - optional, will return only values that are matching the SEARCHSTRING.
+
+#### getDetailData(TYPE, ID)
+
+*Get more detailed data per entry, returns a single Dictionary.*
+
+**TYPE** - Accepts 'passwords' or 'projects'.
+
+**ID** - ID from the Entry you want more detailed informations.
 
 #### getArchived(TYPE)
 
