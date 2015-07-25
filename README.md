@@ -16,15 +16,15 @@ This is an example how you can use it in a python script
 ```python
 #! /usr/bin/env python
 import tpm
-# set the address to your TeamPasswordManager
-tpm.TPMURL = "https://myPasswordManager.example.com"
-tpm.TPMAPI = "/index.php/api/v3/"
-# set a user and password to login
-tpm.USER = 'MyUser'
-tpm.PASS = 'Secret'
+# create a object for the connection settings
+URL = "https://myPasswordManager.example.com"
+API = "/index.php/api/v3/"
+USER = 'MyUser'
+PASS = 'Secret'
+conn = tpm.Connection(API, URL, USER, PASS)
 
 # get a dictionary for all password entries
-data = tpm.getData('passwords')
+data = tpm.getData(conn, 'passwords')
 # show all names from the password entries
 for item in data:
     print item.get('name')
@@ -32,7 +32,7 @@ for item in data:
 ## Functions explained
 ### Functions that get data from TeamPasswordManager
 ---
-#### getData(TYPE, SEARCHSTRING='')
+#### getData(conn, TYPE, SEARCHSTRING='')
 
 *Connect to TPM and return found Entries in a List of Dictionaries.*
 
@@ -40,7 +40,7 @@ for item in data:
 
 **SEARCHSTRING** - optional, will return only values that are matching the SEARCHSTRING.
 
-#### getDetailData(TYPE, ID)
+#### getDetailData(conn, TYPE, ID)
 
 *Get more detailed data per entry, returns a single Dictionary.*
 
@@ -48,19 +48,19 @@ for item in data:
 
 **ID** - ID from the Entry you want more detailed informations.
 
-#### getArchived(TYPE)
+#### getArchived(conn, TYPE)
 
 *Return all archived entries from 'passwords' or 'projects'*
 
 **TYPE** - Accepts 'passwords' or 'projects'.
 
-#### getFavorite(TYPE)
+#### getFavorite(conn, TYPE)
 
 *Return all favorite entries from 'passwords' or 'projects'*
 
 **TYPE** - Accepts 'passwords' or 'projects'.
 
-#### getSecurity(TYPE, ID)
+#### getSecurity(conn, TYPE, ID)
 
 *List Users that have Access to a specific entry by ID.*
 
@@ -70,7 +70,7 @@ for item in data:
 
 ### Functions that create data to TeamPasswordManager
 ---
-#### postData(TYPE, DATA)
+#### postData(conn, TYPE, DATA)
 
 *Create a new entry in TeamPasswordManager.*
 
@@ -80,7 +80,7 @@ for item in data:
 
 ### Functions that update data to TeamPasswordManager
 ---
-#### putData(TYPE, ID, DATA)
+#### putData(conn, TYPE, ID, DATA)
 
 *Update an entry in TPM.*
 
@@ -90,7 +90,7 @@ for item in data:
 
 **DATA** - Takes an dictionary, translate it to JSON and post it to the API, if fields are wrong, the API will complain.
 
-#### putSecurity(TYPE, ID, DATA)
+#### putSecurity(conn, TYPE, ID, DATA)
 
 *Update Security Access for an entry.*
 
@@ -100,7 +100,7 @@ for item in data:
 
 **DATA** - Takes an dictionary, translate it to JSON and post it to the API, if fields are wrong, the API will complain.
 
-#### putCustomFields(ID, DATA)
+#### putCustomFields(conn, ID, DATA)
 
 *Update custom field labels for an entry.*
 
@@ -115,11 +115,11 @@ DATA = {'custom_label1': 'IP',
         'custom_label3': 'E-Mail',
         'custom_type3': 'email'}
 ```
-#### lockPassword(ID)
+#### lockPassword(conn, ID)
 
 **ID** - ID from the entry you want to lock.
 
-#### unlockPassword(ID)
+#### unlockPassword(conn, ID)
 
 **ID** - ID from the entry you want to unlock.
 
@@ -127,7 +127,7 @@ DATA = {'custom_label1': 'IP',
 
 ### Functions that delete data from TeamPasswordManager
 ---
-#### deleteData(TYPE, ID)
+#### deleteData(conn, TYPE, ID)
 
 **TYPE** - Accepts 'passwords' or 'projects'.
 
