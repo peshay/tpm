@@ -72,9 +72,22 @@ def HandleAPIErrors(r):
 def checkType(TYPE):
     """Test if given type is correct."""
     # check if a valid type was added
-    if TYPE is not 'passwords' and TYPE is not 'projects':
+    if TYPE is not 'passwords' \
+       and TYPE is not 'projects' \
+       and TYPE is not 'users' \
+       and TYPE is not 'groups':
         print(bcolors.WARNING + "connect type is neither " +
-              "'passwords' nor 'projects'" + bcolors.ENDC)
+              "'passwords', 'projects', 'users' or 'groups'" + bcolors.ENDC)
+        sys.exit()
+
+
+def checkTypeEntry(TYPE):
+    """Test if given type is correct."""
+    # check if a valid type was added
+    if TYPE is not 'passwords' \
+       and TYPE is not 'projects':
+        print(bcolors.WARNING + "connect type is neither " +
+              "'passwords' or 'projects'" + bcolors.ENDC)
         sys.exit()
 
 
@@ -120,6 +133,21 @@ def getSingle(conn, URL):
     except requests.exceptions.RequestException as e:
         HandleRequestsException(e)
     return data
+
+
+def generatePass(conn):
+    """Generate a random password."""
+    # build URL
+    URL = conn.url + conn.api + "generate_password.json"
+    # try to connect and handle errors
+    try:
+        r = requests.get(URL, auth=(conn.user, conn.password),
+                         headers=(header), stream=True, verify=False)
+        # Handle request Errors
+        HandleAPIErrors(r)
+        return json.load(r.raw).get('password')
+    except requests.exceptions.RequestException as e:
+        HandleRequestsException(e)
 
 
 def put(conn, URL, DATA):
@@ -177,7 +205,7 @@ def getDetailData(conn, TYPE, ID):
 def getArchived(conn, TYPE):
     """Connect to TPM and returns Data Object."""
     # check if type is password or projects
-    checkType(TYPE)
+    checkTypeEntry(TYPE)
     URL = conn.url + conn.api + TYPE + "/archived.json"
     # return data dictionary
     return get(conn, URL)
@@ -186,7 +214,7 @@ def getArchived(conn, TYPE):
 def getFavorite(conn, TYPE):
     """Connect to TPM and returns Data Object."""
     # check if type is password or projects
-    checkType(TYPE)
+    checkTypeEntry(TYPE)
     # build URL
     URL = conn.url + conn.api + TYPE + "/favorite.json"
     # return data dictionary
@@ -196,7 +224,7 @@ def getFavorite(conn, TYPE):
 def getSecurity(conn, TYPE, ID):
     """List Users that have Access to a specific entry by ID."""
     # check if type is password or projects
-    checkType(TYPE)
+    checkTypeEntry(TYPE)
     # build URL
     URL = conn.url + conn.api + TYPE + '/' + ID + "/security.json"
     # return data dictionary
@@ -206,7 +234,7 @@ def getSecurity(conn, TYPE, ID):
 def putSecurity(conn, TYPE, ID, DATA):
     """Update Security Access for an entry."""
     # check if type is password or projects
-    checkType(TYPE)
+    checkTypeEntry(TYPE)
     # build URL
     URL = conn.url + conn.api + TYPE + "/" + ID + "/" + "/security.json"
     put(conn, URL, DATA)

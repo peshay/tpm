@@ -36,7 +36,7 @@ for item in data:
 
 *Connect to TPM and return found Entries in a List of Dictionaries.*
 
-**TYPE** - Accepts 'passwords' or 'projects'.
+**TYPE** - Accepts 'passwords', 'projects', 'users' or 'groups'.
 
 **SEARCHSTRING** - optional, will return only values that are matching the SEARCHSTRING.
 
@@ -44,7 +44,7 @@ for item in data:
 
 *Get more detailed data per entry, returns a single Dictionary.*
 
-**TYPE** - Accepts 'passwords' or 'projects'.
+**TYPE** - Accepts 'passwords', 'projects', 'users' or 'groups'.
 
 **ID** - ID from the Entry you want more detailed informations.
 
@@ -70,7 +70,7 @@ for item in data:
 
 #### generatePass(conn)
 
-*Generates a random password from Team Password Manager.*
+*Returns a random password from Team Password Manager as string.*
 
 ### Functions that create data to TeamPasswordManager
 ---
@@ -78,7 +78,7 @@ for item in data:
 
 *Create a new entry in TeamPasswordManager.*
 
-**TYPE** - Accepts 'passwords' or 'projects'.
+**TYPE** - Accepts 'passwords', 'projects', 'users' or 'groups'.
 
 **DATA** - Takes an dictionary, translate it to JSON and post it to the API, if fields are wrong, the API will complain.
 
@@ -88,7 +88,7 @@ for item in data:
 
 *Update an entry in TPM.*
 
-**TYPE** - Accepts 'passwords' or 'projects'.
+**TYPE** - Accepts 'passwords', 'projects', 'users' or 'groups'.
 
 **ID** - ID from the Entry you want to update.
 
@@ -133,7 +133,7 @@ DATA = {'custom_label1': 'IP',
 ---
 #### deleteData(conn, TYPE, ID)
 
-**TYPE** - Accepts 'passwords' or 'projects'.
+**TYPE** - Accepts 'passwords', 'projects', 'users' or 'groups'.
 
 **ID** - ID from the entry you want to delete.
 
