@@ -11,6 +11,7 @@ __version__ = '2.0'
 import json
 import requests
 import sys
+import re
 
 
 class bcolors:
@@ -29,12 +30,40 @@ class bcolors:
 
 class Connection:
 
-    """Set some stuff."""
+    """Settings needed for the connection to Team Password Manager."""
 
     def __init__(self, api, url, user, password):
         """init thing."""
-        self.api = api
-        self.url = url
+        AllowedAPI = ['v3', 'v4']
+        REGEXurl = "^" \
+                   "(?:(?:https?)://)" \
+                   "(?:\\S+(?::\\S*)?@)?" \
+                   "(?:" \
+                   "(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])" \
+                   "(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}" \
+                   "(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))" \
+                   "|" \
+                   "(?:(?:[a-z\\u00a1-\\uffff0-9]-*)*[a-z\\u00a1-\\uffff0-9]+)" \
+                   "(?:\\.(?:[a-z\\u00a1-\\uffff0-9]-*)*[a-z\\u00a1-\\uffff0-9]+)*" \
+                   "(?:\\.(?:[a-z\\u00a1-\\uffff]{2,}))?" \
+                   ".?" \
+                   ")" \
+                   "(?::\\d{2,5})?" \
+                   "(?:[/?#]\\S*)?" \
+                   "$"
+        if api in AllowedAPI:
+            apiurl = '/index.php/api/' + api + '/'
+        else:
+            print(bcolors.FAIL + 'API Version not known: ' + api)
+            print(bcolors.ENDC)
+            sys.exit()
+        self.api = apiurl
+        if re.match(REGEXurl, url):
+            self.url = url
+        else:
+            print(bcolors.FAIL + 'Invalid URL: ' + url)
+            print(bcolors.ENDC)
+            sys.exit()
         self.user = user
         self.password = password
 
