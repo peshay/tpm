@@ -6,7 +6,7 @@ for use, please install requests library: pip install requests
 created by Andreas Hubert, censhare AG
 """
 
-__version__ = '1.6'
+__version__ = '2.0'
 
 import json
 import requests
@@ -26,16 +26,21 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
+
+class Connection:
+
+    """Set some stuff."""
+
+    def __init__(self, api, url, user, password):
+        """init thing."""
+        self.api = api
+        self.url = url
+        self.user = user
+        self.password = password
+
+
 # disable unsecure SSL warning
 requests.packages.urllib3.disable_warnings()
-
-# set TPM URL and API version
-TPMURL = ""
-TPMAPI = ""
-
-# set login to TPM
-USER = ""
-PASS = ""
 
 # set header as team password manager wants them
 header = {'content-type': 'application/json; charset=utf-8'}
@@ -73,14 +78,14 @@ def checkType(TYPE):
         sys.exit()
 
 
-def get(URL):
+def get(conn, URL):
     """Return all results pagewise in list of dictionaries."""
     data = []
     # get search results
     while URL:
         # try to connect and handle errors
         try:
-            r = requests.get(URL, auth=(USER, PASS),
+            r = requests.get(URL, auth=(conn.user, conn.password),
                              headers=(header), stream=True, verify=False)
             # Handle API Errors
             HandleAPIErrors(r)
@@ -99,13 +104,13 @@ def get(URL):
     return data
 
 
-def getSingle(URL):
+def getSingle(conn, URL):
     """Return the single results in dictionary."""
     data = {}
     # get search results
     # try to connect and handle errors
     try:
-        r = requests.get(URL, auth=(USER, PASS),
+        r = requests.get(URL, auth=(conn.user, conn.password),
                          headers=(header), stream=True, verify=False)
         # Handle API Errors
         HandleAPIErrors(r)
@@ -117,13 +122,13 @@ def getSingle(URL):
     return data
 
 
-def put(URL, DATA):
+def put(conn, URL, DATA):
     """Update data in TPM."""
     # convert DATA to JSON
     JSON = json.dumps(DATA)
     # try to connect and handle errors
     try:
-        r = requests.put(URL, data=JSON, auth=(USER, PASS),
+        r = requests.put(URL, data=JSON, auth=(conn.user, conn.password),
                          headers=(header), stream=True, verify=False)
         # Handle request Errors
         HandleAPIErrors(r)
@@ -131,13 +136,13 @@ def put(URL, DATA):
         HandleRequestsException(e)
 
 
-def post(URL, DATA):
+def post(conn, URL, DATA):
     """Post data to TPM."""
     # convert DATA to JSON
     JSON = json.dumps(DATA)
     # try to connect and handle errors
     try:
-        r = requests.post(URL, data=JSON, auth=(USER, PASS),
+        r = requests.post(URL, data=JSON, auth=(conn.user, conn.password),
                           headers=(header), stream=True, verify=False)
         # Handle request Errors
         HandleAPIErrors(r)
@@ -147,90 +152,91 @@ def post(URL, DATA):
     return json.load(r.raw)
 
 
-def getData(TYPE, SEARCHSTRING=''):
+def getData(conn, TYPE, SEARCHSTRING=''):
     """Connect to TPM and returns found Entries in a dictionary."""
     # check if type is password or projects
     checkType(TYPE)
     # Search or All
     if SEARCHSTRING:
-        URL = TPMURL + TPMAPI + TYPE + "/search/" + SEARCHSTRING + ".json"
+        URL = conn.url + conn.api + TYPE + "/search/" + SEARCHSTRING + ".json"
     else:
-        URL = TPMURL + TPMAPI + TYPE + ".json"
+        URL = conn.url + conn.api + TYPE + ".json"
     # return data dictionary
-    return get(URL)
+    return get(conn, URL)
 
 
-def getDetailData(TYPE, ID):
+def getDetailData(conn, TYPE, ID):
     """Get more Details from an Entry."""
     # check if type is password or projects
     checkType(TYPE)
-    URL = URL = TPMURL + TPMAPI + TYPE + "/" + str(ID) + ".json"
+    URL = URL = conn.url + conn.api + TYPE + "/" + str(ID) + ".json"
     # return data dictionary
-    return getSingle(URL)
+    return getSingle(conn, URL)
 
 
-def getArchived(TYPE):
+def getArchived(conn, TYPE):
     """Connect to TPM and returns Data Object."""
     # check if type is password or projects
     checkType(TYPE)
-    URL = TPMURL + TPMAPI + TYPE + "/archived.json"
+    URL = conn.url + conn.api + TYPE + "/archived.json"
     # return data dictionary
-    return get(URL)
+    return get(conn, URL)
 
 
-def getFavorite(TYPE):
+def getFavorite(conn, TYPE):
     """Connect to TPM and returns Data Object."""
     # check if type is password or projects
     checkType(TYPE)
     # build URL
-    URL = TPMURL + TPMAPI + TYPE + "/favorite.json"
+    URL = conn.url + conn.api + TYPE + "/favorite.json"
     # return data dictionary
-    return get(URL)
+    return get(conn, URL)
 
 
-def getSecurity(TYPE, ID):
+def getSecurity(conn, TYPE, ID):
     """List Users that have Access to a specific entry by ID."""
     # check if type is password or projects
     checkType(TYPE)
     # build URL
-    URL = TPMURL + TPMAPI + TYPE + '/' + ID + "/security.json"
+    URL = conn.url + conn.api + TYPE + '/' + ID + "/security.json"
     # return data dictionary
-    return get(URL)
+    return get(conn, URL)
 
 
-def putSecurity(TYPE, ID, DATA):
+def putSecurity(conn, TYPE, ID, DATA):
     """Update Security Access for an entry."""
     # check if type is password or projects
     checkType(TYPE)
     # build URL
-    URL = TPMURL + TPMAPI + TYPE + "/" + ID + "/" + "/security.json"
-    put(URL, DATA)
+    URL = conn.url + conn.api + TYPE + "/" + ID + "/" + "/security.json"
+    put(conn, URL, DATA)
 
 
-def putCustomFields(ID, DATA):
+def putCustomFields(conn, ID, DATA):
     """Update the Custom Fields in TPM."""
     # build URL
-    URL = TPMURL + TPMAPI + "passwords" + "/" + ID + "/" + "custom_fields.json"
-    put(URL, DATA)
+    URL = conn.url + conn.api + "passwords" + "/" + ID + "/" + \
+                                                         "custom_fields.json"
+    put(conn, URL, DATA)
 
 
-def putData(TYPE, ID, DATA):
+def putData(conn, TYPE, ID, DATA):
     """Update an entry in TPM."""
     # check if type is password or projects
     checkType(TYPE)
     # build URL
-    URL = TPMURL + TPMAPI + TYPE + "/" + ID + ".json"
+    URL = conn.url + conn.api + TYPE + "/" + ID + ".json"
     # update to TPM
-    put(URL, DATA)
+    put(conn, URL, DATA)
 
 
-def lockPassword(ID):
+def lockPassword(conn, ID):
     """To Lock an entry."""
     # build URL
-    URL = TPMURL + TPMAPI + "passwords" + "/" + str(ID) + "/" + "lock.json"
+    URL = conn.url + conn.api + "passwords" + "/" + str(ID) + "/" + "lock.json"
     # try to connect and handle errors
     try:
-        r = requests.put(URL, auth=(USER, PASS),
+        r = requests.put(URL, auth=(conn.user, conn.password),
                          headers=(header), stream=True, verify=False)
         # Handle request Errors
         HandleAPIErrors(r)
@@ -238,15 +244,16 @@ def lockPassword(ID):
         HandleRequestsException(e)
 
 
-def unlockPassword(ID, REASON):
+def unlockPassword(conn, ID, REASON):
     """To Unlock an entry."""
     # build URL
-    URL = TPMURL + TPMAPI + "passwords" + "/" + str(ID) + "/" + "unlock.json"
+    URL = conn.url + conn.api + "passwords" + "/" + str(ID) + "/" + \
+                                                              "unlock.json"
     # add Unlock Reason to header
     header['X-Unlock-Reason'] = REASON
     # try to connect and handle errors
     try:
-        r = requests.put(URL, auth=(USER, PASS),
+        r = requests.put(URL, auth=(conn.user, conn.password),
                          headers=(header), stream=True, verify=False)
         # Handle request Errors
         HandleAPIErrors(r)
@@ -254,27 +261,27 @@ def unlockPassword(ID, REASON):
         HandleRequestsException(e)
 
 
-def postData(TYPE, DATA):
+def postData(conn, TYPE, DATA):
     """Connect to TPM and create an entry."""
     # check if type is password or projects
     checkType(TYPE)
     # build URL
-    URL = TPMURL + TPMAPI + TYPE + ".json"
+    URL = conn.url + conn.api + TYPE + ".json"
     # create entry and return created ID
-    return post(URL, DATA)
+    return post(conn, URL, DATA)
 
 
-def deleteData(TYPE, ID):
+def deleteData(conn, TYPE, ID):
     """Connect to TPM and delete an entry."""
     # check if type is password or projects
     checkType(TYPE)
     # create URL to delete entry
-    URL = TPMURL + TPMAPI + TYPE + "/" + str(ID) + ".json"
+    URL = conn.url + conn.api + TYPE + "/" + str(ID) + ".json"
 
     # try to connect and handle errors
     try:
-        r = requests.delete(URL, auth=(USER, PASS), headers=(header),
-                            stream=True, verify=False)
+        r = requests.delete(URL, auth=(conn.user, conn.password),
+                            headers=(header), stream=True, verify=False)
         # Handle request Errors
         HandleAPIErrors(r)
     except requests.exceptions.RequestException as e:
