@@ -68,6 +68,10 @@ for item in data:
 
 **ID** - ID from the Entry you want to get the Users that have Access.
 
+#### generatePass(conn)
+
+*Generates a random password from Team Password Manager.*
+
 ### Functions that create data to TeamPasswordManager
 ---
 #### postData(conn, TYPE, DATA)
