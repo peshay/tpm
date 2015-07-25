@@ -18,7 +18,7 @@ This is an example how you can use it in a python script
 import tpm
 # create a object for the connection settings
 URL = "https://myPasswordManager.example.com"
-API = "/index.php/api/v3/"
+API = "v3"
 USER = 'MyUser'
 PASS = 'Secret'
 conn = tpm.Connection(API, URL, USER, PASS)
