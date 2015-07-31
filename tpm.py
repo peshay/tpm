@@ -222,6 +222,33 @@ def getData(conn, TYPE, SEARCHSTRING=''):
     return get(conn, URL)
 
 
+def getSubProjects(conn, ID):
+    """Get projcets that are subprojects of 'ID'."""
+    if conn.api == 'v4':
+        URL = conn.url + conn.api + '/projects/' + str(ID) + '/subprojects.json'
+        # return data dictionary
+        return get(conn, URL)
+    else:
+        print(bcolors.FAIL + 'This functions only works with v4 API.'
+                           + bcolors.ENDC)
+        sys.exit()
+
+
+def getSubProjectsNewPwd(conn, ID):
+    """Get projcets that are subprojects of 'ID' and shows disabled=true
+    if the Users permissions does not allow to create a new Password in that
+    subproject."""
+    if conn.api == 'v4':
+        URL = conn.url + conn.api + '/projects/' + str(ID) + \
+              '/subprojects/new_pwd.json'
+        # return data dictionary
+        return get(conn, URL)
+    else:
+        print(bcolors.FAIL + 'This functions only works with v4 API.'
+                           + bcolors.ENDC)
+        sys.exit()
+
+
 def getDetailData(conn, TYPE, ID):
     """Get more Details from an Entry."""
     # check if type is password or projects
