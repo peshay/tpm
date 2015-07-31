@@ -48,6 +48,20 @@ for item in data:
 
 **ID** - ID from the Entry you want more detailed informations.
 
+#### getSubProjects(conn, ID)
+
+*Get all immediate subprojects of a project with 'ID'.*
+
+**ID** - ID from the Entry you want more detailed informations.
+
+#### getSubProjects(conn, ID)
+
+*Get all immediate subprojects of a project with 'ID' and shows disabled=true
+if the Users permissions does not allow to create a new Password in that
+subproject.*
+
+**ID** - ID from the Entry you want more detailed informations.
+
 #### getArchived(conn, TYPE)
 
 *Return all archived entries from 'passwords' or 'projects'*
