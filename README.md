@@ -34,15 +34,16 @@ for item in data:
 ---
 #### getData(conn, TYPE, SEARCHSTRING='')
 
-*Connect to TPM and return found Entries in a List of Dictionaries.*
+*Connect to TPM and return found Entries in a list of dictionaries.*
 
 **TYPE** - Accepts 'passwords', 'projects', 'users' or 'groups'.
 
-**SEARCHSTRING** - optional, will return only values that are matching the SEARCHSTRING.
+**SEARCHSTRING** - optional, will return only values
+that are matching the SEARCHSTRING.
 
 #### getDetailData(conn, TYPE, ID)
 
-*Get more detailed data per entry, returns a single Dictionary.*
+*Get more detailed data per entry, returns a single dictionary.*
 
 **TYPE** - Accepts 'passwords', 'projects', 'users' or 'groups'.
 
@@ -50,40 +51,49 @@ for item in data:
 
 #### getSubProjects(conn, ID)
 
-*Get all immediate subprojects of a project with 'ID' and shows disabled=true
-if the Users permissions does not allow to create a new Password in that
-subproject.*
+*Returns projects that are subprojects of 'ID' in a list of dictionaries.*
+
+**ID** - ID from the Entry you want more detailed informations.
+
+#### getSubProjectsNewPwd(conn, ID)
+
+*Returns all immediate subprojects of a project with 'ID'
+in list of dictionaries and shows disabled=true if the Users permissions
+does not allow to create a new Password in that subproject.*
 
 **ID** - ID from the Entry you want more detailed informations.
 
 #### getProjectPasswords(conn, ID)
 
-*Returns a dictionary of password entries from a project.*
+*Returns password entries from a project in a list of dictionaries.*
 
 **ID** - ID of the project.
 
 #### getProjectPasswordsCount(conn, ID)
 
-*Returns a dictionary with num_items, num_items_per_page, num_pages
-of password entries from a project.*
+*Returns the num_items, num_items_per_page, num_pages of password entries
+from a project in a single dictionary.*
 
 **ID** - ID of the project.
 
 #### getArchived(conn, TYPE)
 
-*Return all archived entries from 'passwords' or 'projects'*
+*Returns all archived entries from 'passwords' or 'projects'
+in a list of dictionaries.*
 
 **TYPE** - Accepts 'passwords' or 'projects'.
 
 #### getFavorite(conn, TYPE)
 
-*Return all favorite entries from 'passwords' or 'projects'*
+*Return all favorite entries from 'passwords' or 'projects'
+in a list of dictionaries.*
 
 **TYPE** - Accepts 'passwords' or 'projects'.
 
 #### getSecurity(conn, TYPE, ID)
 
-*List Users that have Access to a specific entry by ID.*
+*Returns Users that have Access to a specific entry by ID
+in a list of dictionaries.*
 
 **TYPE** - Accepts 'passwords' or 'projects'.
 
@@ -101,7 +111,7 @@ of password entries from a project.*
 
 **TYPE** - Accepts 'passwords', 'projects', 'users' or 'groups'.
 
-**DATA** - Takes an dictionary, translate it to JSON and post it to the API, if fields are wrong, the API will complain.
+**DATA** - Takes a dictionary, translate it to JSON and post it to the API, if fields are wrong, the API will complain.
 
 ### Functions that update data to TeamPasswordManager
 ---

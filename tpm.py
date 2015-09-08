@@ -265,6 +265,15 @@ def getProjectPasswords(conn, ID):
     # return data dictionary
     return get(conn, URL)
 
+
+def getProjectPasswordsCount(conn, ID):
+    """Return the number of password entries from a project."""
+    # Build URL
+    URL = conn.url + conn.api + 'projects/' + str(ID) + '/passwords/count.json'
+    # return data dictionary
+    return getSingle(conn, URL)
+
+
 def getArchived(conn, TYPE):
     """Connect to TPM and returns Data Object."""
     # check if type is password or projects
