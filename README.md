@@ -58,7 +58,7 @@ that are matching the SEARCHSTRING.
 #### getSubProjectsNewPwd(conn, ID)
 
 *Returns all immediate subprojects of a project with 'ID'
-in list of dictionaries and shows disabled=true if the Users permissions
+in a list of dictionaries and shows '{disabled: true}' if the Users permissions
 does not allow to create a new Password in that subproject.*
 
 **ID** - ID from the Entry you want more detailed informations.
