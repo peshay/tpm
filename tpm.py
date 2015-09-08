@@ -253,10 +253,17 @@ def getDetailData(conn, TYPE, ID):
     """Get more Details from an Entry."""
     # check if type is password or projects
     checkType(TYPE)
-    URL = URL = conn.url + conn.api + TYPE + "/" + str(ID) + ".json"
+    URL = conn.url + conn.api + TYPE + "/" + str(ID) + ".json"
     # return data dictionary
     return getSingle(conn, URL)
 
+
+def getProjectPasswords(conn, ID):
+    """Get the password entries from a project."""
+    # Build URL
+    URL = conn.url + conn.api + 'projects/' + str(ID) + '/passwords.json'
+    # return data dictionary
+    return get(conn, URL)
 
 def getArchived(conn, TYPE):
     """Connect to TPM and returns Data Object."""
