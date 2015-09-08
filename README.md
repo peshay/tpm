@@ -50,17 +50,24 @@ for item in data:
 
 #### getSubProjects(conn, ID)
 
-*Get all immediate subprojects of a project with 'ID'.*
-
-**ID** - ID from the Entry you want more detailed informations.
-
-#### getSubProjects(conn, ID)
-
 *Get all immediate subprojects of a project with 'ID' and shows disabled=true
 if the Users permissions does not allow to create a new Password in that
 subproject.*
 
 **ID** - ID from the Entry you want more detailed informations.
+
+#### getProjectPasswords(conn, ID)
+
+*Returns a dictionary of password entries from a project.*
+
+**ID** - ID of the project.
+
+#### getProjectPasswordsCount(conn, ID)
+
+*Returns a dictionary with num_items, num_items_per_page, num_pages
+of password entries from a project.*
+
+**ID** - ID of the project.
 
 #### getArchived(conn, TYPE)
 
