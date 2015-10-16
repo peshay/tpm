@@ -6,7 +6,7 @@ for use, please install requests library: pip install requests
 created by Andreas Hubert, censhare AG
 """
 
-__version__ = '2.1'
+__version__ = '2.2'
 
 import json
 import requests
