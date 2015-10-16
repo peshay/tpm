@@ -150,6 +150,15 @@ DATA = {'custom_label1': 'IP',
         'custom_label3': 'E-Mail',
         'custom_type3': 'email'}
 ```
+
+#### changeParent(conn, ID, ParentID):
+
+*Change the Parent Project of a Project.*
+
+**ID** - ID of the Project you want to change.
+
+**ParentID** - ID of the new parent Project.
+
 #### lockPassword(conn, ID)
 
 **ID** - ID from the entry you want to lock.

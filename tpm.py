@@ -6,7 +6,7 @@ for use, please install requests library: pip install requests
 created by Andreas Hubert, censhare AG
 """
 
-__version__ = '2.0'
+__version__ = '2.1'
 
 import json
 import requests
@@ -224,8 +224,9 @@ def getData(conn, TYPE, SEARCHSTRING=''):
 
 def getSubProjects(conn, ID):
     """Get projcets that are subprojects of 'ID'."""
-    if conn.api == 'v4':
-        URL = conn.url + conn.api + '/projects/' + str(ID) + '/subprojects.json'
+    if conn.api == '/index.php/api/v4/':
+        URL = conn.url + conn.api + '/projects/' + str(ID) + \
+            '/subprojects.json'
         # return data dictionary
         return get(conn, URL)
     else:
@@ -238,11 +239,25 @@ def getSubProjectsNewPwd(conn, ID):
     """Get projcets that are subprojects of 'ID' and shows disabled=true
     if the Users permissions does not allow to create a new Password in that
     subproject."""
-    if conn.api == 'v4':
+    if conn.api == '/index.php/api/v4/':
         URL = conn.url + conn.api + '/projects/' + str(ID) + \
-              '/subprojects/new_pwd.json'
+            '/subprojects/new_pwd.json'
         # return data dictionary
         return get(conn, URL)
+    else:
+        print(bcolors.FAIL + 'This functions only works with v4 API.'
+                           + bcolors.ENDC)
+        sys.exit()
+
+
+def changeParent(conn, ID, ParentID):
+    """Change the Parent Project of a Project."""
+    if conn.api == '/index.php/api/v4/':
+        URL = conn.url + conn.api + '/projects/' + str(ID) + \
+            '/change_parent.json'
+        DATA = {"parent_id": ParentID}
+        # return data dictionary
+        return put(conn, URL, DATA)
     else:
         print(bcolors.FAIL + 'This functions only works with v4 API.'
                            + bcolors.ENDC)
