@@ -18,7 +18,7 @@ This is an example how you can use it in a python script
 import tpm
 # create a object for the connection settings
 URL = "https://myPasswordManager.example.com"
-API = "v3"
+API = "v4"
 USER = 'MyUser'
 PASS = 'Secret'
 conn = tpm.Connection(API, URL, USER, PASS)
@@ -168,6 +168,14 @@ DATA = {'custom_label1': 'IP',
 **ID** - ID from the entry you want to unlock.
 
 **REASON** - The Reason why you want to unlock.
+
+#### archiveProject(conn, ID)
+
+**ID** - ID from the project you want to archive.
+
+#### unarchiveProject(conn, ID)
+
+**ID** - ID from the project you want to unarchive.
 
 ### Functions that delete data from TeamPasswordManager
 ---

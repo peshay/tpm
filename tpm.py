@@ -6,7 +6,7 @@ for use, please install requests library: pip install requests
 created by Andreas Hubert, censhare AG
 """
 
-__version__ = '2.2'
+__version__ = '2.3'
 
 import json
 import requests
@@ -374,6 +374,20 @@ def unlockPassword(conn, ID, REASON):
         HandleAPIErrors(r)
     except requests.exceptions.RequestException as e:
         HandleRequestsException(e)
+
+
+def archiveProject(conn, ID):
+    "To Archive a Project."
+    # build URL
+    URL = conn.url + conn.api + 'projects/' + str(ID) + '/archive.json'
+    put(conn, URL)
+
+
+def unarchiveProject(conn,ID):
+    "To Unarchive a Project."
+    # build URL
+    URL = conn.url + conn.api + 'projects/' + str(ID) + '/unarchive.json'
+    put(conn, URL)
 
 
 def postData(conn, TYPE, DATA):
