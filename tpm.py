@@ -380,14 +380,16 @@ def archiveProject(conn, ID):
     "To Archive a Project."
     # build URL
     URL = conn.url + conn.api + 'projects/' + str(ID) + '/archive.json'
-    put(conn, URL)
+    DATA = {}
+    put(conn, URL, DATA)
 
 
-def unarchiveProject(conn,ID):
+def unarchiveProject(conn, ID):
     "To Unarchive a Project."
     # build URL
     URL = conn.url + conn.api + 'projects/' + str(ID) + '/unarchive.json'
-    put(conn, URL)
+    DATA = {}
+    put(conn, URL, DATA)
 
 
 def postData(conn, TYPE, DATA):
