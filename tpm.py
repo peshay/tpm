@@ -6,11 +6,10 @@ for use, please install requests library: pip install requests
 created by Andreas Hubert, censhare AG
 """
 
-__version__ = '2.3'
+__version__ = '2.5'
 
 import json
 import requests
-import sys
 import re
 
 
@@ -29,8 +28,14 @@ class bcolors:
 
 
 class Connection:
-
     """Settings needed for the connection to Team Password Manager."""
+    class ConnectionSetting(Exception):
+        """To throw Exception based on wrong Settings."""
+        def __init__(self, value):
+            self.value = value
+
+        def __str__(self):
+            return repr(self.value)
 
     def __init__(self, api, url, user, password):
         """init thing."""
@@ -54,16 +59,12 @@ class Connection:
         if api in AllowedAPI:
             apiurl = '/index.php/api/' + api + '/'
         else:
-            print(bcolors.FAIL + 'API Version not known: ' + api)
-            print(bcolors.ENDC)
-            sys.exit()
+            raise ConnectionSetting('API Version not known: %s' % api)
         self.api = apiurl
         if re.match(REGEXurl, url):
             self.url = url
         else:
-            print(bcolors.FAIL + 'Invalid URL: ' + url)
-            print(bcolors.ENDC)
-            sys.exit()
+            raise ConnectionSetting('Invalid URL: %s' % url)
         self.user = user
         self.password = password
 
@@ -83,7 +84,6 @@ def HandleRequestsException(e):
     print(bcolors.FAIL + e[0][0])
     print(e[0][1])
     print(bcolors.ENDC)
-    sys.exit()
 
 
 def HandleAPIErrors(r):
@@ -91,11 +91,10 @@ def HandleAPIErrors(r):
     # Handle API Errors
     if r.status_code != 200 and r.status_code != 201 and r.status_code != 204:
         content = json.load(r.raw)
-        print(bcolors.FAIL + 'Error:    ' + str(r.status_code))
-        print('Type:     ' + content['type'])
-        print('Message:  ' + content['message'])
-        print('With URL: ' + r.url + bcolors.ENDC)
-        sys.exit()
+        print('%sError:    %s' % (bcolors.FAIL, str(r.status_code)))
+        print('Type:     %s' % content['type'])
+        print('Message:  %s' % content['message'])
+        print('With URL: %s' % r.url + bcolors.ENDC)
 
 
 def checkType(TYPE):
@@ -105,9 +104,9 @@ def checkType(TYPE):
        and TYPE is not 'projects' \
        and TYPE is not 'users' \
        and TYPE is not 'groups':
-        print(bcolors.WARNING + "connect type is neither " +
-              "'passwords', 'projects', 'users' or 'groups'" + bcolors.ENDC)
-        sys.exit()
+        print("%sconnect type is neither "
+              "'passwords', 'projects', 'users' or 'groups'%s" %
+              (bcolors.WARNING, bcolors.ENDC))
 
 
 def checkTypeEntry(TYPE):
@@ -115,9 +114,8 @@ def checkTypeEntry(TYPE):
     # check if a valid type was added
     if TYPE is not 'passwords' \
        and TYPE is not 'projects':
-        print(bcolors.WARNING + "connect type is neither " +
-              "'passwords' or 'projects'" + bcolors.ENDC)
-        sys.exit()
+        print("%sconnect type is neither "
+              "'passwords' or 'projects'%s" % (bcolors.WARNING, bcolors.ENDC))
 
 
 def get(conn, URL):
@@ -230,9 +228,8 @@ def getSubProjects(conn, ID):
         # return data dictionary
         return get(conn, URL)
     else:
-        print(bcolors.FAIL + 'This functions only works with v4 API.'
-                           + bcolors.ENDC)
-        sys.exit()
+        print('%sThis functions only works with v4 API.' %
+              (bcolors.FAIL, bcolors.ENDC))
 
 
 def getSubProjectsNewPwd(conn, ID):
@@ -245,9 +242,8 @@ def getSubProjectsNewPwd(conn, ID):
         # return data dictionary
         return get(conn, URL)
     else:
-        print(bcolors.FAIL + 'This functions only works with v4 API.'
-                           + bcolors.ENDC)
-        sys.exit()
+        print('%sThis functions only works with v4 API.' %
+              (bcolors.FAIL, bcolors.ENDC))
 
 
 def changeParent(conn, ID, ParentID):
@@ -259,9 +255,8 @@ def changeParent(conn, ID, ParentID):
         # return data dictionary
         return put(conn, URL, DATA)
     else:
-        print(bcolors.FAIL + 'This functions only works with v4 API.'
-                           + bcolors.ENDC)
-        sys.exit()
+        print('%sThis functions only works with v4 API.' %
+              (bcolors.FAIL, bcolors.ENDC))
 
 
 def getDetailData(conn, TYPE, ID):

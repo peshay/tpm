@@ -2,7 +2,7 @@
 """Setup to install TeamPasswordManager API Python Module."""
 from distutils.core import setup
 setup(name='tpm',
-      version='2.4',
+      version='2.5',
       py_modules=['tpm'],
       install_requires=['requests'],
       description='Provides functions to work with TeamPasswordManager API.',
@@ -21,7 +21,8 @@ setup(name='tpm',
                    'Programming Language :: Python :: 3',
                    'Programming Language :: Python :: 3.2',
                    'Programming Language :: Python :: 3.3',
-                   'Programming Language :: Python :: 3.4', ],
+                   'Programming Language :: Python :: 3.4',
+                   'Programming Language :: Python :: 3.5', ],
       keywords='TeamPasswordManager json api',
 
       )
