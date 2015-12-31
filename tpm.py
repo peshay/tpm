@@ -427,6 +427,42 @@ class TpmApi(object):
         """Delete a user."""
         # http://teampasswordmanager.com/docs/api-users/#delete_user
         delete('users/%s.json' % ID)
+
+    def list_groups(self):
+        """List Groups."""
+        # http://teampasswordmanager.com/docs/api-groups/#list_groups
+        return collection('groups.json')
+
+    def show_group(self, ID):
+        """Show a Group."""
+        # http://teampasswordmanager.com/docs/api-groups/#show_group
+        return get('groups/%s.json' % ID)
+
+    def create_group(self, data):
+        """Create a Group."""
+        # http://teampasswordmanager.com/docs/api-groups/#create_group
+        return post('groups.json')
+
+    def update_group(self, ID, data):
+        """Update a Group.""""
+        # http://teampasswordmanager.com/docs/api-groups/#update_group
+        put('groups/%s.json' % ID, data)
+
+    def add_user_to_group(self, GroupID, UserID):
+        """Add a user to a group."""
+        # http://teampasswordmanager.com/docs/api-groups/#add_user
+        put('groups/%s/add_user/%s.json' % (GroupID, UserID))
+
+    def delete_user_from_group(self, GroupID, UserID):
+        """Delete a user from a group."""
+        # http://teampasswordmanager.com/docs/api-groups/#del_user
+        put('groups/%s/delete_user/%s.json' % (GroupID, UserID))
+
+    def delete_group(self, ID):
+        """Delete a group."""
+        # http://teampasswordmanager.com/docs/api-groups/#delete_group
+        delete('groups/%s.json' % ID)
+
 class TpmApiv3(TpmApi):
     """API v3 based class."""
     def __init__(self, url, **kwargs):
