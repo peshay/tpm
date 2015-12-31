@@ -32,8 +32,7 @@ class TpmApi(object):
 
     def __init__(self, api, base_url, kwargs):
         """init thing."""
-
-        # Check if API version and URL is not bullshit
+        # Check if API version is not bullshit
         AllowedAPI = ['v3', 'v4']
         REGEXurl = "^" \
                    "(?:(?:https?)://)" \
@@ -56,12 +55,13 @@ class TpmApi(object):
         else:
             raise ConfigError('API Version not known: %s' % api)
         self.api = self.apiurl
+        # Check if URL is not bullshit
         if re.match(REGEXurl, base_url):
             self.url = base_url + self.apiurl
             self.base_url = base_url
         else:
             raise ConfigError('Invalid URL: %s' % url)
-        # set header
+        # set headers
         self.headers = {'Content-Type': 'application/json; charset=utf-8',
                         'User-Agent': 'tpm.py/' + __version__
                         }
@@ -91,13 +91,17 @@ class TpmApi(object):
                               ' (user/password or private/public key)')
 
     def request(self, path, action, data=''):
+        """To make a request to the API."""
+        # Check if the path includes URL or not.
         head = self.base_url
         if path.startswith(head):
             path = path[len(head):]
         if not path.startswith(self.api):
             path = self.api + path
+        # If we have data, convert to JSON
         if data:
             data = json.dumps(data)
+        # In case of key authentication
         if self.private_key and self.public_key:
             timestamp = str(int(time.time()))
             unhashed = path + timestamp + data
@@ -107,13 +111,15 @@ class TpmApi(object):
             self.headers['X-Public-Key'] = self.public_key
             self.headers['X-Request-Hash'] = hash
             self.headers['X-Request-Timestamp'] = timestamp
+        # In case of user credentials authentication
         elif self.username and self.password:
             auth = requests.auth.HTTPBasicAuth(self.username, self.password)
-
+        # Set unlock reason
         if self.unlock_reason:
             self.headers['X-Unlock-Reason'] = self.unlock_reason
 
         url = head + path
+        # Try API request and handle Exceptions
         try:
             if action == 'get':
                 self.req = requests.get(url, headers=self.headers, auth=auth,
@@ -146,12 +152,23 @@ class TpmApi(object):
         return result
 
     def post(self, path, data):
+        """For post based requests."""
         return self.request(path, 'post', data)
 
     def get(self, path):
+        """For get based requests."""
         return self.request(path, 'get')
 
+    def put(self, path):
+        """For put based requests."""
+        return self.request(path, 'put')
+
+    def delete(self, path):
+        """For delete based requests."""
+        return self.request(path, 'delete')
+
     def get_collection(self, path):
+        """To get pagewise data."""
         while True:
             items = self.get(path)
             req = self.req
@@ -163,6 +180,7 @@ class TpmApi(object):
             else:
                 break
 
+    """From now on, Functions that work that way in all API Versions."""
     def listPasswords(self):
         data = []
         for item in self.get_collection('passwords.json'):
@@ -171,10 +189,14 @@ class TpmApi(object):
 
 
 class TpmApiv3(TpmApi):
+    """API v3 based class."""
     def __init__(self, url, **kwargs):
         super(TpmApiv3, self).__init__('v3', url, kwargs)
+    """From now on, Functions that only work with API v3."""
 
 
 class TpmApiv4(TpmApi):
+    """API v4 based class."""
     def __init__(self, url, **kwargs):
         super(TpmApiv4, self).__init__('v4', url, kwargs)
+    """From now on, Functions that only work with API v4."""
