@@ -333,17 +333,12 @@ class TpmApiv4(TpmApi):
         super(TpmApiv4, self).__init__('v4', url, kwargs)
     """From now on, Functions that only work with API v4."""
 
-    # List subprojects
-    # http://teampasswordmanager.com/docs/api-projects/#list_subprojects
     def list_subprojects(self, ID):
-        data = []
-        for item in self.get_collection('projects/%s/subprojects.json' % ID):
-            data.append(item)
-        return data
+        """List subprojects."""
+        # http://teampasswordmanager.com/docs/api-projects/#list_subprojects
+        return collection('projects/%s/subprojects.json' % ID)
 
     def list_subprojects_action(self, ID, action):
-        data = []
-        for item in self.get_collection('projects/%s/subprojects/%s.json' %
-                                        (ID, action)):
-            data.append(item)
-        return data
+        """List subprojects with allowed action."""
+        return collection('projects/%s/subprojects/%s.json' %
+                          (ID, action))
