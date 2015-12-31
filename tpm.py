@@ -463,6 +463,22 @@ class TpmApi(object):
         # http://teampasswordmanager.com/docs/api-groups/#delete_group
         delete('groups/%s.json' % ID)
 
+    def generate_password(self):
+        """Generate a new random password."""
+        # http://teampasswordmanager.com/docs/api-passwords-generator/
+        get('generate_password.json')
+
+    def get_version(self):
+        """Get Version Information."""
+        # http://teampasswordmanager.com/docs/api-version/
+        get('version.json')
+
+    def get_latest_version(self):
+        """Check for latest version."""
+        # http://teampasswordmanager.com/docs/api-version/
+        get('version/check_latest.json')
+
+
 class TpmApiv3(TpmApi):
     """API v3 based class."""
     def __init__(self, url, **kwargs):
