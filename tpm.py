@@ -187,107 +187,116 @@ class TpmApi(object):
             data.append(item)
         return data
 
-    """From now on, Functions that work that way in all API Versions."""
-    # List projects
+    # From now on, Functions that work that way in all API Versions.
+
     # http://teampasswordmanager.com/docs/api-projects/#list_projects
     def list_projects(self):
+        """List projects."""
         return collection('projects.json')
 
     def list_projects_archived(self):
+        """List archived projects."""
         return collection('projects/archived.json')
 
     def list_projects_favorite(self):
+        """List favorite projects."""
         return collection('projects/favorite.json')
 
     def list_projects_search(self, searchstring):
+        """List projects with searchstring."""
         return collection('projects/search/%s.json' % searchstring)
 
-    # Show a project
-    # http://teampasswordmanager.com/docs/api-projects/#show_project
     def show_project(self, ID):
+        """Show a project."""
+        # http://teampasswordmanager.com/docs/api-projects/#show_project
         return collection('projects/%s.json' % ID)
 
-    # List passwords of project
-    # http://teampasswordmanager.com/docs/api-projects/#list_pwds_prj
     def list_passwords_of_project(self, ID):
+        """List passwords of project."""
+        # http://teampasswordmanager.com/docs/api-projects/#list_pwds_prj
         return collection('projects/%s/passwords.json' % ID)
 
-    # List users who can access a project
-    # http://teampasswordmanager.com/docs/api-projects/#list_users_prj
     def list_user_access_on_project(self, ID):
+        """List users who can access a project."""
+        # http://teampasswordmanager.com/docs/api-projects/#list_users_prj
         return collection('projects/%s/security.json' % ID)
 
-    # Create a project
-    # http://teampasswordmanager.com/docs/api-projects/#create_project
     def create_project(self, data):
+        """Create a project."""
+        # http://teampasswordmanager.com/docs/api-projects/#create_project
         return post('projects.json', data)
 
-    # Update a project
-    # http://teampasswordmanager.com/docs/api-projects/#update_project
     def update_project(self, ID, data):
+        """Update a project."""
+        # http://teampasswordmanager.com/docs/api-projects/#update_project
         put('projects/%s.json' % ID, data)
 
-    # Change parent of project
-    # http://teampasswordmanager.com/docs/api-projects/#change_parent
     def change_parent_of_project(self, ID, NewParrentID):
+        """Change parent of project."""
+        # http://teampasswordmanager.com/docs/api-projects/#change_parent
         data = {'parent_id': NewParrentID}
         put('projects/%s/change_parent.json' % ID, data)
 
-    # Update security of project
-    # http://teampasswordmanager.com/docs/api-projects/#update_project_security
     def update_security_of_project(self, ID, data):
+        """Update security of project."""
+        # http://teampasswordmanager.com/docs/api-projects/#update_project_security
         put('projects/%s/security.json' % ID, data)
 
-    # Archive/un-archive a project
-    # http://teampasswordmanager.com/docs/api-projects/#arch_unarch_project
     def archive_project(self, ID):
+        """Archive a project."""
+        # http://teampasswordmanager.com/docs/api-projects/#arch_unarch_project
         put('projects/%s/archive.json' % ID)
 
     def unarchive_project(self, ID):
+        """Un-Archive a project."""
+        # http://teampasswordmanager.com/docs/api-projects/#arch_unarch_project
         put('projects/%s/unarchive.json' % ID)
 
-    # Delete a project
-    # http://teampasswordmanager.com/docs/api-projects/#delete_project
     def delete_project(self, ID):
+        """Delete a project."""
+        # http://teampasswordmanager.com/docs/api-projects/#delete_project
         delete('projects/%s.json' % ID)
 
-    # List passwords
     # http://teampasswordmanager.com/docs/api-passwords/#list_passwords
     def list_passwords(self):
+        """"List passwords."""
         return collection('passwords.json')
 
     def list_passwords_archived(self):
+        """"List archived passwords."""
         return collection('passwords/archived.json')
 
     def list_passwords_favorite(self):
+        """"List favorite passwords."""
         return collection('passwords/favorite.json')
 
     def list_passwords_search(self, searchstring):
+        """"List passwords with searchstring."""
         return collection('passwords/%s.json' % searchstring)
 
-    # Show passwords
-    # http://teampasswordmanager.com/docs/api-passwords/#show_password
     def show_passwords(self, ID):
+        """Show passwords."""
+        # http://teampasswordmanager.com/docs/api-passwords/#show_password
         return collection('passwords/%s.json' % ID)
 
-    # List users who can access a password
-    # http://teampasswordmanager.com/docs/api-passwords/#list_users_pwd
     def list_user_access_on_password(self, ID):
+        """List users who can access a password."""
+        # http://teampasswordmanager.com/docs/api-passwords/#list_users_pwd
         return collection('passwords/%s/security.json' % ID)
 
-    # Create a password
-    # http://teampasswordmanager.com/docs/api-passwords/#create_password
     def create_password(self, data):
+        """Create a password."""
+        # http://teampasswordmanager.com/docs/api-passwords/#create_password
         return post('passwords.json', data)
 
-    # Update a password
-    # http://teampasswordmanager.com/docs/api-passwords/#update_password
     def update_password(self, ID, data):
+        """Update a password."""
+        # http://teampasswordmanager.com/docs/api-passwords/#update_password
         put('passwords/%s.json', ID, data)
 
-    # Update security of a password
-    # http://teampasswordmanager.com/docs/api-passwords/#update_security_password
     def update_security_of_password(self, ID, data):
+        """Update security of a password."""
+        # http://teampasswordmanager.com/docs/api-passwords/#update_security_password
         put('passwords/%s/security.json' % ID, data)
 
     def update_custom_fields_of_password(self, ID, data):
@@ -309,6 +318,7 @@ class TpmApi(object):
         """Unlock a password."""
         # http://teampasswordmanager.com/docs/api-passwords/#unlock_password
         put('passwords/%s/unlock.json' % ID)
+
 
 class TpmApiv3(TpmApi):
     """API v3 based class."""
