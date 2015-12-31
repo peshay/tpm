@@ -369,7 +369,64 @@ class TpmApi(object):
         # http://teampasswordmanager.com/docs/api-favorites/#del_fav
         delete('favorite_project/%s.json' % ID)
 
+    def list_users(self):
+        """List users."""
+        # http://teampasswordmanager.com/docs/api-users/#list_users
+        return collection('users.json')
 
+    def show_user(self, ID):
+        """Show a user."""
+        # http://teampasswordmanager.com/docs/api-users/#show_user
+        return collection('users/%s.json') % ID
+
+    def show_me(self):
+        """Show me."""
+        # http://teampasswordmanager.com/docs/api-users/#show_me
+        return collection('users/me.json')
+
+    def who_am_i(self):
+        """Who am I."""
+        return show_me()
+
+    def create_user(self, data):
+        """Create a User."""
+        # http://teampasswordmanager.com/docs/api-users/#create_user
+        return post('users.json', data)
+
+    def update_user(self, ID, data):
+        """Update a User.""""
+        # http://teampasswordmanager.com/docs/api-users/#update_user
+        put('users/%s.json' % ID, data)
+
+    def change_user_password(self, ID, data):
+        """Change password of a User."""
+        # http://teampasswordmanager.com/docs/api-users/#change_password
+        put('users/%s/change_password.json' % ID, data)
+
+    def activate_user(self, ID):
+        """Activate a User."""
+        # http://teampasswordmanager.com/docs/api-users/#activate_deactivate
+        put('users/%s/activate.json' % ID)
+
+    def deactivate_user(self, ID):
+        """Dectivate a User."""
+        # http://teampasswordmanager.com/docs/api-users/#activate_deactivate
+        put('users/%s/deactivate.json' % ID)
+
+    def convert_user_to_ldap(self, ID, DN):
+        """Convert a normal user to a LDAP user."""
+        # http://teampasswordmanager.com/docs/api-users/#convert_to_ldap
+        data = {'login_dn': DN}
+        put('users/%s/convert_to_ldap.json' % ID, data)
+
+    def convert_ldap_user_to_normal(self, ID):
+        """Convert a LDAP user to a normal user."""
+        put('users/%s/convert_to_normal.json' % ID)
+
+    def delete_user(self, ID):
+        """Delete a user."""
+        # http://teampasswordmanager.com/docs/api-users/#delete_user
+        delete('users/%s.json' % ID)
 class TpmApiv3(TpmApi):
     """API v3 based class."""
     def __init__(self, url, **kwargs):
