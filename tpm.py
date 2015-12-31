@@ -319,6 +319,36 @@ class TpmApi(object):
         # http://teampasswordmanager.com/docs/api-passwords/#unlock_password
         put('passwords/%s/unlock.json' % ID)
 
+    def list_mypasswords(self):
+        """List my passwords."""
+        # http://teampasswordmanager.com/docs/api-my-passwords/#list_passwords
+        return collection('my_passwords.json')
+
+    def list_mypasswords_search(self, searchstring):
+        """List my passwords with searchstring."""
+        # http://teampasswordmanager.com/docs/api-my-passwords/#list_passwords
+        return collection('my_passwords/search/%s.json', searchstring)
+
+    def show_mypasswords(self, ID):
+        """Show my password."""
+        # http://teampasswordmanager.com/docs/api-my-passwords/#show_password
+        return collection('my_passwords/%s.json' % ID)
+
+    def create_mypassword(self, data):
+        """Create my password."""
+        # http://teampasswordmanager.com/docs/api-my-passwords/#create_password
+        return post('my_passwords.json', data)
+
+    def update_mypassword(self, ID, data):
+        """Update my password."""
+        # http://teampasswordmanager.com/docs/api-my-passwords/#update_password
+        put('my_passwords/%s.json' % ID, data)
+
+    def delete_mypassword(self, ID):
+        """Delete my password."""
+        # http://teampasswordmanager.com/docs/api-my-passwords/#delete_password
+        delete('my_passwords/%s.json' % ID)
+
 
 class TpmApiv3(TpmApi):
     """API v3 based class."""
