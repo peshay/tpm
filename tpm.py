@@ -349,6 +349,26 @@ class TpmApi(object):
         # http://teampasswordmanager.com/docs/api-my-passwords/#delete_password
         delete('my_passwords/%s.json' % ID)
 
+    def set_favorite_password(self, ID):
+        """Set a password as favorite."""
+        # http://teampasswordmanager.com/docs/api-favorites/#set_fav
+        post('favorite_passwords/%s.json' % ID)
+
+    def unset_favorite_password(self, ID):
+        """Unet a password as favorite."""
+        # http://teampasswordmanager.com/docs/api-favorites/#del_fav
+        delete('favorite_passwords/%s.json' % ID)
+
+    def set_favorite_project(self, ID):
+        """Set a project as favorite."""
+        # http://teampasswordmanager.com/docs/api-favorites/#set_fav
+        post('favorite_project/%s.json' % ID)
+
+    def unset_favorite_project(self, ID):
+        """Unet a project as favorite."""
+        # http://teampasswordmanager.com/docs/api-favorites/#del_fav
+        delete('favorite_project/%s.json' % ID)
+
 
 class TpmApiv3(TpmApi):
     """API v3 based class."""
