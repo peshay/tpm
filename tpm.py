@@ -209,7 +209,7 @@ class TpmApi(object):
     def show_project(self, ID):
         """Show a project."""
         # http://teampasswordmanager.com/docs/api-projects/#show_project
-        return collection('projects/%s.json' % ID)
+        return get('projects/%s.json' % ID)
 
     def list_passwords_of_project(self, ID):
         """List passwords of project."""
@@ -277,7 +277,7 @@ class TpmApi(object):
     def show_passwords(self, ID):
         """Show passwords."""
         # http://teampasswordmanager.com/docs/api-passwords/#show_password
-        return collection('passwords/%s.json' % ID)
+        return get('passwords/%s.json' % ID)
 
     def list_user_access_on_password(self, ID):
         """List users who can access a password."""
@@ -332,7 +332,7 @@ class TpmApi(object):
     def show_mypasswords(self, ID):
         """Show my password."""
         # http://teampasswordmanager.com/docs/api-my-passwords/#show_password
-        return collection('my_passwords/%s.json' % ID)
+        return get('my_passwords/%s.json' % ID)
 
     def create_mypassword(self, data):
         """Create my password."""
@@ -377,12 +377,12 @@ class TpmApi(object):
     def show_user(self, ID):
         """Show a user."""
         # http://teampasswordmanager.com/docs/api-users/#show_user
-        return collection('users/%s.json') % ID
+        return get('users/%s.json') % ID
 
     def show_me(self):
         """Show me."""
         # http://teampasswordmanager.com/docs/api-users/#show_me
-        return collection('users/me.json')
+        return get('users/me.json')
 
     def who_am_i(self):
         """Who am I."""
@@ -477,6 +477,14 @@ class TpmApi(object):
         """Check for latest version."""
         # http://teampasswordmanager.com/docs/api-version/
         get('version/check_latest.json')
+
+    def up_to_date(self):
+        """Check if Team Password Manager is up to date."""
+        VersionInfo = self.get_latest_version()
+        if VersionInfo.get('version') == VersionInfo.get('latest_version'):
+            return True
+        else:
+            return False
 
 
 class TpmApiv3(TpmApi):
