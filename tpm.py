@@ -14,10 +14,13 @@ import time
 import requests
 import re
 import json
+import logging
+
+log = logging.getLogger(__name__)
 
 
 class TPMException(Exception):
-    pass
+    log.warning('Error in communicating with API.')
 
 
 class TpmApi(object):
@@ -26,6 +29,7 @@ class TpmApi(object):
         """To throw Exception based on wrong Settings."""
         def __init__(self, value):
             self.value = value
+            log.critical(value)
 
         def __str__(self):
             return repr(self.value)
