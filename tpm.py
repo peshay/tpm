@@ -15,6 +15,7 @@ import requests
 import re
 import json
 import logging
+import urllib
 
 # set logger
 log = logging.getLogger(__name__)
@@ -111,6 +112,8 @@ class TpmApi(object):
         if not path.startswith(self.api):
             path = self.api + path
         log.debug('Using path %s' % path)
+
+
         # If we have data, convert to JSON
         if data:
             data = json.dumps(data)
@@ -237,7 +240,8 @@ class TpmApi(object):
     def list_projects_search(self, searchstring):
         """List projects with searchstring."""
         log.info('List all projects with: %s' % searchstring)
-        return self.collection('projects/search/%s.json' % searchstring)
+        return self.collection('projects/search/%s.json' %
+                               urllib.quote_plus(searchstring))
 
     def show_project(self, ID):
         """Show a project."""
@@ -321,7 +325,8 @@ class TpmApi(object):
     def list_passwords_search(self, searchstring):
         """List passwords with searchstring."""
         log.info('List all passwords with: %s' % searchstring)
-        return self.collection('passwords/%s.json' % searchstring)
+        return self.collection('passwords/search/%s.json' %
+                               urllib.quote_plus(searchstring))
 
     def show_passwords(self, ID):
         """Show passwords."""
@@ -389,7 +394,8 @@ class TpmApi(object):
         """List my passwords with searchstring."""
         # http://teampasswordmanager.com/docs/api-my-passwords/#list_passwords
         log.info('List MyPasswords with %s' % searchstring)
-        return self.collection('my_passwords/search/%s.json', searchstring)
+        return self.collection('my_passwords/search/%s.json' %
+                               urllib.quote_plus(searchstring))
 
     def show_mypasswords(self, ID):
         """Show my password."""
