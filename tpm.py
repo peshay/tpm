@@ -397,7 +397,7 @@ class TpmApi(object):
         return self.collection('my_passwords/search/%s.json' %
                                urllib.quote_plus(searchstring))
 
-    def show_mypasswords(self, ID):
+    def show_mypassword(self, ID):
         """Show my password."""
         # http://teampasswordmanager.com/docs/api-my-passwords/#show_password
         log.info('Show MyPassword %s' % ID)
