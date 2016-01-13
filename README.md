@@ -65,117 +65,126 @@ logging.getLogger("urllib3").setLevel(logging.WARNING)
 ### All Functions are also explained at the API documentation
 ---
 ### [API Projects](http://teampasswordmanager.com/docs/api-projects)
-#### http://teampasswordmanager.com/docs/api-projects/#list_projects
+#### [List Projects](http://teampasswordmanager.com/docs/api-projects/#list_projects)
 list_projects()
+
 list_projects_archived()
+
 list_projects_favorite()
+
 list_projects_search(searchstring)
-#### (v4 Only) http://teampasswordmanager.com/docs/api-projects/#list_subprojects
+
+#### (v4 Only) [List Subprojects](http://teampasswordmanager.com/docs/api-projects/#list_subprojects)
 list_subprojects(ID)
+
 list_subprojects_action(ID, action)
-#### http://teampasswordmanager.com/docs/api-projects/#show_project
+
+#### [Show Project](http://teampasswordmanager.com/docs/api-projects/#show_project)
 show_project(ID)
-#### http://teampasswordmanager.com/docs/api-projects/#list_pwds_prj
+#### [List Passwords of Project](http://teampasswordmanager.com/docs/api-projects/#list_pwds_prj)
 list_passwords_of_project(ID)
-#### http://teampasswordmanager.com/docs/api-projects/#list_users_prj
+#### [List User Access on Project](http://teampasswordmanager.com/docs/api-projects/#list_users_prj)
 list_user_access_on_project(ID)
-#### http://teampasswordmanager.com/docs/api-projects/#create_project
+#### [Create Project](http://teampasswordmanager.com/docs/api-projects/#create_project)
 create_project(data)
-#### http://teampasswordmanager.com/docs/api-projects/#update_project
+#### [Update Project](http://teampasswordmanager.com/docs/api-projects/#update_project)
 update_project(ID, data)
-#### http://teampasswordmanager.com/docs/api-projects/#change_parent
+#### [Change Parten of Project](http://teampasswordmanager.com/docs/api-projects/#change_parent)
 change_parent_of_project(ID, NewParrentID)
-#### http://teampasswordmanager.com/docs/api-projects/#update_project_security
+#### [Update Security of Project](http://teampasswordmanager.com/docs/api-projects/#update_project_security)
 update_security_of_project(ID, data)
-#### http://teampasswordmanager.com/docs/api-projects/#arch_unarch_project
+#### [Archive Project](http://teampasswordmanager.com/docs/api-projects/#arch_unarch_project)
 archive_project(ID)
-#### http://teampasswordmanager.com/docs/api-projects/#arch_unarch_project
+#### [Unarchive Project](http://teampasswordmanager.com/docs/api-projects/#arch_unarch_project)
 unarchive_project(ID)
-#### http://teampasswordmanager.com/docs/api-projects/#delete_project
+#### [Delete Project](http://teampasswordmanager.com/docs/api-projects/#delete_project)
 delete_project(ID)
 ### [API Passwords](http://teampasswordmanager.com/docs/api-passwords)
-#### http://teampasswordmanager.com/docs/api-passwords/#list_passwords
+#### [List Passwords](http://teampasswordmanager.com/docs/api-passwords/#list_passwords)
 list_passwords()
+
 list_passwords_archived()
+
 list_passwords_favorite()
+
 list_passwords_search(searchstring)
-#### http://teampasswordmanager.com/docs/api-passwords/#show_password
-show_passwords(ID)
-#### http://teampasswordmanager.com/docs/api-passwords/#list_users_pwd
+#### [Show Password](http://teampasswordmanager.com/docs/api-passwords/#show_password)
+show_password(ID)
+#### [Lust User Access on Password](http://teampasswordmanager.com/docs/api-passwords/#list_users_pwd)
 list_user_access_on_password(ID)
-#### http://teampasswordmanager.com/docs/api-passwords/#create_password
+#### [Create Password](http://teampasswordmanager.com/docs/api-passwords/#create_password)
 create_password(data)
-#### http://teampasswordmanager.com/docs/api-passwords/#update_password
+#### [Update Password](http://teampasswordmanager.com/docs/api-passwords/#update_password)
 update_password(ID, data)
-#### http://teampasswordmanager.com/docs/api-passwords/#update_security_password
+#### [Update Security of Password](http://teampasswordmanager.com/docs/api-passwords/#update_security_password)
 update_security_of_password(ID, data)
-#### http://teampasswordmanager.com/docs/api-passwords/#update_cf_password
+#### [Update Custom Fields of Password](http://teampasswordmanager.com/docs/api-passwords/#update_cf_password)
 update_custom_fields_of_password(ID, data)
-#### http://teampasswordmanager.com/docs/api-passwords/#delete_password
+#### [Delete Password](http://teampasswordmanager.com/docs/api-passwords/#delete_password)
 delete_password(ID)
-#### http://teampasswordmanager.com/docs/api-passwords/#lock_password
+#### [Lock Password](http://teampasswordmanager.com/docs/api-passwords/#lock_password)
 lock_password(ID)
-#### http://teampasswordmanager.com/docs/api-passwords/#unlock_password
+#### [Unlock Password](http://teampasswordmanager.com/docs/api-passwords/#unlock_password)
 unlock_password(ID)
 ### [API MyPasswords](http://teampasswordmanager.com/docs/api-my-passwords)
-#### http://teampasswordmanager.com/docs/api-my-passwords/#list_passwords
+#### [List MyPasswords](http://teampasswordmanager.com/docs/api-my-passwords/#list_passwords)
 list_mypasswords()
-#### http://teampasswordmanager.com/docs/api-my-passwords/#list_passwords
+
 list_mypasswords_search(searchstring)
-#### http://teampasswordmanager.com/docs/api-my-passwords/#show_password
-show_mypasswords(ID)
-#### http://teampasswordmanager.com/docs/api-my-passwords/#create_password
+#### [Show MyPassword](http://teampasswordmanager.com/docs/api-my-passwords/#show_password)
+show_mypassword(ID)
+#### [Create MyPassword](http://teampasswordmanager.com/docs/api-my-passwords/#create_password)
 create_mypassword(data)
-#### http://teampasswordmanager.com/docs/api-my-passwords/#update_password
+#### [Update MyPassword](http://teampasswordmanager.com/docs/api-my-passwords/#update_password)
 update_mypassword(ID, data)
-#### http://teampasswordmanager.com/docs/api-my-passwords/#delete_password
+#### [Delete MyPassword](http://teampasswordmanager.com/docs/api-my-passwords/#delete_password)
 delete_mypassword(ID)
 ### [API Favorites](http://teampasswordmanager.com/docs/api-favorites)
-#### http://teampasswordmanager.com/docs/api-favorites/#set_fav
+#### [Set Favorite Password](http://teampasswordmanager.com/docs/api-favorites/#set_fav)
 set_favorite_password(ID)
-#### http://teampasswordmanager.com/docs/api-favorites/#del_fav
+#### [Unset Favorite Password](http://teampasswordmanager.com/docs/api-favorites/#del_fav)
 unset_favorite_password(ID)
-#### http://teampasswordmanager.com/docs/api-favorites/#set_fav
+#### [Set Favorite Project](http://teampasswordmanager.com/docs/api-favorites/#set_fav)
 set_favorite_project(ID)
-#### http://teampasswordmanager.com/docs/api-favorites/#del_fav
+#### [Unset Favorite Project](http://teampasswordmanager.com/docs/api-favorites/#del_fav)
 unset_favorite_project(ID)
 ### [API Users](http://teampasswordmanager.com/docs/api-users)
-#### http://teampasswordmanager.com/docs/api-users/#list_users
+#### [List Users](http://teampasswordmanager.com/docs/api-users/#list_users)
 list_users()
-#### http://teampasswordmanager.com/docs/api-users/#show_user
+#### [Show User](http://teampasswordmanager.com/docs/api-users/#show_user)
 show_user(ID)
-#### http://teampasswordmanager.com/docs/api-users/#show_me
+#### [Show Me/Who am I?](http://teampasswordmanager.com/docs/api-users/#show_me)
 show_me()
 who_am_i()
-#### http://teampasswordmanager.com/docs/api-users/#create_user
+#### [Create User](http://teampasswordmanager.com/docs/api-users/#create_user)
 create_user(data)
-#### http://teampasswordmanager.com/docs/api-users/#update_user
+#### [Update User](http://teampasswordmanager.com/docs/api-users/#update_user)
 update_user(ID, data)
-#### http://teampasswordmanager.com/docs/api-users/#change_password
+#### [Change User Password](http://teampasswordmanager.com/docs/api-users/#change_password)
 change_user_password(ID, data)
-#### http://teampasswordmanager.com/docs/api-users/#activate_deactivate
+#### [Activate User](http://teampasswordmanager.com/docs/api-users/#activate_deactivate)
 activate_user(ID)
-#### http://teampasswordmanager.com/docs/api-users/#activate_deactivate
+#### [Deactivate User](http://teampasswordmanager.com/docs/api-users/#activate_deactivate)
 deactivate_user(ID)
-#### http://teampasswordmanager.com/docs/api-users/#convert_to_ldap
+#### [Convert User to LDAP](http://teampasswordmanager.com/docs/api-users/#convert_to_ldap)
 convert_user_to_ldap(ID, DN)
 convert_ldap_user_to_normal(ID)
-#### http://teampasswordmanager.com/docs/api-users/#delete_user
+#### [Delete User](http://teampasswordmanager.com/docs/api-users/#delete_user)
 delete_user(ID)
 ### [API Groups](http://teampasswordmanager.com/docs/api-groups)
-#### http://teampasswordmanager.com/docs/api-groups/#list_groups
+#### [List groups](http://teampasswordmanager.com/docs/api-groups/#list_groups)
 list_groups()
-#### http://teampasswordmanager.com/docs/api-groups/#show_group
+#### [Show Group](http://teampasswordmanager.com/docs/api-groups/#show_group)
 show_group(ID)
-#### http://teampasswordmanager.com/docs/api-groups/#create_group
+#### [Create Group](http://teampasswordmanager.com/docs/api-groups/#create_group)
 create_group(data)
-#### http://teampasswordmanager.com/docs/api-groups/#update_group
+#### [Update Group](http://teampasswordmanager.com/docs/api-groups/#update_group)
 update_group(ID, data):
-#### http://teampasswordmanager.com/docs/api-groups/#add_user
+#### [Add User to Group](http://teampasswordmanager.com/docs/api-groups/#add_user)
 add_user_to_group(GroupID, UserID)
-#### http://teampasswordmanager.com/docs/api-groups/#del_user
+#### [Delete User from Group](http://teampasswordmanager.com/docs/api-groups/#del_user)
 delete_user_from_group(GroupID, UserID)
-#### http://teampasswordmanager.com/docs/api-groups/#delete_group
+#### [Delete Group](http://teampasswordmanager.com/docs/api-groups/#delete_group)
 delete_group(ID)
 ### [API Password Generator](http://teampasswordmanager.com/docs/api-passwords-generator/)
 generate_password()
