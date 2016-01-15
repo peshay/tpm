@@ -6,7 +6,7 @@ for use, please install requests library: pip install requests
 created by Andreas Hubert, censhare AG
 """
 
-__version__ = '3.0'
+__version__ = '3.1'
 
 import hmac
 import hashlib
@@ -120,8 +120,6 @@ class TpmApi(object):
         if data:
             data = json.dumps(data)
             log.debug('Data to sent: %s' % data)
-        else:
-            data = {}
         # In case of key authentication
         if self.private_key and self.public_key:
             timestamp = str(int(time.time()))
