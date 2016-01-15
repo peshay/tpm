@@ -15,7 +15,10 @@ import requests
 import re
 import json
 import logging
-import urllib
+from future.standard_library import install_aliases
+install_aliases()
+
+from urllib.parse import quote_plus
 
 # set logger
 log = logging.getLogger(__name__)
@@ -113,11 +116,12 @@ class TpmApi(object):
             path = self.api + path
         log.debug('Using path %s' % path)
 
-
         # If we have data, convert to JSON
         if data:
             data = json.dumps(data)
             log.debug('Data to sent: %s' % data)
+        else:
+            data = {}
         # In case of key authentication
         if self.private_key and self.public_key:
             timestamp = str(int(time.time()))
@@ -178,8 +182,9 @@ class TpmApi(object):
                 log.warning(url + " forbidden")
                 raise TPMException(url + " not found")
             else:
-                log.warning(self.req.text)
-                raise TPMException(self.req.text)
+                message = ('%s\n%s' % (self.req.url, self.req.text))
+                log.warning(message)
+                raise TPMException(message)
 
         return result
 
@@ -191,7 +196,7 @@ class TpmApi(object):
         """For get based requests."""
         return self.request(path, 'get')
 
-    def put(self, path, data):
+    def put(self, path, data={}):
         """For put based requests."""
         self.request(path, 'put', data)
 
@@ -224,41 +229,41 @@ class TpmApi(object):
     # http://teampasswordmanager.com/docs/api-projects/#list_projects
     def list_projects(self):
         """List projects."""
-        log.info('List all projects.')
+        log.debug('List all projects.')
         return self.collection('projects.json')
 
     def list_projects_archived(self):
         """List archived projects."""
-        log.info('List all archived projects.')
+        log.debug('List all archived projects.')
         return self.collection('projects/archived.json')
 
     def list_projects_favorite(self):
         """List favorite projects."""
-        log.info('List all favorite projects.')
+        log.debug('List all favorite projects.')
         return self.collection('projects/favorite.json')
 
     def list_projects_search(self, searchstring):
         """List projects with searchstring."""
-        log.info('List all projects with: %s' % searchstring)
+        log.debug('List all projects with: %s' % searchstring)
         return self.collection('projects/search/%s.json' %
-                               urllib.quote_plus(searchstring))
+                               quote_plus(searchstring))
 
     def show_project(self, ID):
         """Show a project."""
         # http://teampasswordmanager.com/docs/api-projects/#show_project
-        log.info('Show project info: %s' % ID)
+        log.debug('Show project info: %s' % ID)
         return self.get('projects/%s.json' % ID)
 
     def list_passwords_of_project(self, ID):
         """List passwords of project."""
         # http://teampasswordmanager.com/docs/api-projects/#list_pwds_prj
-        log.info('List passwords of project: %s' % ID)
+        log.debug('List passwords of project: %s' % ID)
         return self.collection('projects/%s/passwords.json' % ID)
 
     def list_user_access_on_project(self, ID):
         """List users who can access a project."""
         # http://teampasswordmanager.com/docs/api-projects/#list_users_prj
-        log.info('List User access on project: %s' % ID)
+        log.debug('List User access on project: %s' % ID)
         return self.collection('projects/%s/security.json' % ID)
 
     def create_project(self, data):
@@ -309,24 +314,24 @@ class TpmApi(object):
     # http://teampasswordmanager.com/docs/api-passwords/#list_passwords
     def list_passwords(self):
         """List passwords."""
-        log.info('List all passwords.')
+        log.debug('List all passwords.')
         return self.collection('passwords.json')
 
     def list_passwords_archived(self):
         """List archived passwords."""
-        log.info('List archived passwords.')
+        log.debug('List archived passwords.')
         return self.collection('passwords/archived.json')
 
     def list_passwords_favorite(self):
         """List favorite passwords."""
-        log.info('List favorite spasswords.')
+        log.debug('List favorite spasswords.')
         return self.collection('passwords/favorite.json')
 
     def list_passwords_search(self, searchstring):
         """List passwords with searchstring."""
-        log.info('List all passwords with: %s' % searchstring)
+        log.debug('List all passwords with: %s' % searchstring)
         return self.collection('passwords/search/%s.json' %
-                               urllib.quote_plus(searchstring))
+                               quote_plus(searchstring))
 
     def show_password(self, ID):
         """Show password."""
@@ -337,7 +342,7 @@ class TpmApi(object):
     def list_user_access_on_password(self, ID):
         """List users who can access a password."""
         # http://teampasswordmanager.com/docs/api-passwords/#list_users_pwd
-        log.info('List user access on password %s' % ID)
+        log.debug('List user access on password %s' % ID)
         return self.collection('passwords/%s/security.json' % ID)
 
     def create_password(self, data):
@@ -378,29 +383,30 @@ class TpmApi(object):
         log.info('Lock password %s' % ID)
         self.put('passwords/%s/lock.json' % ID)
 
-    def unlock_password(self, ID):
+    def unlock_password(self, ID, reason):
         """Unlock a password."""
         # http://teampasswordmanager.com/docs/api-passwords/#unlock_password
-        log.info('Unlock password %s' % ID)
+        log.info('Unlock password %s, Reason: %s' % (ID, reason))
+        self.unlock_reason = reason
         self.put('passwords/%s/unlock.json' % ID)
 
     def list_mypasswords(self):
         """List my passwords."""
         # http://teampasswordmanager.com/docs/api-my-passwords/#list_passwords
-        log.info('List MyPasswords')
+        log.debug('List MyPasswords')
         return self.collection('my_passwords.json')
 
     def list_mypasswords_search(self, searchstring):
         """List my passwords with searchstring."""
         # http://teampasswordmanager.com/docs/api-my-passwords/#list_passwords
-        log.info('List MyPasswords with %s' % searchstring)
+        log.debug('List MyPasswords with %s' % searchstring)
         return self.collection('my_passwords/search/%s.json' %
-                               urllib.quote_plus(searchstring))
+                               quote_plus(searchstring))
 
     def show_mypassword(self, ID):
         """Show my password."""
         # http://teampasswordmanager.com/docs/api-my-passwords/#show_password
-        log.info('Show MyPassword %s' % ID)
+        log.debug('Show MyPassword %s' % ID)
         return self.get('my_passwords/%s.json' % ID)
 
     def create_mypassword(self, data):
@@ -450,19 +456,19 @@ class TpmApi(object):
     def list_users(self):
         """List users."""
         # http://teampasswordmanager.com/docs/api-users/#list_users
-        log.info('List users')
+        log.debug('List users')
         return self.collection('users.json')
 
     def show_user(self, ID):
         """Show a user."""
         # http://teampasswordmanager.com/docs/api-users/#show_user
-        log.info('Show user %s' % ID)
-        return self.get('users/%s.json') % ID
+        log.debug('Show user %s' % ID)
+        return self.get('users/%s.json' % ID)
 
     def show_me(self):
         """Show me."""
         # http://teampasswordmanager.com/docs/api-users/#show_me
-        log.info('Show Info about own user')
+        log.debug('Show Info about own user')
         return self.get('users/me.json')
 
     def who_am_i(self):
@@ -522,13 +528,13 @@ class TpmApi(object):
     def list_groups(self):
         """List Groups."""
         # http://teampasswordmanager.com/docs/api-groups/#list_groups
-        log.info('List groups')
+        log.debug('List groups')
         return self.collection('groups.json')
 
     def show_group(self, ID):
         """Show a Group."""
         # http://teampasswordmanager.com/docs/api-groups/#show_group
-        log.info('Show group %s' % ID)
+        log.debug('Show group %s' % ID)
         return self.get('groups/%s.json' % ID)
 
     def create_group(self, data):
@@ -566,19 +572,19 @@ class TpmApi(object):
     def generate_password(self):
         """Generate a new random password."""
         # http://teampasswordmanager.com/docs/api-passwords-generator/
-        log.info('Generate new password')
+        log.debug('Generate new password')
         return self.get('generate_password.json')
 
     def get_version(self):
         """Get Version Information."""
         # http://teampasswordmanager.com/docs/api-version/
-        log.info('Get version information')
+        log.debug('Get version information')
         return self.get('version.json')
 
     def get_latest_version(self):
         """Check for latest version."""
         # http://teampasswordmanager.com/docs/api-version/
-        log.info('Get latest version')
+        log.debug('Get latest version')
         return self.get('version/check_latest.json')
 
     def up_to_date(self):
