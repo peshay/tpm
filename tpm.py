@@ -6,7 +6,7 @@ for use, please install requests library: pip install requests
 created by Andreas Hubert, censhare AG
 """
 
-__version__ = '3.1'
+__version__ = '3.2'
 
 import hmac
 import hashlib
@@ -123,7 +123,7 @@ class TpmApi(object):
         # In case of key authentication
         if self.private_key and self.public_key:
             timestamp = str(int(time.time()))
-            unhashed = path + timestamp + data
+            unhashed = path + timestamp + str(data)
             self.hash = hmac.new(str.encode(self.private_key),
                                  msg=unhashed.encode('utf-8'),
                                  digestmod=hashlib.sha256).hexdigest()
@@ -194,7 +194,7 @@ class TpmApi(object):
         """For get based requests."""
         return self.request(path, 'get')
 
-    def put(self, path, data={}):
+    def put(self, path, data=''):
         """For put based requests."""
         self.request(path, 'put', data)
 
