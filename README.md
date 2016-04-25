@@ -17,7 +17,7 @@ This is an example how you can use it in a python script
 #! /usr/bin/env python
 import tpm
 # create a object for the connection settings
-URL = "https://myPasswordManager.example.com"
+URL = "https://mypasswordpanager.example.com"
 USER = 'MyUser'
 PASS = 'Secret'
 tpmconn = tpm.TpmApiv4(URL, username=USER, password=PASS)
@@ -33,7 +33,7 @@ You can also use Private/Public Key authentication
 #! /usr/bin/env python
 import tpm
 # create a object for the connection settings
-URL = "https://myPasswordManager.example.com"
+URL = "https://mypasswordmanager.example.com"
 pubkey = '3726d93f2a0e5f0fe2cc3a6e9e3ade964b43b07f897d579466c28b7f8ff51cd0'
 privkey = '87324bedead51af96a45271d217b8ad5ef3f220da6c078a9bce4e4318729189c'
 tpmconn = tpm.TpmApiv4(URL, private_key=privkey, public_key=pubkey)
@@ -110,7 +110,7 @@ list_passwords_favorite()
 list_passwords_search(searchstring)
 #### [Show Password](http://teampasswordmanager.com/docs/api-passwords/#show_password)
 show_password(ID)
-#### [Lust User Access on Password](http://teampasswordmanager.com/docs/api-passwords/#list_users_pwd)
+#### [List User Access on Password](http://teampasswordmanager.com/docs/api-passwords/#list_users_pwd)
 list_user_access_on_password(ID)
 #### [Create Password](http://teampasswordmanager.com/docs/api-passwords/#create_password)
 create_password(data)
