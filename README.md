@@ -26,7 +26,7 @@ tpmconn = tpm.TpmApiv4(URL, username=USER, password=PASS)
 data = tpmconn.list_passwords()
 # show all names from the password entries
 for item in data:
-    print item.get('name')
+    print (item.get('name'))
 ```
 You can also use Private/Public Key authentication
 ```python
@@ -42,7 +42,7 @@ tpmconn = tpm.TpmApiv4(URL, private_key=privkey, public_key=pubkey)
 data = tpmconn.list_passwords()
 # show all names from the password entries
 for item in data:
-    print item.get('name')
+    print (item.get('name'))
 ```
 
 ## Logging
