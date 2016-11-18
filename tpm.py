@@ -1,12 +1,31 @@
 #! /usr/bin/env python
-"""This is a common script for API connection with Team Password Manager.
+"""Team Password Manager API
 
+To simplify usage of Team Password Manager API.
+
+You can authenticate with username and password
+    >>> import tpm
+    >>> URL = "https://mypasswordmanager.example.com"
+    >>> USER = 'MyUser'
+    >>> PASS = 'Secret'
+    >>> tpmconn = tpm.TpmApiv4(URL, username=USER, password=PASS)
+
+Or with Private/Public Key
+    >>> pubkey = '3726d93f2a0e5f0fe2cc3a6e9e3ade964b43b07f897d579466c28b7f8ff51cd0'
+    >>> privkey = '87324bedead51af96a45271d217b8ad5ef3f220da6c078a9bce4e4318729189c'
+    >>> tpmconn = tpm.TpmApiv4(URL, private_key=privkey, public_key=pubkey)
+
+With the connection object you can use all TPM functions, like list all passwords:
+    >>> tpmconn.list_passwords()
+
+All API functions from Team Password Manager are included.
 see http://teampasswordmanager.com/docs/api/
-for use, please install requests library: pip install requests
-created by Andreas Hubert, censhare AG
+
+:copyright: (c) 2015 by Andreas Hubert.
+:license: The MIT License (MIT), see LICENSE for more details.
 """
 
-__version__ = '3.2'
+__version__ = '3.3'
 
 import hmac
 import hashlib
