@@ -2,6 +2,7 @@
 [![GitHub release](https://img.shields.io/github/release/peshay/tpm.svg)]()
 [![GitHub tag](https://img.shields.io/github/tag/peshay/tpm.svg)]()
 [![license](https://img.shields.io/github/license/peshay/tpm.svg)]()
+[![Beerpay](https://img.shields.io/beerpay/peshay/tpm.svg?style=plastic)]()
 
 # tpm.py
 
