@@ -12,6 +12,7 @@ python:
 - pypy3
 install:
 - pip install -r requirements.txt
+- pip install requests_mock
 - python setup.py -q install
 script: nosetests
 deploy:
