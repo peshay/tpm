@@ -7,7 +7,7 @@ import json
 
 url = 'https://tpm.example.com/index.php/api/v4/projects.json'
 
-def fake_data(url, action, data=''):
+def fake_data(url, action, data):
     """
     A stub urlopen() implementation that load json responses from
     the filesystem.
