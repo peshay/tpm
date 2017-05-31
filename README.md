@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/peshay/tpm.svg?branch=travis-test)](https://travis-ci.org/peshay/tpm)
+[![Build Status](https://travis-ci.org/peshay/tpm.svg?branch=master)](https://travis-ci.org/peshay/tpm)
 [![GitHub release](https://img.shields.io/github/release/peshay/tpm.svg)]()
 [![GitHub tag](https://img.shields.io/github/tag/peshay/tpm.svg)]()
 [![license](https://img.shields.io/github/license/peshay/tpm.svg)]()
