@@ -198,8 +198,3 @@ generate_password()
 get_version()
 get_latest_version()
 up_to_date()
-
-## Support on Beerpay
-Hey dude! Help me out for a couple of :beers:!
-
-[![Beerpay](https://beerpay.io/peshay/tpm/badge.svg?style=beer-square)](https://beerpay.io/peshay/tpm)  [![Beerpay](https://beerpay.io/peshay/tpm/make-wish.svg?style=flat-square)](https://beerpay.io/peshay/tpm?focus=wish)
