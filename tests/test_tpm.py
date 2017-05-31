@@ -9,39 +9,45 @@ import logging
 log = logging.getLogger(__name__)
 
 url_projects = 'https://tpm.example.com/index.php/api/v4/projects.json'
-url_getmore = 'https://tpm.example.com/index.php/api/v4/getmore'
 
-nextdata = []
 item_limit = 3
 
-def fake_data(url, action, data):
+def fake_data(url, m):
     """
     A stub urlopen() implementation that load json responses from
     the filesystem.
     """
-    global nextdata
-    global url_getmore
-    header = {}
-    if url == url_getmore:
-        data = nextdata
-        log.debug("data is nextdata {0}".format(nextdata))
-    else:
-        # Map path from url to a file
-        path_parts = url.split('/')[6:]
-        path = '/'.join(path_parts)
-        resource_file = os.path.normpath('tests/resources/%s' %
-                                         path)
-        data_file = open(resource_file)
-        data = json.load(data_file)
+
+    # Map path from url to a file
+    path_parts = url.split('/')[6:]
+    path = '/'.join(path_parts)
+    resource_file = os.path.normpath('tests/resources/{}'.format(path))
+    data_file = open(resource_file)
+    data = json.load(data_file)
+
     # Must return a json-like object
-    if len(data) > item_limit:
-        nextdata = data[item_limit:]
-        data = data[:item_limit]
-        header.update({ 'link': 'getmore; rel="next"', "value1": "crap2"})
-    else:
-        header.clear()
-    log.debug("data to return: {0}".format(data))
-    return data, header
+    count = 0
+    header = {}
+    while True:
+        count += 1
+        if len(data) > item_limit:
+            returndata = data[:item_limit]
+            data = data[item_limit:]
+            pageingurl = url.replace('.json', '/page/{}.json'.format(count))
+            log.debug("Registering URL: {}".format(pageingurl))
+            log.debug("Registering data: {}".format(returndata))
+            log.debug("Data length: {}".format(len(returndata)))
+            log.debug("Registering header: {}".format(header))
+            m.get(pageingurl, json=returndata, headers=header.copy())
+            header = { 'link': '{}; rel="next"'.format(pageingurl)}
+        else:
+            log.debug("Registering URL: {}".format(url))
+            log.debug("Registering data: {}".format(data))
+            log.debug("Registering header: {}".format(header))
+            log.debug("Data length: {}".format(len(data)))
+            m.get(url, json=data, headers=header.copy())
+            header.clear()
+            break
 
 class ClientTestCase(unittest.TestCase):
     """Test case for the client methods."""
@@ -51,14 +57,7 @@ class ClientTestCase(unittest.TestCase):
     def test_request(self):
         """Test a list_projects."""
         with requests_mock.Mocker() as m:
-            log.debug('mock url_projects')
-            data_projects, header = fake_data(url_projects, 'post', data='')
-            log.debug("the header: {}".format(header))
-            m.get(url_projects, json=data_projects, headers=header)
-            log.debug('mock url_getmore')
-            log.debug("the header: {}".format(header))
-            data_getmore, header = fake_data(url_getmore, 'post', data='')
-            m.get(url_getmore, json=data_getmore, headers=header)
+            fake_data(url_projects, m)
             response = self.client.list_projects()
         # number of projects is 5
         self.assertEqual(len(response), 5)
