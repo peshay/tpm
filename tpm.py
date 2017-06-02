@@ -94,7 +94,7 @@ class TpmApi(object):
             self.url = self.base_url + self.apiurl
             log.debug('Set URL to %s' % self.url)
         else:
-            raise self.ConfigError('Invalid URL: %s' % self.url)
+            raise self.ConfigError('Invalid URL: %s' % base_url)
         # set headers
         self.headers = {'Content-Type': 'application/json; charset=utf-8',
                         'User-Agent': 'tpm.py/' + __version__
