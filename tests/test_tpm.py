@@ -82,6 +82,13 @@ class ClientTestCase(unittest.TestCase):
 
 class ExceptionTestCase(unittest.TestCase):
     """Test case for all kind of Exceptions."""
+    def test_wrong_auth_exception(self):
+        """Exception if wrong authentication mehtod."""
+        with self.assertRaises(tpm.TpmApi.ConfigError) as context:
+            tpm.TpmApiv4('https://tpm.example.com', username='USER', private_key='PASS')
+        log.debug("context exception: {}".format(context.exception))
+        self.assertEqual("'No authentication specified (user/password or private/public key)'", str(context.exception))
+
     def test_wrong_url_exception(self):
         """Exception if URL does not match REGEXurl."""
         wrong_url = 'ftp://tpm.example.com'
