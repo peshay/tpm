@@ -80,8 +80,8 @@ class ClientTestCase(unittest.TestCase):
         """Test Logging."""
         pass
 
-class ExceptionTestCase(unittest.TestCase):
-    """Test case for all kind of Exceptions."""
+class ExceptionTestCases(unittest.TestCase):
+    """Test case for Config Exceptions."""
     def test_wrong_auth_exception(self):
         """Exception if wrong authentication mehtod."""
         with self.assertRaises(tpm.TpmApi.ConfigError) as context:
@@ -97,24 +97,39 @@ class ExceptionTestCase(unittest.TestCase):
         log.debug("context exception: {}".format(context.exception))
         self.assertEqual("'Invalid URL: {}'".format(wrong_url), str(context.exception))
 
+class ExceptionOnRequestsTestCases(unittest.TestCase):
+    def setUp(self):
+        self.client = tpm.TpmApiv4('https://tpm.example.com', username='USER', password='PASS')
+
     def test_connection_exception(self):
         """Exception if connection fails."""
         exception_error = "Connection error for HTTPSConnectionPool(host='tpm.example.com', port=443)"
         with self.assertRaises(tpm.TPMException) as context:
-            self.client = tpm.TpmApiv4('https://tpm.example.com', username='USER', password='PASS')
             self.client.list_passwords()
         log.debug("context exception: {}".format(context.exception))
         self.assertTrue(exception_error in str(context.exception))
 
+    """Test cases for Exceptions on connection"""
     def test_value_error_exception(self):
         """Exception if value is not json format."""
         exception_error = "Extra data: line 1 column 1256 - line 2 column 1 (char 1255 - 1262)"
         path_to_mock = 'passwords/value_error.json'
         request_url = api_url + path_to_mock
-        self.client = tpm.TpmApiv4('https://tpm.example.com', username='USER', password='PASS')
         with self.assertRaises(ValueError) as context:
             with requests_mock.Mocker() as m:
                 fake_data(request_url, m)
                 response = self.client.show_passwords('value_error')
+        log.debug("context exception: {}".format(context.exception))
+        self.assertTrue(exception_error in str(context.exception))
+
+    def test_exception_on_403(self):
+        """Exception if 403 forbidden."""
+        path_to_mock = 'passwords.json'
+        request_url = api_url + path_to_mock
+        exception_error = "{} forbidden".format(request_url)
+        with self.assertRaises(tpm.TPMException) as context:
+            with requests_mock.Mocker() as m:
+                m.get(request_url, text='forbidden', status_code=403)
+                response = self.client.list_passwords()
         log.debug("context exception: {}".format(context.exception))
         self.assertTrue(exception_error in str(context.exception))
