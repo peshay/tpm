@@ -113,7 +113,7 @@ class ExceptionOnRequestsTestCases(unittest.TestCase):
     """Test cases for Exceptions on connection"""
     def test_value_error_exception(self):
         """Exception if value is not json format."""
-        exception_error = "Extra data: line 1 column 1256"
+        exception_error = "Extra data: "
         path_to_mock = 'passwords/value_error.json'
         request_url = api_url + path_to_mock
         with self.assertRaises(ValueError) as context:
