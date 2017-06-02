@@ -31,7 +31,7 @@ def fake_data(url, m):
     header = {}
     while True:
         count += 1
-        if len(data) > item_limit:
+        if len(data) > item_limit and isinstance(data,list):
             returndata = data[:item_limit]
             data = data[item_limit:]
             pageingurl = url.replace('.json', '/page/{}.json'.format(count))
@@ -52,6 +52,39 @@ def fake_data(url, m):
 
 class ClientTestCase(unittest.TestCase):
     """Test case for the client methods."""
+    client = tpm.TpmApiv4('https://tpm.example.com', username='USER', password='PASS')
+    # get all retrievable sample data
+    path_to_mock = 'projects.json'
+    request_url = api_url + path_to_mock
+    with requests_mock.Mocker() as m:
+        fake_data(request_url, m)
+        global Projects
+        Projects = client.list_projects()
+    path_to_mock = 'passwords.json'
+    request_url = api_url + path_to_mock
+    with requests_mock.Mocker() as m:
+        fake_data(request_url, m)
+        global Passwords
+        Passwords = client.list_passwords()
+    path_to_mock = 'my_passwords.json'
+    request_url = api_url + path_to_mock
+    with requests_mock.Mocker() as m:
+        fake_data(request_url, m)
+        global MyPasswords
+        MyPasswords = client.list_mypasswords()
+    path_to_mock = 'users.json'
+    request_url = api_url + path_to_mock
+    with requests_mock.Mocker() as m:
+        fake_data(request_url, m)
+        global Users
+        Users = client.list_users()
+    path_to_mock = 'groups.json'
+    request_url = api_url + path_to_mock
+    with requests_mock.Mocker() as m:
+        fake_data(request_url, m)
+        global Groups
+        Groups = client.list_groups()
+
     def setUp(self):
         self.client = tpm.TpmApiv4('https://tpm.example.com', username='USER', password='PASS')
 
@@ -79,6 +112,116 @@ class ClientTestCase(unittest.TestCase):
     def test_logging(self):
         """Test Logging."""
         pass
+
+    def test_list_projects(self):
+        """Test function list_projects."""
+        path_to_mock = 'projects.json'
+        request_url = api_url + path_to_mock
+        request_path = local_path + path_to_mock
+        resource_file = os.path.normpath(request_path)
+        data_file = open(resource_file)
+        data = json.load(data_file)
+        with requests_mock.Mocker() as m:
+            fake_data(request_url, m)
+            response = self.client.list_projects()
+        # number of passwords as from original json file.
+        self.assertEqual(data, response)
+
+    def test_list_projects_archived(self):
+        """Test function list_projects_archived."""
+        path_to_mock = 'projects/archived.json'
+        request_url = api_url + path_to_mock
+        request_path = local_path + path_to_mock
+        resource_file = os.path.normpath(request_path)
+        data_file = open(resource_file)
+        data = json.load(data_file)
+        with requests_mock.Mocker() as m:
+            fake_data(request_url, m)
+            response = self.client.list_projects_archived()
+        # number of passwords as from original json file.
+        self.assertEqual(data, response)
+
+    def test_list_projects_favorite(self):
+        """Test function list_projects_favorite."""
+        path_to_mock = 'projects/favorite.json'
+        request_url = api_url + path_to_mock
+        request_path = local_path + path_to_mock
+        resource_file = os.path.normpath(request_path)
+        data_file = open(resource_file)
+        data = json.load(data_file)
+        with requests_mock.Mocker() as m:
+            fake_data(request_url, m)
+            response = self.client.list_projects_favorite()
+        # number of passwords as from original json file.
+        self.assertEqual(data, response)
+
+    def test_list_projects_search(self):
+        """Test function list_projects_search."""
+        searches = ['company', 'internal', 'website']
+        for search in searches:
+            path_to_mock = 'projects/search/{}.json'.format(search)
+            request_url = api_url + path_to_mock
+            request_path = local_path + path_to_mock
+            resource_file = os.path.normpath(request_path)
+            data_file = open(resource_file)
+            data = json.load(data_file)
+            with requests_mock.Mocker() as m:
+                fake_data(request_url, m)
+                response = self.client.list_projects_search(search)
+            # number of passwords as from original json file.
+            self.assertEqual(data, response)
+
+    def test_show_project(self):
+        """Test function show_project."""
+        for project in Projects:
+            project_id = project.get('id')
+            log.debug("Testing with Project ID: {}".format(project_id))
+            path_to_mock = 'projects/{}.json'.format(project_id)
+            request_url = api_url + path_to_mock
+            request_path = local_path + path_to_mock
+            resource_file = os.path.normpath(request_path)
+            data_file = open(resource_file)
+            data = json.load(data_file)
+            with requests_mock.Mocker() as m:
+                fake_data(request_url, m)
+                response = self.client.show_project(project_id)
+            # number of passwords as from original json file.
+            self.assertEqual(data, response)
+
+    def test_list_passwords_of_project(self):
+        """Test function list_passwords_of_project."""
+        for project in Projects:
+            project_id = project.get('id')
+            log.debug("Testing with Project ID: {}".format(project_id))
+            path_to_mock = 'projects/{}/passwords.json'.format(project_id)
+            request_url = api_url + path_to_mock
+            request_path = local_path + path_to_mock
+            resource_file = os.path.normpath(request_path)
+            data_file = open(resource_file)
+            data = json.load(data_file)
+            with requests_mock.Mocker() as m:
+                fake_data(request_url, m)
+                response = self.client.list_passwords_of_project(project_id)
+            # number of passwords as from original json file.
+            self.assertEqual(data, response)
+
+    def test_list_user_access_on_project(self):
+        """Test function list_user_access_on_project."""
+        for project in Projects:
+            project_id = project.get('id')
+            log.debug("Testing with Project ID: {}".format(project_id))
+            path_to_mock = 'projects/{}/security.json'.format(project_id)
+            request_url = api_url + path_to_mock
+            request_path = local_path + path_to_mock
+            resource_file = os.path.normpath(request_path)
+            data_file = open(resource_file)
+            data = json.load(data_file)
+            with requests_mock.Mocker() as m:
+                fake_data(request_url, m)
+                response = self.client.list_user_access_on_project(project_id)
+            # number of passwords as from original json file.
+            self.assertEqual(data, response)
+
 
 class ExceptionTestCases(unittest.TestCase):
     """Test case for Config Exceptions."""
