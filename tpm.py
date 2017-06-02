@@ -461,7 +461,7 @@ class TpmApi(object):
     def set_favorite_project(self, ID):
         """Set a project as favorite."""
         # http://teampasswordmanager.com/docs/api-favorites/#set_fav
-        og.info('Set project %s as favorite' % ID)
+        log.info('Set project %s as favorite' % ID)
         self.post('favorite_project/%s.json' % ID)
 
     def unset_favorite_project(self, ID):
