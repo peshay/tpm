@@ -113,7 +113,7 @@ class ExceptionOnRequestsTestCases(unittest.TestCase):
     """Test cases for Exceptions on connection"""
     def test_value_error_exception(self):
         """Exception if value is not json format."""
-        exception_error = "Extra data: line 1 column 1256 - line 2 column 1 (char 1255 - 1262)"
+        exception_error = "Extra data: line 1 column 1256"
         path_to_mock = 'passwords/value_error.json'
         request_url = api_url + path_to_mock
         with self.assertRaises(ValueError) as context:
@@ -157,4 +157,4 @@ class ExceptionOnRequestsTestCases(unittest.TestCase):
                 m.get(request_url, text='Method Not Allowed', status_code=405)
                 response = self.client.list_passwords()
         log.debug("context exception: {}".format(context.exception))
-        self.assertTrue(exception_error in str(context.exception))
+        self.assertTrue(str(context.exception).startswith(exception_error))
