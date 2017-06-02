@@ -55,6 +55,10 @@ class ClientTestCase(unittest.TestCase):
     def setUp(self):
         self.client = tpm.TpmApiv4('https://tpm.example.com', username='USER', password='PASS')
 
+    def test_user_auth_method(self):
+        """Test user based authentication method."""
+        pass
+
     def test_paging(self):
         """Test paging, if number of items is same as from original data source."""
         path_to_mock = 'passwords.json'
@@ -71,3 +75,17 @@ class ClientTestCase(unittest.TestCase):
         response_items = len(response)
         log.debug("Source Items: {}; Response Items: {}".format(source_items, response_items))
         self.assertEqual(source_items, response_items)
+
+    def test_logging(self):
+        """Test Logging."""
+        pass
+
+class ExceptionTestCase(unittest.TestCase):
+    """Test case for all kind of Exceptions."""
+    def test_wrong_url_exception(self):
+        """Exception if URL does not match REGEXurl."""
+        wrong_url = 'ftp://tpm.example.com'
+        with self.assertRaises(tpm.TpmApiv4.ConfigError) as context:
+            tpm.TpmApiv4(wrong_url, username='USER', password='PASS')
+        log.debug("context exception: {}".format(context.exception))
+        self.assertEqual("'Invalid URL: {}'".format(wrong_url), str(context.exception))
