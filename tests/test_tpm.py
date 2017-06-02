@@ -133,3 +133,15 @@ class ExceptionOnRequestsTestCases(unittest.TestCase):
                 response = self.client.list_passwords()
         log.debug("context exception: {}".format(context.exception))
         self.assertTrue(exception_error in str(context.exception))
+
+    def test_exception_on_404(self):
+        """Exception if 404 not found."""
+        path_to_mock = 'passwords.json'
+        request_url = api_url + path_to_mock
+        exception_error = "{} not found".format(request_url)
+        with self.assertRaises(tpm.TPMException) as context:
+            with requests_mock.Mocker() as m:
+                m.get(request_url, text='not found', status_code=404)
+                response = self.client.list_passwords()
+        log.debug("context exception: {}".format(context.exception))
+        self.assertTrue(exception_error in str(context.exception))
