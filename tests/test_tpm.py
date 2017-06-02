@@ -99,11 +99,22 @@ class ExceptionTestCase(unittest.TestCase):
 
     def test_connection_exception(self):
         """Exception if connection fails."""
-        connection_error = "Connection error for HTTPSConnectionPool(host='tpm.example.com', port=443)"
+        exception_error = "Connection error for HTTPSConnectionPool(host='tpm.example.com', port=443)"
         with self.assertRaises(tpm.TPMException) as context:
             self.client = tpm.TpmApiv4('https://tpm.example.com', username='USER', password='PASS')
             self.client.list_passwords()
         log.debug("context exception: {}".format(context.exception))
-        self.assertTrue(connection_error in str(context.exception))
+        self.assertTrue(exception_error in str(context.exception))
 
-    
+    def test_value_error_exception(self):
+        """Exception if value is not json format."""
+        exception_error = "Extra data: line 1 column 1256 - line 2 column 1 (char 1255 - 1262)"
+        path_to_mock = 'passwords/value_error.json'
+        request_url = api_url + path_to_mock
+        self.client = tpm.TpmApiv4('https://tpm.example.com', username='USER', password='PASS')
+        with self.assertRaises(ValueError) as context:
+            with requests_mock.Mocker() as m:
+                fake_data(request_url, m)
+                response = self.client.show_passwords('value_error')
+        log.debug("context exception: {}".format(context.exception))
+        self.assertTrue(exception_error in str(context.exception))
