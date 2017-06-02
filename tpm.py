@@ -199,7 +199,7 @@ class TpmApi(object):
                 log.warning(url + " forbidden")
                 raise TPMException(url + " not found")
             else:
-                message = ('%s\n%s' % (self.req.url, self.req.text))
+                message = ('%s %s' % (self.req.url, self.req.text))
                 log.warning(message)
                 raise TPMException(message)
 

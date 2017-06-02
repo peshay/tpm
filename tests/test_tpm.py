@@ -98,6 +98,7 @@ class ExceptionTestCases(unittest.TestCase):
         self.assertEqual("'Invalid URL: {}'".format(wrong_url), str(context.exception))
 
 class ExceptionOnRequestsTestCases(unittest.TestCase):
+    """Test case for Request based Exceptions."""
     def setUp(self):
         self.client = tpm.TpmApiv4('https://tpm.example.com', username='USER', password='PASS')
 
@@ -142,6 +143,18 @@ class ExceptionOnRequestsTestCases(unittest.TestCase):
         with self.assertRaises(tpm.TPMException) as context:
             with requests_mock.Mocker() as m:
                 m.get(request_url, text='not found', status_code=404)
+                response = self.client.list_passwords()
+        log.debug("context exception: {}".format(context.exception))
+        self.assertTrue(exception_error in str(context.exception))
+
+    def test_exception_on_405(self):
+        """Exception if 405 Method Not Allowed."""
+        path_to_mock = 'passwords.json'
+        request_url = api_url + path_to_mock
+        exception_error = "{} Method Not Allowed".format(request_url)
+        with self.assertRaises(tpm.TPMException) as context:
+            with requests_mock.Mocker() as m:
+                m.get(request_url, text='Method Not Allowed', status_code=405)
                 response = self.client.list_passwords()
         log.debug("context exception: {}".format(context.exception))
         self.assertTrue(exception_error in str(context.exception))
