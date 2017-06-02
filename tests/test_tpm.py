@@ -8,9 +8,10 @@ import logging
 
 log = logging.getLogger(__name__)
 
-url_projects = 'https://tpm.example.com/index.php/api/v4/projects.json'
+api_url = 'https://tpm.example.com/index.php/api/v4/'
+local_path = 'tests/resources/'
 
-item_limit = 3
+item_limit = 20
 
 def fake_data(url, m):
     """
@@ -54,10 +55,19 @@ class ClientTestCase(unittest.TestCase):
     def setUp(self):
         self.client = tpm.TpmApiv4('https://tpm.example.com', username='USER', password='PASS')
 
-    def test_request(self):
-        """Test a list_projects."""
+    def test_paging(self):
+        """Test paging, if number of items is same as from original data source."""
+        path_to_mock = 'passwords.json'
+        request_url = api_url + path_to_mock
+        request_path = local_path + path_to_mock
+        resource_file = os.path.normpath(request_path)
+        data_file = open(resource_file)
+        data = json.load(data_file)
         with requests_mock.Mocker() as m:
-            fake_data(url_projects, m)
-            response = self.client.list_projects()
-        # number of projects is 5
-        self.assertEqual(len(response), 5)
+            fake_data(request_url, m)
+            response = self.client.list_passwords()
+        # number of passwords as from original json file.
+        source_items = len(data)
+        response_items = len(response)
+        log.debug("Source Items: {}; Response Items: {}".format(source_items, response_items))
+        self.assertEqual(source_items, response_items)
