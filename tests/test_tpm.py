@@ -96,3 +96,14 @@ class ExceptionTestCase(unittest.TestCase):
             tpm.TpmApiv4(wrong_url, username='USER', password='PASS')
         log.debug("context exception: {}".format(context.exception))
         self.assertEqual("'Invalid URL: {}'".format(wrong_url), str(context.exception))
+
+    def test_connection_exception(self):
+        """Exception if connection fails."""
+        connection_error = "Connection error for HTTPSConnectionPool(host='tpm.example.com', port=443)"
+        with self.assertRaises(tpm.TPMException) as context:
+            self.client = tpm.TpmApiv4('https://tpm.example.com', username='USER', password='PASS')
+            self.client.list_passwords()
+        log.debug("context exception: {}".format(context.exception))
+        self.assertTrue(connection_error in str(context.exception))
+
+    
