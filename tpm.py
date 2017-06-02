@@ -205,7 +205,7 @@ class TpmApi(object):
 
         return result
 
-    def post(self, path, data):
+    def post(self, path, data=''):
         """For post based requests."""
         return self.request(path, 'post', data)
 
