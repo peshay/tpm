@@ -190,11 +190,11 @@ with safe_open_w('users.json') as outfile:
 
 for user_id in AllUserIDs:
     data = tpmconn.show_user(user_id)
-    with safe_open_w('users.json') as outfile:
+    with safe_open_w('users/{}.json'.format(user_id)) as outfile:
         json.dump(data, outfile)
 
 data = tpmconn.show_me()
-with safe_open_w('users/me.json'.format()) as outfile:
+with safe_open_w('users/me.json') as outfile:
     json.dump(data, outfile)
 
 ## special cases
@@ -209,16 +209,16 @@ with safe_open_w('users/me.json'.format()) as outfile:
 
 # List Groups
 data = tpmconn.list_groups()
-with safe_open_w('users.json') as outfile:
+with safe_open_w('groups.json') as outfile:
     json.dump(data, outfile)
 
 for group_id in AllGroupIDs:
     data = tpmconn.show_group(group_id)
-    with safe_open_w('users.json') as outfile:
+    with safe_open_w('groups/{}.json'.format(group_id)) as outfile:
         json.dump(data, outfile)
 
 data = tpmconn.show_me()
-with safe_open_w('users/me.json'.format()) as outfile:
+with safe_open_w('users/me.json') as outfile:
     json.dump(data, outfile)
 
 ## special cases
