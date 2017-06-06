@@ -862,10 +862,31 @@ class GeneralClientTestCases(unittest.TestCase):
 
 class ExceptionTestCases(unittest.TestCase):
     """Test case for Config Exceptions."""
-    def test_wrong_auth_exception(self):
-        """Exception if wrong authentication mehtod."""
+    def test_wrong_auth_exception1(self):
+        """Exception if wrong authentication mehtod with username but private_key."""
         with self.assertRaises(tpm.TpmApi.ConfigError) as context:
             tpm.TpmApiv4('https://tpm.example.com', username='USER', private_key='PASS')
+        log.debug("context exception: {}".format(context.exception))
+        self.assertEqual("'No authentication specified (user/password or private/public key)'", str(context.exception))
+
+    def test_wrong_auth_exception2(self):
+        """Exception if wrong authentication mehtod with public key but password."""
+        with self.assertRaises(tpm.TpmApi.ConfigError) as context:
+            tpm.TpmApiv4('https://tpm.example.com', public_key='USER', password='PASS')
+        log.debug("context exception: {}".format(context.exception))
+        self.assertEqual("'No authentication specified (user/password or private/public key)'", str(context.exception))
+
+    def test_wrong_auth_exception3(self):
+        """Exception if wrong authentication mehtod with username but public_key."""
+        with self.assertRaises(tpm.TpmApi.ConfigError) as context:
+            tpm.TpmApiv4('https://tpm.example.com', username='USER', public_key='PASS')
+        log.debug("context exception: {}".format(context.exception))
+        self.assertEqual("'No authentication specified (user/password or private/public key)'", str(context.exception))
+
+    def test_wrong_auth_exception4(self):
+        """Exception if wrong authentication mehtod with private key but password."""
+        with self.assertRaises(tpm.TpmApi.ConfigError) as context:
+            tpm.TpmApiv4('https://tpm.example.com', private_key='USER', password='PASS')
         log.debug("context exception: {}".format(context.exception))
         self.assertEqual("'No authentication specified (user/password or private/public key)'", str(context.exception))
 
