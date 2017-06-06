@@ -5,6 +5,9 @@ import os.path
 import tpm
 import json
 import logging
+import hmac
+import hashlib
+import time
 
 log = logging.getLogger(__name__)
 
@@ -793,6 +796,27 @@ class GeneralClientTestCases(unittest.TestCase):
         response_items = len(response)
         log.debug("Source Items: {}; Response Items: {}".format(source_items, response_items))
         self.assertEqual(source_items, response_items)
+
+    def test_key_authentciation(self):
+        """Test Key authentication header."""
+        private_key='private_secret'
+        public_key='public_secret'
+        client = tpm.TpmApiv4('https://tpm.example.com', private_key=private_key, public_key=public_key)
+        path_to_mock = 'version.json'
+        request_url = api_url + path_to_mock
+        with requests_mock.Mocker() as m:
+            fake_data(request_url, m)
+            response = client.get_version()
+            history = m.request_history
+        request_hash = history[0].headers.get('X-Request-Hash')
+        request_pubkey = history[0].headers.get('X-Public-Key')
+        request_timestamp = history[0].headers.get('X-Request-Timestamp')
+        timestamp = str(int(time.time()))
+        unhashed = 'api/v4/' + path_to_mock + request_timestamp
+        hashed = hmac.new(str.encode(private_key),
+                             msg=unhashed.encode('utf-8'),
+                             digestmod=hashlib.sha256).hexdigest()
+        self.assertEqual(request_hash, hashed)
 
     def test_logging(self):
         """Test Logging."""

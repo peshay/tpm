@@ -142,7 +142,9 @@ class TpmApi(object):
         # In case of key authentication
         if self.private_key and self.public_key:
             timestamp = str(int(time.time()))
+            log.debug('Using timestamp: {}'.format(timestamp))
             unhashed = path + timestamp + str(data)
+            log.debug('Using message: {}'.format(unhashed))
             self.hash = hmac.new(str.encode(self.private_key),
                                  msg=unhashed.encode('utf-8'),
                                  digestmod=hashlib.sha256).hexdigest()
