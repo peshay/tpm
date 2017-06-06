@@ -13,7 +13,7 @@ local_path = 'tests/resources/'
 
 item_limit = 20
 
-def fake_data(url, m):
+def fake_data(url, m, altpath=False):
     """
     A stub urlopen() implementation that load json responses from
     the filesystem.
@@ -21,7 +21,10 @@ def fake_data(url, m):
 
     # Map path from url to a file
     path_parts = url.split('/')[6:]
-    path = '/'.join(path_parts)
+    if altpath == False:
+        path = '/'.join(path_parts)
+    else:
+        path = altpath
     resource_file = os.path.normpath('tests/resources/{}'.format(path))
     data_file = open(resource_file)
     data = json.load(data_file)
@@ -834,8 +837,8 @@ class GeneralClientTestCases(unittest.TestCase):
             response = self.client.get_latest_version()
         self.assertEqual(data, response)
 
-    def test_function_up_to_date(self):
-        """Test function up_to_date."""
+    def test_function_up_to_date_true(self):
+        """Test function up_to_date is true."""
         path_to_mock = 'version/check_latest.json'
         request_url = api_url + path_to_mock
         request_path = local_path + path_to_mock
@@ -844,8 +847,18 @@ class GeneralClientTestCases(unittest.TestCase):
         data = json.load(data_file)
         with requests_mock.Mocker() as m:
             fake_data(request_url, m)
-            response = self.client.get_latest_version()
-            self.assertTrue(self.client.up_to_date)
+            response_up_to_date_true = self.client.up_to_date()
+            self.assertTrue(response_up_to_date_true)
+
+    def test_function_up_to_date_false(self):
+        """Test function up_to_date is false."""
+        path_to_mock = 'version/check_latest.json'
+        request_url = api_url + path_to_mock
+        with requests_mock.Mocker() as m:
+            fake_data(request_url, m, 'version/check_outdated.json')
+            response_up_to_date_false = self.client.up_to_date()
+            self.assertFalse(response_up_to_date_false)
+
 
 class ExceptionTestCases(unittest.TestCase):
     """Test case for Config Exceptions."""
