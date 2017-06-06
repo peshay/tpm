@@ -50,8 +50,8 @@ def fake_data(url, m):
             header.clear()
             break
 
-class ClientTestCase(unittest.TestCase):
-    """Test case for the client methods."""
+class ClientProjectTestCase(unittest.TestCase):
+    """Test cases for all project related queries."""
     client = tpm.TpmApiv4('https://tpm.example.com', username='USER', password='PASS')
     # get all retrievable sample data
     path_to_mock = 'projects.json'
@@ -60,58 +60,9 @@ class ClientTestCase(unittest.TestCase):
         fake_data(request_url, m)
         global Projects
         Projects = client.list_projects()
-    path_to_mock = 'passwords.json'
-    request_url = api_url + path_to_mock
-    with requests_mock.Mocker() as m:
-        fake_data(request_url, m)
-        global Passwords
-        Passwords = client.list_passwords()
-    path_to_mock = 'my_passwords.json'
-    request_url = api_url + path_to_mock
-    with requests_mock.Mocker() as m:
-        fake_data(request_url, m)
-        global MyPasswords
-        MyPasswords = client.list_mypasswords()
-    path_to_mock = 'users.json'
-    request_url = api_url + path_to_mock
-    with requests_mock.Mocker() as m:
-        fake_data(request_url, m)
-        global Users
-        Users = client.list_users()
-    path_to_mock = 'groups.json'
-    request_url = api_url + path_to_mock
-    with requests_mock.Mocker() as m:
-        fake_data(request_url, m)
-        global Groups
-        Groups = client.list_groups()
 
     def setUp(self):
         self.client = tpm.TpmApiv4('https://tpm.example.com', username='USER', password='PASS')
-
-    def test_user_auth_method(self):
-        """Test user based authentication method."""
-        pass
-
-    def test_paging(self):
-        """Test paging, if number of items is same as from original data source."""
-        path_to_mock = 'passwords.json'
-        request_url = api_url + path_to_mock
-        request_path = local_path + path_to_mock
-        resource_file = os.path.normpath(request_path)
-        data_file = open(resource_file)
-        data = json.load(data_file)
-        with requests_mock.Mocker() as m:
-            fake_data(request_url, m)
-            response = self.client.list_passwords()
-        # number of passwords as from original json file.
-        source_items = len(data)
-        response_items = len(response)
-        log.debug("Source Items: {}; Response Items: {}".format(source_items, response_items))
-        self.assertEqual(source_items, response_items)
-
-    def test_logging(self):
-        """Test Logging."""
-        pass
 
     def test_function_list_projects(self):
         """Test function list_projects."""
@@ -288,6 +239,19 @@ class ClientTestCase(unittest.TestCase):
             response = self.client.unarchive_project('4')
         self.assertEqual(response, None)
 
+class ClientPasswordTestCase(unittest.TestCase):
+    """Test cases for all password related queries."""
+    client = tpm.TpmApiv4('https://tpm.example.com', username='USER', password='PASS')
+    path_to_mock = 'passwords.json'
+    request_url = api_url + path_to_mock
+    with requests_mock.Mocker() as m:
+        fake_data(request_url, m)
+        global Passwords
+        Passwords = client.list_passwords()
+
+    def setUp(self):
+        self.client = tpm.TpmApiv4('https://tpm.example.com', username='USER', password='PASS')
+
     def test_function_list_passwords(self):
         """Test function list_passwords."""
         path_to_mock = 'passwords.json'
@@ -444,6 +408,19 @@ class ClientTestCase(unittest.TestCase):
             response = self.client.unlock_password('4', unlock_reason)
         self.assertEqual(response, None)
 
+class ClientMyPasswordTestCase(unittest.TestCase):
+    """Test cases for all mypassword related queries."""
+    client = tpm.TpmApiv4('https://tpm.example.com', username='USER', password='PASS')
+    path_to_mock = 'my_passwords.json'
+    request_url = api_url + path_to_mock
+    with requests_mock.Mocker() as m:
+        fake_data(request_url, m)
+        global MyPasswords
+        MyPasswords = client.list_mypasswords()
+
+    def setUp(self):
+        self.client = tpm.TpmApiv4('https://tpm.example.com', username='USER', password='PASS')
+
     def test_function_list_mypasswords(self):
         """Test function list_mypasswords."""
         path_to_mock = 'my_passwords.json'
@@ -557,6 +534,19 @@ class ClientTestCase(unittest.TestCase):
             m.delete(request_url, status_code=204)
             response = self.client.unset_favorite_project('4')
         self.assertEqual(response, None)
+
+class ClientUsersTestCase(unittest.TestCase):
+    """Test cases for all user related queries."""
+    client = tpm.TpmApiv4('https://tpm.example.com', username='USER', password='PASS')
+    path_to_mock = 'users.json'
+    request_url = api_url + path_to_mock
+    with requests_mock.Mocker() as m:
+        fake_data(request_url, m)
+        global Users
+        Users = client.list_users()
+
+    def setUp(self):
+        self.client = tpm.TpmApiv4('https://tpm.example.com', username='USER', password='PASS')
 
     def test_function_list_users(self):
         """Test function list_users."""
@@ -681,6 +671,19 @@ class ClientTestCase(unittest.TestCase):
             response = self.client.delete_user('4')
         self.assertEqual(response, None)
 
+class ClientGroupsTestCase(unittest.TestCase):
+    """Test cases for all group related queries."""
+    client = tpm.TpmApiv4('https://tpm.example.com', username='USER', password='PASS')
+    path_to_mock = 'groups.json'
+    request_url = api_url + path_to_mock
+    with requests_mock.Mocker() as m:
+        fake_data(request_url, m)
+        global Groups
+        Groups = client.list_groups()
+
+    def setUp(self):
+        self.client = tpm.TpmApiv4('https://tpm.example.com', username='USER', password='PASS')
+
     def test_function_list_groups(self):
         """Test function list_groups."""
         path_to_mock = 'groups.json'
@@ -762,6 +765,36 @@ class ClientTestCase(unittest.TestCase):
             response = self.client.delete_group('4')
         self.assertEqual(response, None)
 
+class GeneralClientTestCases(unittest.TestCase):
+    """general test cases for client queries."""
+    def setUp(self):
+        self.client = tpm.TpmApiv4('https://tpm.example.com', username='USER', password='PASS')
+
+    def test_user_auth_method(self):
+        """Test user based authentication method."""
+        pass
+
+    def test_paging(self):
+        """Test paging, if number of items is same as from original data source."""
+        path_to_mock = 'passwords.json'
+        request_url = api_url + path_to_mock
+        request_path = local_path + path_to_mock
+        resource_file = os.path.normpath(request_path)
+        data_file = open(resource_file)
+        data = json.load(data_file)
+        with requests_mock.Mocker() as m:
+            fake_data(request_url, m)
+            response = self.client.list_passwords()
+        # number of passwords as from original json file.
+        source_items = len(data)
+        response_items = len(response)
+        log.debug("Source Items: {}; Response Items: {}".format(source_items, response_items))
+        self.assertEqual(source_items, response_items)
+
+    def test_logging(self):
+        """Test Logging."""
+        pass
+
     def test_function_generate_password(self):
         """Test function generate_password."""
         path_to_mock = 'generate_password.json'
@@ -788,7 +821,7 @@ class ClientTestCase(unittest.TestCase):
             response = self.client.get_version()
         self.assertEqual(data, response)
 
-    def test_function_generate_password(self):
+    def test_function_check_latest(self):
         """Test function generate_password."""
         path_to_mock = 'version/check_latest.json'
         request_url = api_url + path_to_mock
