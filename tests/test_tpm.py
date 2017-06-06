@@ -776,10 +776,6 @@ class GeneralClientTestCases(unittest.TestCase):
     def setUp(self):
         self.client = tpm.TpmApiv4('https://tpm.example.com', username='USER', password='PASS')
 
-    def test_user_auth_method(self):
-        """Test user based authentication method."""
-        pass
-
     def test_paging(self):
         """Test paging, if number of items is same as from original data source."""
         path_to_mock = 'passwords.json'
@@ -817,10 +813,6 @@ class GeneralClientTestCases(unittest.TestCase):
                              msg=unhashed.encode('utf-8'),
                              digestmod=hashlib.sha256).hexdigest()
         self.assertEqual(request_hash, hashed)
-
-    def test_logging(self):
-        """Test Logging."""
-        pass
 
     def test_function_generate_password(self):
         """Test function generate_password."""
