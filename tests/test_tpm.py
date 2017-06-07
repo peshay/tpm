@@ -827,7 +827,7 @@ class GeneralClientTestCases(unittest.TestCase):
             m.get(request_url, text=str(data))
             try:
                 client.show_password('value_error')
-            except tpm.TPMException as e:
+            except ValueError as e:
                 pass
         self.assertEqual(m.call_count, max_retries)
 
@@ -947,17 +947,21 @@ class ExceptionOnRequestsTestCases(unittest.TestCase):
     """Test cases for Exceptions on connection"""
     def test_value_error_exception(self):
         """Exception if value is not json format."""
-        exception_error = "No JSON object could be decoded: "
         path_to_mock = 'passwords/value_error.json'
         request_url = api_url + path_to_mock
+        exception_error = "No JSON object could be decoded: {}".format(request_url)
+        exception_error3 = "Expecting value: line 1 column 1 (char 0): "
         resource_file = os.path.normpath('tests/resources/{}'.format(path_to_mock))
         data = open(resource_file)
-        with self.assertRaises(tpm.TPMException) as context:
+        with self.assertRaises(ValueError) as context:
             with requests_mock.Mocker() as m:
                 m.get(request_url, text=str(data))
                 response = self.client.show_password('value_error')
         log.debug("context exception: {}".format(context.exception))
-        self.assertTrue(exception_error in str(context.exception))
+        if str(context.exception).startswith(exception_error) or str(context.exception).startswith(exception_error3):
+            self.assertTrue(True)
+        else:
+            self.assertTrue(False)
 
     def test_exception_on_403(self):
         """Exception if 403 forbidden."""
@@ -987,10 +991,10 @@ class ExceptionOnRequestsTestCases(unittest.TestCase):
         """Exception if 405 Method Not Allowed."""
         path_to_mock = 'passwords.json'
         request_url = api_url + path_to_mock
-        exception_error = "No JSON object could be decoded: {} Method Not Allowed".format(request_url)
-        with self.assertRaises(tpm.TPMException) as context:
+        exception_error = "{} Method Not Allowed".format(request_url)
+        with self.assertRaises(ValueError) as context:
             with requests_mock.Mocker() as m:
                 m.get(request_url, text='Method Not Allowed', status_code=405)
                 response = self.client.list_passwords()
         log.debug("context exception: {}".format(context.exception))
-        self.assertTrue(str(context.exception).startswith(exception_error))
+        self.assertTrue(str(context.exception).endswith(exception_error))

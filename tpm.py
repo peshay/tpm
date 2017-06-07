@@ -217,7 +217,7 @@ class TpmApi(object):
                     if retries < self.max_retries:
                         continue
                     else:
-                        raise TPMException(message)
+                        raise ValueError(message)
             break
 
         return result
