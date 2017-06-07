@@ -931,6 +931,13 @@ class ExceptionTestCases(unittest.TestCase):
         log.debug("context exception: {}".format(context.exception))
         self.assertEqual("'Invalid URL: {}'".format(wrong_url), str(context.exception))
 
+    def test_max_retries_too_low_exception(self):
+        """Exception if max_retires < 1."""
+        with self.assertRaises(tpm.TpmApi.ConfigError) as context:
+            tpm.TpmApiv4('https://tpm.example.com', username='USER', private_key='PASS', max_retries=0)
+        log.debug("context exception: {}".format(context.exception))
+        self.assertEqual("'Parameter max_retires should be at least 1'", str(context.exception))
+
 class ExceptionOnRequestsTestCases(unittest.TestCase):
     """Test case for Request based Exceptions."""
     def setUp(self):

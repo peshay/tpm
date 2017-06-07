@@ -118,6 +118,8 @@ class TpmApi(object):
                 self.password = kwargs[key]
             elif key == 'max_retries':
                 self.max_retries = kwargs[key]
+                if self.max_retries < 1:
+                    raise self.ConfigError('Parameter max_retires should be at least 1')
         log.debug("Max retries on ValueError: {}".format(self.max_retries))
         if self.private_key is not False and self.public_key is not False and\
                 self.username is False and self.password is False:
