@@ -956,7 +956,7 @@ class ExceptionOnRequestsTestCases(unittest.TestCase):
         """Exception if value is not json format."""
         path_to_mock = 'passwords/value_error.json'
         request_url = api_url + path_to_mock
-        exception_error = "No JSON object could be decoded: {}".format(request_url)
+        exception_error = "No JSON object could be decoded: "
         exception_error3 = "Expecting value: line 1 column 1 (char 0): "
         resource_file = os.path.normpath('tests/resources/{}'.format(path_to_mock))
         data = open(resource_file)
