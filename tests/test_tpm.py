@@ -8,6 +8,7 @@ import logging
 import hmac
 import hashlib
 import time
+import random
 
 log = logging.getLogger(__name__)
 
@@ -814,6 +815,22 @@ class GeneralClientTestCases(unittest.TestCase):
                              digestmod=hashlib.sha256).hexdigest()
         self.assertEqual(request_hash, hashed)
 
+    def test_max_retries(self):
+        """Test use of max_retries."""
+        max_retries = random.randint(2,12)
+        client = tpm.TpmApiv4('https://tpm.example.com', username='USER', password='PASS', max_retries=max_retries)
+        path_to_mock = 'passwords/value_error.json'
+        request_url = api_url + path_to_mock
+        resource_file = os.path.normpath('tests/resources/{}'.format(path_to_mock))
+        data = open(resource_file)
+        with requests_mock.Mocker() as m:
+            m.get(request_url, text=str(data))
+            try:
+                client.show_password('value_error')
+            except tpm.TPMException as e:
+                pass
+        self.assertEqual(m.call_count, max_retries)
+
     def test_function_generate_password(self):
         """Test function generate_password."""
         path_to_mock = 'generate_password.json'
@@ -930,13 +947,15 @@ class ExceptionOnRequestsTestCases(unittest.TestCase):
     """Test cases for Exceptions on connection"""
     def test_value_error_exception(self):
         """Exception if value is not json format."""
-        exception_error = "Extra data: "
+        exception_error = "No JSON object could be decoded: "
         path_to_mock = 'passwords/value_error.json'
         request_url = api_url + path_to_mock
-        with self.assertRaises(ValueError) as context:
+        resource_file = os.path.normpath('tests/resources/{}'.format(path_to_mock))
+        data = open(resource_file)
+        with self.assertRaises(tpm.TPMException) as context:
             with requests_mock.Mocker() as m:
-                fake_data(request_url, m)
-                response = self.client.show_passwords('value_error')
+                m.get(request_url, text=str(data))
+                response = self.client.show_password('value_error')
         log.debug("context exception: {}".format(context.exception))
         self.assertTrue(exception_error in str(context.exception))
 
@@ -968,7 +987,7 @@ class ExceptionOnRequestsTestCases(unittest.TestCase):
         """Exception if 405 Method Not Allowed."""
         path_to_mock = 'passwords.json'
         request_url = api_url + path_to_mock
-        exception_error = "{} Method Not Allowed".format(request_url)
+        exception_error = "No JSON object could be decoded: {} Method Not Allowed".format(request_url)
         with self.assertRaises(tpm.TPMException) as context:
             with requests_mock.Mocker() as m:
                 m.get(request_url, text='Method Not Allowed', status_code=405)

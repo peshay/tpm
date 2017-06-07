@@ -106,6 +106,7 @@ class TpmApi(object):
         self.username = False
         self.password = False
         self.unlock_reason = False
+        self.max_retries = 3
         for key in kwargs:
             if key == 'private_key':
                 self.private_key = kwargs[key]
@@ -115,6 +116,9 @@ class TpmApi(object):
                 self.username = kwargs[key]
             elif key == 'password':
                 self.password = kwargs[key]
+            elif key == 'max_retries':
+                self.max_retries = kwargs[key]
+        log.debug("Max retries on ValueError: {}".format(self.max_retries))
         if self.private_key is not False and self.public_key is not False and\
                 self.username is False and self.password is False:
             log.debug('Using Private/Public Key authentication.')
@@ -162,48 +166,59 @@ class TpmApi(object):
             log.info('Unlock Reason: %s' % self.unlock_reason)
         url = head + path
         # Try API request and handle Exceptions
-        try:
-            if action == 'get':
-                log.debug('GET request %s' % url)
-                self.req = requests.get(url, headers=self.headers, auth=auth,
-                                        verify=False)
-            elif action == 'post':
-                log.debug('POST request %s' % url)
-                self.req = requests.post(url, headers=self.headers, auth=auth,
-                                         verify=False, data=data)
-            elif action == 'put':
-                log.debug('PUT request %s' % url)
-                self.req = requests.put(url, headers=self.headers,
-                                        auth=auth, verify=False,
-                                        data=data)
-            elif action == 'delete':
-                log.debug('DELETE request %s' % url)
-                self.req = requests.delete(url, headers=self.headers,
-                                           verify=False, auth=auth)
+        retries = 0
+        while retries < self.max_retries:
+            retries += 1
+            log.debug("Try {} of {} to retrieve result.".format(retries, self.max_retries))
+            try:
+                if action == 'get':
+                    log.debug('GET request %s' % url)
+                    self.req = requests.get(url, headers=self.headers, auth=auth,
+                                            verify=False)
+                elif action == 'post':
+                    log.debug('POST request %s' % url)
+                    self.req = requests.post(url, headers=self.headers, auth=auth,
+                                             verify=False, data=data)
+                elif action == 'put':
+                    log.debug('PUT request %s' % url)
+                    self.req = requests.put(url, headers=self.headers,
+                                            auth=auth, verify=False,
+                                            data=data)
+                elif action == 'delete':
+                    log.debug('DELETE request %s' % url)
+                    self.req = requests.delete(url, headers=self.headers,
+                                               verify=False, auth=auth)
 
-            if self.req.content == b'':
-                result = None
-                log.debug('No result returned.')
-            else:
-                result = self.req.json()
-                if 'error' in result and result['error']:
-                    raise TPMException(result['message'])
+                if self.req.content == b'':
+                    result = None
+                    log.debug('No result returned.')
+                else:
+                    result = self.req.json()
+                    if 'error' in result and result['error']:
+                        raise TPMException(result['message'])
+                        break
 
-        except requests.exceptions.RequestException as e:
-            log.critical("Connection error for " + str(e))
-            raise TPMException("Connection error for " + str(e))
+            except requests.exceptions.RequestException as e:
+                log.critical("Connection error for " + str(e))
+                raise TPMException("Connection error for " + str(e))
 
-        except ValueError as e:
-            if self.req.status_code == 403:
-                log.warning(url + " forbidden")
-                raise TPMException(url + " forbidden")
-            elif self.req.status_code == 404:
-                log.warning(url + " forbidden")
-                raise TPMException(url + " not found")
-            else:
-                message = ('%s %s' % (self.req.url, self.req.text))
-                log.warning(message)
-                raise TPMException(message)
+            except ValueError as e:
+                if self.req.status_code == 403:
+                    log.warning(url + " forbidden")
+                    raise TPMException(url + " forbidden")
+                    break
+                elif self.req.status_code == 404:
+                    log.warning(url + " forbidden")
+                    raise TPMException(url + " not found")
+                    break
+                else:
+                    message = ('%s: %s %s' % (e, self.req.url, self.req.text))
+                    log.debug(message)
+                    if retries < self.max_retries:
+                        continue
+                    else:
+                        raise TPMException(message)
+            break
 
         return result
 
