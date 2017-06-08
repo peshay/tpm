@@ -16,7 +16,7 @@ install:
 - pip install codecov
 script: 
 - nosetests -v
-- coverage run test/test_tpm.py
+- coverage run tests/test_tpm.py
 after_success:
 - codecov
 deploy:
