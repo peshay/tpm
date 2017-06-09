@@ -1013,10 +1013,7 @@ class ExceptionOnRequestsTestCases(unittest.TestCase):
                 m.get(request_url, text=str(data))
                 response = self.client.show_password('value_error')
         log.debug("context exception: {}".format(context.exception))
-        if str(context.exception).startswith(exception_error) or str(context.exception).startswith(exception_error3):
-            self.assertTrue(True)
-        else:
-            self.assertTrue(False)
+        self.assertTrue(str(context.exception).startswith(exception_error) or str(context.exception).startswith(exception_error3))
 
     def test_exception_on_error_in_result(self):
         """Exception if "error" found in result."""
