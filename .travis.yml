@@ -21,15 +21,15 @@ after_success:
 deploy:
   provider: pypi
   distributions: sdist
-  user: "peshay"
+  user: peshay
   password:
-    secure: MuulvcKnhSa6YD1Vx4AM9VAHsf2n9Ks2zIwyV1hk0emhzpghrCc2uGrahMji3viQcZe28eZ3PmPSc+WhS+ZNlQ68xOuRFjks8KjdrNdSTKXFx3OOo9lBCpOwP87U2jisphTAlgmO6gCfeIQlEhiGaWR2qkEyKRZa1Sr7bxHKP0w13QyaneeUJ1f/KzXIUPk9GkZM342LsV3OyakN28mIp5nk7ea+DghEqnHqWqiy0jIiC4rDQZf10QJaRK4SIKEf62nOVdxQSYaWWyCIW9c2QcJ1xGKrZOhATJmnB8HGr26GdNkVGahM6ww2kXys21bo0U1axnzYkYMgMmgrk2qZrswEItqN9GxNrfujwhFrt9+cG6nleyC5FCmc8SUpnDqi7ILqoG71+pfKuquX81s23re3PSiqJzrPopVV+qnybVwTbetxzr0y1elxmc02AfHCRoY+7S3ZItEDdu5yS4kzGbSVR+yYDeDOtSc/gukhEHAc9XiVPX3ixQaztyNwaXM5tvFVF1Uhm937YUzSUffpvVrZLV/jobmlBfIYU406CMTFdo9F8IbUZz5rtlRgK9EN6NAVi+VZA2Orzxg3FVg6TmaNzb0OwZ5Hk8+a69H/0dzuXBgcFDONgVRfwht0Kp8WgdtAcoqSdCmerFUCroi0XPh28/y7a0ursD0nAh7glz0=
+    secure: csAkz7o9vKJ5jx0BfNmssMJYBAFe46wabnToxdSrAFfdKqRxsZgThkTPM4dbPT6madUk6usZpCR9IzSpvgPb3PKCRDrb7eEx4xxkHWkO5FZlllL7YSTMa0y5rPrfGCUX5mr2BAEPCnxi2ZIRaFJdkO5lvxFSAk/ji6vvdHS9S+pK875pbnLIUuVItkPKAvewZmzDnVOLWyrnRMdSTRJhik1Q/1xHRLdUa3Y9p55Ujp+0RMXIZYbuIZ9shFNTCn2vxAi8GIPcHStUSE34F+0gI12Abu4yHSuPZfG9Qpldht0IprfIqSd0bdEeONO63KvQBoMNpGoJOJ+5J8Pcd+QUVT5j7YSEH9vdyhTej0dPRIGHu89PqDuFiGLY3SS1Vgk2W+MlMd6gAfnva7LcthCEHv9HQi1WAoCCB6MVBWSl5UW8lvw332ULXvQKXJRx6GFYo5zLyEoU4cwoIZ1nVYgY0rRmJg7LNwMi5S+cASCtz3i4sEJEqFh/dzANto/4IyKkYQuBQyhGjYsJm1G5Oi3OUQ+E0lvqnlVwtSe8Y9sYbZvp4VpBhCZMuf6pHlq+gkvkAzeOHXewl5Wh7IpOZacnCf/q9qiVhpcR+jX92xwF+GiF/fEa8QL9SHoYbnyTld20A9ayTa2SX4JvRp7KrXd2fDv3XFQX9KMPS1RqDizQ1B8=
   on:
     tags: true
     condition: $TRAVIS_PYTHON_VERSION = "3.6"
 notifications:
   email:
     recipients:
-      - anhubert@gmail.com
-    on_success: never # default: change
-    on_failure: always # default: always
+    - anhubert@gmail.com
+    on_success: never
+    on_failure: always
