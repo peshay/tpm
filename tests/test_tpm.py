@@ -246,6 +246,50 @@ class ClientProjectTestCase(unittest.TestCase):
             response = self.client.unarchive_project('4')
         self.assertEqual(response, None)
 
+    def test_function_unarchive_project(self):
+        """Test function unarchive_project."""
+        path_to_mock = 'projects/4/unarchive.json'
+        request_url = api_url + path_to_mock
+        with requests_mock.Mocker() as m:
+            m.put(request_url, status_code=204)
+            response = self.client.unarchive_project('4')
+        self.assertEqual(response, None)
+
+    def test_function_list_subprojects(self):
+        """Test function list_subprojects."""
+        for project in Projects:
+            project_id = project.get('id')
+            log.debug("Testing with Project ID: {}".format(project_id))
+            path_to_mock = 'projects/{}/subprojects.json'.format(project_id)
+            request_url = api_url + path_to_mock
+            request_path = local_path + path_to_mock
+            resource_file = os.path.normpath(request_path)
+            data_file = open(resource_file)
+            data = json.load(data_file)
+            with requests_mock.Mocker() as m:
+                fake_data(request_url, m)
+                response = self.client.list_subprojects(project_id)
+            # number of passwords as from original json file.
+            self.assertEqual(data, response)
+
+    def test_function_list_subprojects_action_new_pwd(self):
+        """Test function list_subprojects_action_new_pwd."""
+        action = 'new_pwd'
+        for project in Projects:
+            project_id = project.get('id')
+            log.debug("Testing with Project ID: {}".format(project_id))
+            path_to_mock = 'projects/{}/subprojects/{}.json'.format(project_id, action)
+            request_url = api_url + path_to_mock
+            request_path = local_path + path_to_mock
+            resource_file = os.path.normpath(request_path)
+            data_file = open(resource_file)
+            data = json.load(data_file)
+            with requests_mock.Mocker() as m:
+                fake_data(request_url, m)
+                response = self.client.list_subprojects_action(project_id, action)
+            # number of passwords as from original json file.
+            self.assertEqual(data, response)
+
 class ClientPasswordTestCase(unittest.TestCase):
     """Test cases for all password related queries."""
     client = tpm.TpmApiv4('https://tpm.example.com', username='USER', password='PASS')
@@ -855,6 +899,20 @@ class GeneralClientTestCases(unittest.TestCase):
         with requests_mock.Mocker() as m:
             fake_data(request_url, m)
             response = self.client.get_version()
+        self.assertEqual(data, response)
+
+    def test_a_call_with_v3(self):
+        """Test function get_version with v3 API."""
+        path_to_mock = 'version.json'
+        request_url = 'https://tpm.example.com/index.php/api/v3/' + path_to_mock
+        request_path = local_path + path_to_mock
+        resource_file = os.path.normpath(request_path)
+        data_file = open(resource_file)
+        data = json.load(data_file)
+        client = tpm.TpmApiv3('https://tpm.example.com', username='USER', password='PASS')
+        with requests_mock.Mocker() as m:
+            fake_data(request_url, m)
+            response = client.get_version()
         self.assertEqual(data, response)
 
     def test_function_check_latest(self):
