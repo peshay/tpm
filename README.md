@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/peshay/tpm.svg?branch=develop)](https://travis-ci.org/peshay/tpm)
+[![Codecov](https://codecov.io/gh/peshay/tpm/branch/develop/graph/badge.svg)]()
 [![GitHub release](https://img.shields.io/github/release/peshay/tpm.svg)]()
 [![GitHub tag](https://img.shields.io/github/tag/peshay/tpm.svg)]()
 [![license](https://img.shields.io/github/license/peshay/tpm.svg)]()
