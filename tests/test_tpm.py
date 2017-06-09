@@ -951,7 +951,6 @@ class ExceptionOnRequestsTestCases(unittest.TestCase):
         log.debug("context exception: {}".format(context.exception))
         self.assertTrue(exception_error in str(context.exception))
 
-    """Test cases for Exceptions on connection"""
     def test_value_error_exception(self):
         """Exception if value is not json format."""
         path_to_mock = 'passwords/value_error.json'
@@ -969,6 +968,19 @@ class ExceptionOnRequestsTestCases(unittest.TestCase):
             self.assertTrue(True)
         else:
             self.assertTrue(False)
+
+    def test_exception_on_error_in_result(self):
+        """Exception if "error" found in result."""
+        exception_error = 'something bad happened'
+        error_json={'error': 'not good', 'message': exception_error}
+        path_to_mock = 'passwords/json_error.json'
+        request_url = api_url + path_to_mock
+        with self.assertRaises(tpm.TPMException) as context:
+            with requests_mock.Mocker() as m:
+                m.get(request_url, json=error_json)
+                response = self.client.show_password('json_error')
+        log.debug("context exception: {}".format(context.exception))
+        self.assertTrue(exception_error in str(context.exception))
 
     def test_exception_on_403(self):
         """Exception if 403 forbidden."""
