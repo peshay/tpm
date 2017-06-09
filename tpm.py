@@ -63,7 +63,6 @@ class TpmApi(object):
     def __init__(self, api, base_url, kwargs):
         """init thing."""
         # Check if API version is not bullshit
-        AllowedAPI = ['v3', 'v4']
         REGEXurl = "^" \
                    "(?:(?:https?)://)" \
                    "(?:\\S+(?::\\S*)?@)?" \
@@ -80,12 +79,8 @@ class TpmApi(object):
                    "(?::\\d{2,5})?" \
                    "(?:[/?#]\\S*)?" \
                    "$"
-        if api in AllowedAPI:
-            self.apiurl = 'api/' + api + '/'
-            log.debug('API Version %s good, set as apiurl: %s' %
-                      (api, self.apiurl))
-        else:
-            raise self.ConfigError('API Version not known: %s' % api)
+        self.apiurl = 'api/' + api + '/'
+        log.debug('Set as apiurl: %s' % self.apiurl)
         self.api = self.apiurl
         # Check if URL is not bullshit
         if re.match(REGEXurl, base_url):
