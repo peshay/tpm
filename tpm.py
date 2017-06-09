@@ -21,11 +21,11 @@ With the connection object you can use all TPM functions, like list all password
 All API functions from Team Password Manager are included.
 see http://teampasswordmanager.com/docs/api/
 
-:copyright: (c) 2015 by Andreas Hubert.
+:copyright: (c) 2017 by Andreas Hubert.
 :license: The MIT License (MIT), see LICENSE for more details.
 """
 
-__version__ = '3.3'
+__version__ = '3.4'
 
 import hmac
 import hashlib
@@ -63,7 +63,6 @@ class TpmApi(object):
     def __init__(self, api, base_url, kwargs):
         """init thing."""
         # Check if API version is not bullshit
-        AllowedAPI = ['v3', 'v4']
         REGEXurl = "^" \
                    "(?:(?:https?)://)" \
                    "(?:\\S+(?::\\S*)?@)?" \
@@ -80,12 +79,8 @@ class TpmApi(object):
                    "(?::\\d{2,5})?" \
                    "(?:[/?#]\\S*)?" \
                    "$"
-        if api in AllowedAPI:
-            self.apiurl = 'api/' + api + '/'
-            log.debug('API Version %s good, set as apiurl: %s' %
-                      (api, self.apiurl))
-        else:
-            raise self.ConfigError('API Version not known: %s' % api)
+        self.apiurl = 'api/' + api + '/'
+        log.debug('Set as apiurl: %s' % self.apiurl)
         self.api = self.apiurl
         # Check if URL is not bullshit
         if re.match(REGEXurl, base_url):
@@ -94,7 +89,7 @@ class TpmApi(object):
             self.url = self.base_url + self.apiurl
             log.debug('Set URL to %s' % self.url)
         else:
-            raise self.ConfigError('Invalid URL: %s' % self.url)
+            raise self.ConfigError('Invalid URL: %s' % base_url)
         # set headers
         self.headers = {'Content-Type': 'application/json; charset=utf-8',
                         'User-Agent': 'tpm.py/' + __version__
@@ -106,6 +101,7 @@ class TpmApi(object):
         self.username = False
         self.password = False
         self.unlock_reason = False
+        self.max_retries = 3
         for key in kwargs:
             if key == 'private_key':
                 self.private_key = kwargs[key]
@@ -115,6 +111,11 @@ class TpmApi(object):
                 self.username = kwargs[key]
             elif key == 'password':
                 self.password = kwargs[key]
+            elif key == 'max_retries':
+                self.max_retries = kwargs[key]
+                if self.max_retries < 1:
+                    raise self.ConfigError('Parameter max_retires should be at least 1')
+        log.debug("Max retries on ValueError: {}".format(self.max_retries))
         if self.private_key is not False and self.public_key is not False and\
                 self.username is False and self.password is False:
             log.debug('Using Private/Public Key authentication.')
@@ -142,7 +143,9 @@ class TpmApi(object):
         # In case of key authentication
         if self.private_key and self.public_key:
             timestamp = str(int(time.time()))
+            log.debug('Using timestamp: {}'.format(timestamp))
             unhashed = path + timestamp + str(data)
+            log.debug('Using message: {}'.format(unhashed))
             self.hash = hmac.new(str.encode(self.private_key),
                                  msg=unhashed.encode('utf-8'),
                                  digestmod=hashlib.sha256).hexdigest()
@@ -160,52 +163,60 @@ class TpmApi(object):
             log.info('Unlock Reason: %s' % self.unlock_reason)
         url = head + path
         # Try API request and handle Exceptions
-        try:
-            if action == 'get':
-                log.debug('GET request %s' % url)
-                self.req = requests.get(url, headers=self.headers, auth=auth,
-                                        verify=False)
-            elif action == 'post':
-                log.debug('POST request %s' % url)
-                self.req = requests.post(url, headers=self.headers, auth=auth,
-                                         verify=False, data=data)
-            elif action == 'put':
-                log.debug('PUT request %s' % url)
-                self.req = requests.put(url, headers=self.headers,
-                                        auth=auth, verify=False,
-                                        data=data)
-            elif action == 'delete':
-                log.debug('DELETE request %s' % url)
-                self.req = requests.delete(url, headers=self.headers,
-                                           verify=False, auth=auth)
+        retries = 0
+        while retries < self.max_retries:
+            retries += 1
+            log.debug("Try {} of {} to retrieve result.".format(retries, self.max_retries))
+            try:
+                if action == 'get':
+                    log.debug('GET request %s' % url)
+                    self.req = requests.get(url, headers=self.headers, auth=auth,
+                                            verify=False)
+                elif action == 'post':
+                    log.debug('POST request %s' % url)
+                    self.req = requests.post(url, headers=self.headers, auth=auth,
+                                             verify=False, data=data)
+                elif action == 'put':
+                    log.debug('PUT request %s' % url)
+                    self.req = requests.put(url, headers=self.headers,
+                                            auth=auth, verify=False,
+                                            data=data)
+                elif action == 'delete':
+                    log.debug('DELETE request %s' % url)
+                    self.req = requests.delete(url, headers=self.headers,
+                                               verify=False, auth=auth)
 
-            if self.req.content == b'':
-                result = None
-                log.debug('No result returned.')
-            else:
-                result = self.req.json()
-                if 'error' in result and result['error']:
-                    raise TPMException(result['message'])
+                if self.req.content == b'':
+                    result = None
+                    log.debug('No result returned.')
+                else:
+                    result = self.req.json()
+                    if 'error' in result and result['error']:
+                        raise TPMException(result['message'])
 
-        except requests.exceptions.RequestException as e:
-            log.critical("Connection error for " + str(e))
-            raise TPMException("Connection error for " + str(e))
+            except requests.exceptions.RequestException as e:
+                log.critical("Connection error for " + str(e))
+                raise TPMException("Connection error for " + str(e))
 
-        except ValueError as e:
-            if self.req.status_code == 403:
-                log.warning(url + " forbidden")
-                raise TPMException(url + " forbidden")
-            elif self.req.status_code == 404:
-                log.warning(url + " forbidden")
-                raise TPMException(url + " not found")
-            else:
-                message = ('%s\n%s' % (self.req.url, self.req.text))
-                log.warning(message)
-                raise TPMException(message)
+            except ValueError as e:
+                if self.req.status_code == 403:
+                    log.warning(url + " forbidden")
+                    raise TPMException(url + " forbidden")
+                elif self.req.status_code == 404:
+                    log.warning(url + " forbidden")
+                    raise TPMException(url + " not found")
+                else:
+                    message = ('%s: %s %s' % (e, self.req.url, self.req.text))
+                    log.debug(message)
+                    if retries < self.max_retries:
+                        continue
+                    else:
+                        raise ValueError(message)
+            break
 
         return result
 
-    def post(self, path, data):
+    def post(self, path, data=''):
         """For post based requests."""
         return self.request(path, 'post', data)
 
@@ -461,7 +472,7 @@ class TpmApi(object):
     def set_favorite_project(self, ID):
         """Set a project as favorite."""
         # http://teampasswordmanager.com/docs/api-favorites/#set_fav
-        og.info('Set project %s as favorite' % ID)
+        log.info('Set project %s as favorite' % ID)
         self.post('favorite_project/%s.json' % ID)
 
     def unset_favorite_project(self, ID):
@@ -607,11 +618,15 @@ class TpmApi(object):
     def up_to_date(self):
         """Check if Team Password Manager is up to date."""
         VersionInfo = self.get_latest_version()
-        if VersionInfo.get('version') == VersionInfo.get('latest_version'):
+        CurrentVersion = VersionInfo.get('version')
+        LatestVersion = VersionInfo.get('latest_version')
+        if  CurrentVersion == LatestVersion:
             log.info('TeamPasswordManager is up-to-date!')
+            log.debug('Current Version: {} Latest Version: {}'.format(LatestVersion, LatestVersion))
             return True
         else:
             log.warning('TeamPasswordManager is not up-to-date!')
+            log.debug('Current Version: {} Latest Version: {}'.format(LatestVersion, LatestVersion))
             return False
 
 

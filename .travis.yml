@@ -12,8 +12,12 @@ python:
 install:
 - pip install -r requirements.txt
 - pip install requests_mock
+- pip install codecov
 - python setup.py -q install
-script: nosetests
+script: 
+- nosetests -v --with-coverage
+after_success:
+- codecov
 deploy:
   provider: pypi
   user: peshay

@@ -1,7 +1,7 @@
-[![Build Status](https://travis-ci.org/peshay/tpm.svg?branch=master)](https://travis-ci.org/peshay/tpm)
-[![GitHub release](https://img.shields.io/github/release/peshay/tpm.svg)]()
-[![GitHub tag](https://img.shields.io/github/tag/peshay/tpm.svg)]()
-[![license](https://img.shields.io/github/license/peshay/tpm.svg)]()
+[![Build Status](https://travis-ci.org/peshay/tpm.svg?branch=develop)](https://travis-ci.org/peshay/tpm)
+[![Codecov](https://codecov.io/gh/peshay/tpm/branch/develop/graph/badge.svg)](https://codecov.io/gh/peshay/tpm/branch/develop)
+[![Python version](https://img.shields.io/pypi/pyversions/tpm.svg)](https://pypi.python.org/pypi/tpm)
+[![license](https://img.shields.io/github/license/peshay/tpm.svg)](https://github.com/peshay/tpm/blob/master/LICENSE)
 [![Beerpay](https://beerpay.io/peshay/tpm/badge.svg?style=beer)](https://beerpay.io/peshay/tpm)
 
 # tpm.py
@@ -49,6 +49,11 @@ data = tpmconn.list_passwords()
 # show all names from the password entries
 for item in data:
     print (item.get('name'))
+```
+If TeamPasswordManager does not return valid json data, by default tpm.py will retry 3 times.
+This can be changed with the `max_retries` parameter.
+```python
+tpmconn = tpm.TpmApiv4(URL, username=USER, password=PASS, max_retries=1)
 ```
 
 ## Logging
