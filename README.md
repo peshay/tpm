@@ -1,7 +1,6 @@
 [![Build Status](https://travis-ci.org/peshay/tpm.svg?branch=develop)](https://travis-ci.org/peshay/tpm)
 [![Codecov](https://codecov.io/gh/peshay/tpm/branch/develop/graph/badge.svg)]()
-[![GitHub release](https://img.shields.io/github/release/peshay/tpm.svg)]()
-[![GitHub tag](https://img.shields.io/github/tag/peshay/tpm.svg)]()
+[![Python version](https://img.shields.io/pypi/pyversions/tpm.svg)]()
 [![license](https://img.shields.io/github/license/peshay/tpm.svg)]()
 [![Beerpay](https://beerpay.io/peshay/tpm/badge.svg?style=beer)](https://beerpay.io/peshay/tpm)
 
