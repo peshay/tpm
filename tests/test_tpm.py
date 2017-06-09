@@ -246,15 +246,6 @@ class ClientProjectTestCase(unittest.TestCase):
             response = self.client.unarchive_project('4')
         self.assertEqual(response, None)
 
-    def test_function_unarchive_project(self):
-        """Test function unarchive_project."""
-        path_to_mock = 'projects/4/unarchive.json'
-        request_url = api_url + path_to_mock
-        with requests_mock.Mocker() as m:
-            m.put(request_url, status_code=204)
-            response = self.client.unarchive_project('4')
-        self.assertEqual(response, None)
-
     def test_function_list_subprojects(self):
         """Test function list_subprojects."""
         for project in Projects:
