@@ -193,7 +193,6 @@ class TpmApi(object):
                     result = self.req.json()
                     if 'error' in result and result['error']:
                         raise TPMException(result['message'])
-                        break
 
             except requests.exceptions.RequestException as e:
                 log.critical("Connection error for " + str(e))
@@ -203,11 +202,9 @@ class TpmApi(object):
                 if self.req.status_code == 403:
                     log.warning(url + " forbidden")
                     raise TPMException(url + " forbidden")
-                    break
                 elif self.req.status_code == 404:
                     log.warning(url + " forbidden")
                     raise TPMException(url + " not found")
-                    break
                 else:
                     message = ('%s: %s %s' % (e, self.req.url, self.req.text))
                     log.debug(message)
