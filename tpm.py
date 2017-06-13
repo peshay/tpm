@@ -205,6 +205,10 @@ class TpmApi(object):
                 elif self.req.status_code == 404:
                     log.warning(url + " forbidden")
                     raise TPMException(url + " not found")
+                elif self.req.text.endswith('pre>'):
+                    d = req.text.replace('<pre>','')
+                    result = json.loads(d)
+                    break
                 else:
                     message = ('%s: %s %s' % (e, self.req.url, self.req.text))
                     log.debug(message)
