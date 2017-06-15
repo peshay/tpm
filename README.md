@@ -51,11 +51,6 @@ data = tpmconn.list_passwords()
 for item in data:
     print (item.get('name'))
 ```
-If TeamPasswordManager does not return valid json data, by default tpm.py will retry 3 times.
-This can be changed with the `max_retries` parameter.
-```python
-tpmconn = tpm.TpmApiv4(URL, username=USER, password=PASS, max_retries=1)
-```
 
 ## Logging
 Every function call leads to a at least a logging message.
