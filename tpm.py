@@ -204,10 +204,7 @@ class TpmApi(object):
             else:
                 message = ('%s: %s %s' % (e, self.req.url, self.req.text))
                 log.debug(message)
-                if retries < self.max_retries:
-                    continue
-                else:
-                    raise ValueError(message)
+                raise ValueError(message)
 
         return result
 
