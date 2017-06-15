@@ -850,22 +850,6 @@ class GeneralClientTestCases(unittest.TestCase):
                              digestmod=hashlib.sha256).hexdigest()
         self.assertEqual(request_hash, hashed)
 
-    def test_max_retries(self):
-        """Test use of max_retries."""
-        max_retries = random.randint(2,12)
-        client = tpm.TpmApiv4('https://tpm.example.com', username='USER', password='PASS', max_retries=max_retries)
-        path_to_mock = 'passwords/value_error.json'
-        request_url = api_url + path_to_mock
-        resource_file = os.path.normpath('tests/resources/{}'.format(path_to_mock))
-        data = open(resource_file)
-        with requests_mock.Mocker() as m:
-            m.get(request_url, text=str(data))
-            try:
-                client.show_password('value_error')
-            except ValueError as e:
-                pass
-        self.assertEqual(m.call_count, max_retries)
-
     def test_function_generate_password(self):
         """Test function generate_password."""
         path_to_mock = 'generate_password.json'
