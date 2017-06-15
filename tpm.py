@@ -163,60 +163,51 @@ class TpmApi(object):
             log.info('Unlock Reason: %s' % self.unlock_reason)
         url = head + path
         # Try API request and handle Exceptions
-        retries = 0
-        while retries < self.max_retries:
-            retries += 1
-            log.debug("Try {} of {} to retrieve result.".format(retries, self.max_retries))
-            try:
-                if action == 'get':
-                    log.debug('GET request %s' % url)
-                    self.req = requests.get(url, headers=self.headers, auth=auth,
-                                            verify=False)
-                elif action == 'post':
-                    log.debug('POST request %s' % url)
-                    self.req = requests.post(url, headers=self.headers, auth=auth,
-                                             verify=False, data=data)
-                elif action == 'put':
-                    log.debug('PUT request %s' % url)
-                    self.req = requests.put(url, headers=self.headers,
-                                            auth=auth, verify=False,
-                                            data=data)
-                elif action == 'delete':
-                    log.debug('DELETE request %s' % url)
-                    self.req = requests.delete(url, headers=self.headers,
-                                               verify=False, auth=auth)
+        try:
+            if action == 'get':
+                log.debug('GET request %s' % url)
+                self.req = requests.get(url, headers=self.headers, auth=auth,
+                                        verify=False)
+            elif action == 'post':
+                log.debug('POST request %s' % url)
+                self.req = requests.post(url, headers=self.headers, auth=auth,
+                                         verify=False, data=data)
+            elif action == 'put':
+                log.debug('PUT request %s' % url)
+                self.req = requests.put(url, headers=self.headers,
+                                        auth=auth, verify=False,
+                                        data=data)
+            elif action == 'delete':
+                log.debug('DELETE request %s' % url)
+                self.req = requests.delete(url, headers=self.headers,
+                                           verify=False, auth=auth)
 
-                if self.req.content == b'':
-                    result = None
-                    log.debug('No result returned.')
+            if self.req.content == b'':
+                result = None
+                log.debug('No result returned.')
+            else:
+                result = self.req.json()
+                if 'error' in result and result['error']:
+                    raise TPMException(result['message'])
+
+        except requests.exceptions.RequestException as e:
+            log.critical("Connection error for " + str(e))
+            raise TPMException("Connection error for " + str(e))
+
+        except ValueError as e:
+            if self.req.status_code == 403:
+                log.warning(url + " forbidden")
+                raise TPMException(url + " forbidden")
+            elif self.req.status_code == 404:
+                log.warning(url + " forbidden")
+                raise TPMException(url + " not found")
+            else:
+                message = ('%s: %s %s' % (e, self.req.url, self.req.text))
+                log.debug(message)
+                if retries < self.max_retries:
+                    continue
                 else:
-                    result = self.req.json()
-                    if 'error' in result and result['error']:
-                        raise TPMException(result['message'])
-
-            except requests.exceptions.RequestException as e:
-                log.critical("Connection error for " + str(e))
-                raise TPMException("Connection error for " + str(e))
-
-            except ValueError as e:
-                if self.req.status_code == 403:
-                    log.warning(url + " forbidden")
-                    raise TPMException(url + " forbidden")
-                elif self.req.status_code == 404:
-                    log.warning(url + " forbidden")
-                    raise TPMException(url + " not found")
-                elif self.req.text.endswith('pre>'):
-                    d = req.text.replace('<pre>','')
-                    result = json.loads(d)
-                    break
-                else:
-                    message = ('%s: %s %s' % (e, self.req.url, self.req.text))
-                    log.debug(message)
-                    if retries < self.max_retries:
-                        continue
-                    else:
-                        raise ValueError(message)
-            break
+                    raise ValueError(message)
 
         return result
 
