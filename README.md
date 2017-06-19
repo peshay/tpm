@@ -51,6 +51,10 @@ data = tpmconn.list_passwords()
 for item in data:
     print (item.get('name'))
 ```
+If you always want to unlock entries that are locked, you can specify an unlock reason
+```python
+tpmconn = tpm.TpmApiv4(URL, username=USER, password=PASS, unlock_reason="Because I can!")
+```
 
 ## Logging
 Every function call leads to a at least a logging message.

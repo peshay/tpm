@@ -829,6 +829,23 @@ class GeneralClientTestCases(unittest.TestCase):
         log.debug("Source Items: {}; Response Items: {}".format(source_items, response_items))
         self.assertEqual(source_items, response_items)
 
+    def test_provide_unlock_reason(self):
+        """Test providing an unlock reason."""
+        path_to_mock = 'passwords/14.json'
+        request_url = api_url + path_to_mock
+        request_path = local_path + path_to_mock
+        resource_file = os.path.normpath(request_path)
+        data_file = open(resource_file)
+        data = json.load(data_file)
+        unlock_reason = 'because I can'
+        client = tpm.TpmApiv4('https://tpm.example.com', username='USER', password='PASS', unlock_reason=unlock_reason)
+        with requests_mock.Mocker() as m:
+            m.get(request_url, request_headers={'X-Unlock-Reason': unlock_reason})
+            response = client.show_password('14')
+            history = m.request_history
+            request_unlock_reason = history[0].headers.get('X-Unlock-Reason')
+        self.assertEqual(request_unlock_reason, unlock_reason)
+
     def test_key_authentciation(self):
         """Test Key authentication header."""
         private_key='private_secret'
@@ -963,13 +980,6 @@ class ExceptionTestCases(unittest.TestCase):
             tpm.TpmApiv4(wrong_url, username='USER', password='PASS')
         log.debug("context exception: {}".format(context.exception))
         self.assertEqual("'Invalid URL: {}'".format(wrong_url), str(context.exception))
-
-    def test_max_retries_too_low_exception(self):
-        """Exception if max_retires < 1."""
-        with self.assertRaises(tpm.TpmApi.ConfigError) as context:
-            tpm.TpmApiv4('https://tpm.example.com', username='USER', private_key='PASS', max_retries=0)
-        log.debug("context exception: {}".format(context.exception))
-        self.assertEqual("'Parameter max_retires should be at least 1'", str(context.exception))
 
 class ExceptionOnRequestsTestCases(unittest.TestCase):
     """Test case for Request based Exceptions."""

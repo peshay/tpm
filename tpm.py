@@ -25,7 +25,7 @@ see http://teampasswordmanager.com/docs/api/
 :license: The MIT License (MIT), see LICENSE for more details.
 """
 
-__version__ = '3.4'
+__version__ = '3.5'
 
 import hmac
 import hashlib
@@ -101,7 +101,6 @@ class TpmApi(object):
         self.username = False
         self.password = False
         self.unlock_reason = False
-        self.max_retries = 3
         for key in kwargs:
             if key == 'private_key':
                 self.private_key = kwargs[key]
@@ -111,11 +110,8 @@ class TpmApi(object):
                 self.username = kwargs[key]
             elif key == 'password':
                 self.password = kwargs[key]
-            elif key == 'max_retries':
-                self.max_retries = kwargs[key]
-                if self.max_retries < 1:
-                    raise self.ConfigError('Parameter max_retires should be at least 1')
-        log.debug("Max retries on ValueError: {}".format(self.max_retries))
+            elif key == 'unlock_reason':
+                self.unlock_reason = kwargs[key]
         if self.private_key is not False and self.public_key is not False and\
                 self.username is False and self.password is False:
             log.debug('Using Private/Public Key authentication.')
