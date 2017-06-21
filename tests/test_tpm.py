@@ -829,6 +829,23 @@ class GeneralClientTestCases(unittest.TestCase):
         log.debug("Source Items: {}; Response Items: {}".format(source_items, response_items))
         self.assertEqual(source_items, response_items)
 
+    def test_provide_unlock_reason(self):
+        """Test providing an unlock reason."""
+        path_to_mock = 'passwords/14.json'
+        request_url = api_url + path_to_mock
+        request_path = local_path + path_to_mock
+        resource_file = os.path.normpath(request_path)
+        data_file = open(resource_file)
+        data = json.load(data_file)
+        unlock_reason = 'because I can'
+        client = tpm.TpmApiv4('https://tpm.example.com', username='USER', password='PASS', unlock_reason=unlock_reason)
+        with requests_mock.Mocker() as m:
+            m.get(request_url, request_headers={'X-Unlock-Reason': unlock_reason})
+            response = client.show_password('14')
+            history = m.request_history
+            request_unlock_reason = history[0].headers.get('X-Unlock-Reason')
+        self.assertEqual(request_unlock_reason, unlock_reason)
+
     def test_key_authentciation(self):
         """Test Key authentication header."""
         private_key='private_secret'
