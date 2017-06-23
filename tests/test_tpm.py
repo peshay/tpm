@@ -31,29 +31,33 @@ def fake_data(url, m, altpath=False):
         path = altpath
     resource_file = os.path.normpath('tests/resources/{}'.format(path))
     data_file = open(resource_file)
-    data = json.load(data_file)
-
+    with open(resource_file, 'r') as data_file:
+    	data_txt = data_file.read().replace('\n', '')
+    	try:
+    		data = json.load(data_file)
+    		data_len = len(data)
+    	except ValueError:
+    		data_len = 0
     # Must return a json-like object
     count = 0
     header = {}
     while True:
         count += 1
-        if len(data) > item_limit and isinstance(data,list):
-            returndata = data[:item_limit]
+        if data_len > item_limit and isinstance(data,list):
+            returndata = str(data[:item_limit])
             data = data[item_limit:]
             pageingurl = url.replace('.json', '/page/{}.json'.format(count))
             log.debug("Registering URL: {}".format(pageingurl))
             log.debug("Registering data: {}".format(returndata))
             log.debug("Data length: {}".format(len(returndata)))
             log.debug("Registering header: {}".format(header))
-            m.get(pageingurl, json=returndata, headers=header.copy())
+            m.get(pageingurl, text=returndata, headers=header.copy())
             header = { 'link': '{}; rel="next"'.format(pageingurl)}
         else:
             log.debug("Registering URL: {}".format(url))
-            log.debug("Registering data: {}".format(data))
+            log.debug("Registering data: {}".format(data_txt))
             log.debug("Registering header: {}".format(header))
-            log.debug("Data length: {}".format(len(data)))
-            m.get(url, json=data, headers=header.copy())
+            m.get(url, text=data_txt, headers=header.copy())
             header.clear()
             break
 
