@@ -22,7 +22,6 @@ def fake_data(url, m, altpath=False):
     A stub urlopen() implementation that load json responses from
     the filesystem.
     """
-
     # Map path from url to a file
     path_parts = url.split('/')[6:]
     if altpath == False:
@@ -30,28 +29,32 @@ def fake_data(url, m, altpath=False):
     else:
         path = altpath
     resource_file = os.path.normpath('tests/resources/{}'.format(path))
-    data_file = open(resource_file)
     with open(resource_file, 'r') as data_file:
-    	data_txt = data_file.read().replace('\n', '')
-    	try:
-    		data = json.load(data_file)
-    		data_len = len(data)
-    	except ValueError:
-    		data_len = 0
+        data_txt = data_file.read()
+    try:
+        data = json.loads(data_txt)
+        data_len = len(data)
+        log.debug('Data length: {}'.format(data_len))
+    except ValueError as e:
+        log.debug('ValuError: {}'.format(e))
+        data_len = 0
+        
     # Must return a json-like object
     count = 0
     header = {}
     while True:
         count += 1
         if data_len > item_limit and isinstance(data,list):
-            returndata = str(data[:item_limit])
+            returndata = data[:item_limit]
+            returndata_txt = json.dumps(returndata)
             data = data[item_limit:]
+            data_txt = json.dumps(data)
             pageingurl = url.replace('.json', '/page/{}.json'.format(count))
             log.debug("Registering URL: {}".format(pageingurl))
-            log.debug("Registering data: {}".format(returndata))
+            log.debug("Registering data: {}".format(returndata_txt))
             log.debug("Data length: {}".format(len(returndata)))
             log.debug("Registering header: {}".format(header))
-            m.get(pageingurl, text=returndata, headers=header.copy())
+            m.get(pageingurl, text=returndata_txt, headers=header.copy())
             header = { 'link': '{}; rel="next"'.format(pageingurl)}
         else:
             log.debug("Registering URL: {}".format(url))
@@ -829,8 +832,13 @@ class GeneralClientTestCases(unittest.TestCase):
             response = self.client.list_passwords()
         # number of passwords as from original json file.
         source_items = len(data)
+        paging_count = (source_items / 20) + (source_items % 20 > 0)
         response_items = len(response)
+        log.debug("Paging should be {}".format(paging_count))
+        log.debug("Paged {} times".format(m.call_count))
         log.debug("Source Items: {}; Response Items: {}".format(source_items, response_items))
+        self.assertEqual(paging_count, 
+        m.call_count)
         self.assertEqual(source_items, response_items)
 
     def test_provide_unlock_reason(self):
