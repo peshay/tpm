@@ -33,7 +33,7 @@ def fake_data(url, m, altpath=False):
         data_txt = data_file.read()
     try:
         data = json.loads(data_txt)
-        data_len = len(data)
+        data_len = len(dict(data))
         log.debug('Data length: {}'.format(data_len))
     except ValueError as e:
         log.debug('ValuError: {}'.format(e))
