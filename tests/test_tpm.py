@@ -31,13 +31,10 @@ def fake_data(url, m, altpath=False):
     resource_file = os.path.normpath('tests/resources/{}'.format(path))
     with open(resource_file, 'r') as data_file:
         data_txt = data_file.read()
-    try:
-        data = json.loads(data_txt)
-        data_len = len(data)
-        log.debug('Data length: {}'.format(data_len))
-    except ValueError as e:
-        log.debug('ValuError: {}'.format(e))
-        data_len = 0
+
+    data = json.loads(data_txt)
+    data_len = len(data)
+    log.debug('Data length: {}'.format(data_len))
 
     # Must return a json-like object
     header = {}
