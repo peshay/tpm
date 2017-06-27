@@ -830,7 +830,7 @@ class GeneralClientTestCases(unittest.TestCase):
             response = self.client.list_passwords()
         # number of passwords as from original json file.
         source_items = len(data)
-        paging_count = (source_items / 20) + (source_items % 20 > 0)
+        paging_count = round((source_items / 20) + 0.5)
         response_items = len(response)
         log.debug("Paging should be {}".format(paging_count))
         log.debug("Paged {} times".format(m.call_count))
