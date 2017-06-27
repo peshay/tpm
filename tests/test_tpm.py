@@ -38,10 +38,10 @@ def fake_data(url, m, altpath=False):
     except ValueError as e:
         log.debug('ValuError: {}'.format(e))
         data_len = 0
-        
+
     # Must return a json-like object
-    count = 0
     header = {}
+    count = 0
     while True:
         count += 1
         if data_len > item_limit and isinstance(data,list):
@@ -56,6 +56,7 @@ def fake_data(url, m, altpath=False):
             log.debug("Registering header: {}".format(header))
             m.get(pageingurl, text=returndata_txt, headers=header.copy())
             header = { 'link': '{}; rel="next"'.format(pageingurl)}
+            data_len = len(data)
         else:
             log.debug("Registering URL: {}".format(url))
             log.debug("Registering data: {}".format(data_txt))
@@ -837,8 +838,7 @@ class GeneralClientTestCases(unittest.TestCase):
         log.debug("Paging should be {}".format(paging_count))
         log.debug("Paged {} times".format(m.call_count))
         log.debug("Source Items: {}; Response Items: {}".format(source_items, response_items))
-        self.assertEqual(paging_count, 
-        m.call_count)
+        self.assertEqual(paging_count, m.call_count)
         self.assertEqual(source_items, response_items)
 
     def test_provide_unlock_reason(self):
