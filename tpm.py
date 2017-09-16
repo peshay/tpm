@@ -121,17 +121,20 @@ class TpmApi(object):
         else:
             raise self.ConfigError('No authentication specified'
                                    ' (user/password or private/public key)')
-
-    def request(self, path, action, data=''):
-        """To make a request to the API."""
+    def set_url(path):
         # Check if the path includes URL or not.
         head = self.base_url
         if path.startswith(head):
             path = path[len(head):]
         if not path.startswith(self.api):
             path = self.api + path
+        url = head + path
         log.debug('Using path %s' % path)
-
+        return head, url
+                
+    def request(self, path, action, data=''):
+        """To make a request to the API."""
+        head, url = set_url(path)
         # If we have data, convert to JSON
         if data:
             data = json.dumps(data)
@@ -157,7 +160,7 @@ class TpmApi(object):
         if self.unlock_reason:
             self.headers['X-Unlock-Reason'] = self.unlock_reason
             log.info('Unlock Reason: %s' % self.unlock_reason)
-        url = head + path
+
         # Try API request and handle Exceptions
         try:
             if action == 'get':
