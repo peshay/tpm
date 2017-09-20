@@ -132,7 +132,6 @@ class TpmApi(object):
             path = self.api + path
         log.debug('Using path %s' % path)                
 
-        head, url = set_url(path)
         # If we have data, convert to JSON
         if data:
             data = json.dumps(data)
