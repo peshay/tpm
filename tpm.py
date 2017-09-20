@@ -126,6 +126,7 @@ class TpmApi(object):
     def request(self, path, action, data=''):
         """To make a request to the API."""   
         # Check if the path includes URL or not.
+        head = self.base_url
         if path.startswith(head):
             path = path[len(head):]
         if not path.startswith(self.api):
