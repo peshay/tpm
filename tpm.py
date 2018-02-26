@@ -112,6 +112,8 @@ class TpmApi(object):
                 self.password = kwargs[key]
             elif key == 'unlock_reason':
                 self.unlock_reason = kwargs[key]
+            elif key == 'verify':
+                self.verify = kwargs[key]
         if self.private_key is not False and self.public_key is not False and\
                 self.username is False and self.password is False:
             log.debug('Using Private/Public Key authentication.')
@@ -164,20 +166,20 @@ class TpmApi(object):
             if action == 'get':
                 log.debug('GET request %s' % url)
                 self.req = requests.get(url, headers=self.headers, auth=auth,
-                                        verify=False)
+                                        verify=self.verify)
             elif action == 'post':
                 log.debug('POST request %s' % url)
                 self.req = requests.post(url, headers=self.headers, auth=auth,
-                                         verify=False, data=data)
+                                         verify=self.verify, data=data)
             elif action == 'put':
                 log.debug('PUT request %s' % url)
                 self.req = requests.put(url, headers=self.headers,
-                                        auth=auth, verify=False,
+                                        auth=auth, verify=self.verify,
                                         data=data)
             elif action == 'delete':
                 log.debug('DELETE request %s' % url)
                 self.req = requests.delete(url, headers=self.headers,
-                                           verify=False, auth=auth)
+                                           verify=self.verify, auth=auth)
 
             if self.req.content == b'':
                 result = None
