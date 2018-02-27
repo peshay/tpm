@@ -101,6 +101,7 @@ class TpmApi(object):
         self.username = False
         self.password = False
         self.unlock_reason = False
+        self.verify = False
         for key in kwargs:
             if key == 'private_key':
                 self.private_key = kwargs[key]
