@@ -51,14 +51,14 @@ def fake_data(url, m, altpath=False):
             log.debug("Registering data: {}".format(returndata_txt))
             log.debug("Data length: {}".format(len(returndata)))
             log.debug("Registering header: {}".format(header))
-            m.get(pageingurl, text=returndata_txt, headers=header.copy())
+            m.get(pageingurl.replace(" ", "+"), text=returndata_txt, headers=header.copy())
             header = { 'link': '{}; rel="next"'.format(pageingurl)}
             data_len = len(data)
         else:
             log.debug("Registering URL: {}".format(url))
             log.debug("Registering data: {}".format(data_txt))
             log.debug("Registering header: {}".format(header))
-            m.get(url, text=data_txt, headers=header.copy())
+            m.get(url.replace(" ", "+"), text=data_txt, headers=header.copy())
             header.clear()
             break
 
@@ -120,7 +120,7 @@ class ClientProjectTestCase(unittest.TestCase):
 
     def test_function_list_projects_search(self):
         """Test function list_projects_search."""
-        searches = ['company', 'internal', 'website']
+        searches = ['company', 'internal', 'website', 'search with spaces']
         for search in searches:
             path_to_mock = 'projects/search/{}.json'.format(search)
             request_url = api_url + path_to_mock
@@ -340,7 +340,7 @@ class ClientPasswordTestCase(unittest.TestCase):
 
     def test_function_list_passwords_search(self):
         """Test function list_passwords_search."""
-        searches = ['backup', 'dns', 'facebook', 'firewall', 'reddit', 'test']
+        searches = ['backup', 'dns', 'facebook', 'firewall', 'reddit', 'test', 'search with spaces']
         for search in searches:
             path_to_mock = 'passwords/search/{}.json'.format(search)
             request_url = api_url + path_to_mock
