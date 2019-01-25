@@ -21,11 +21,11 @@ With the connection object you can use all TPM functions, like list all password
 All API functions from Team Password Manager are included.
 see http://teampasswordmanager.com/docs/api/
 
-:copyright: (c) 2017 by Andreas Hubert.
+:copyright: (c) 2019 by Andreas Hubert.
 :license: The MIT License (MIT), see LICENSE for more details.
 """
 
-__version__ = '3.5'
+__version__ = '3.6'
 
 import hmac
 import hashlib
@@ -121,17 +121,18 @@ class TpmApi(object):
         else:
             raise self.ConfigError('No authentication specified'
                                    ' (user/password or private/public key)')
-            
+
 
     def request(self, path, action, data=''):
-        """To make a request to the API."""   
+        """To make a request to the API."""
         # Check if the path includes URL or not.
         head = self.base_url
         if path.startswith(head):
             path = path[len(head):]
+            path = quote_plus(path, safe='/')
         if not path.startswith(self.api):
             path = self.api + path
-        log.debug('Using path %s' % path)                
+        log.debug('Using path %s' % path)
 
         # If we have data, convert to JSON
         if data:

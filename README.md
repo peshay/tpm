@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/peshay/tpm.svg?branch=master)](https://travis-ci.org/peshay/tpm)
-[![Codecov](https://codecov.io/gh/peshay/tpm/branch/master/graph/badge.svg)](https://codecov.io/gh/peshay/tpm/branch/master)
+[![Build Status](https://travis-ci.org/peshay/tpm.svg?branch=fix-search-string-with-space)](https://travis-ci.org/peshay/tpm)
+[![Codecov](https://codecov.io/gh/peshay/tpm/branch/fix-search-string-with-space/graph/badge.svg)](https://codecov.io/gh/peshay/tpm/branch/fix-search-string-with-space)
 [![Scrutinizer](https://img.shields.io/scrutinizer/g/peshay/tpm.svg)](https://scrutinizer-ci.com/g/peshay/tpm/)
 [![Python version](https://img.shields.io/pypi/pyversions/tpm.svg)](https://pypi.python.org/pypi/tpm)
 [![license](https://img.shields.io/github/license/peshay/tpm.svg)](https://github.com/peshay/tpm/blob/master/LICENSE)
