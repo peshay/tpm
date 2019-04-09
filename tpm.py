@@ -42,7 +42,7 @@ from urllib.parse import quote_plus
 # set logger
 log = logging.getLogger(__name__)
 # disable unsecure SSL warning
-requests.packages.urllib3.disable_warnings()
+###requests.packages.urllib3.disable_warnings()
 
 
 class TPMException(Exception):
@@ -101,6 +101,8 @@ class TpmApi(object):
         self.username = False
         self.password = False
         self.unlock_reason = False
+        self.certificate = False
+        self.certificate_key = False
         for key in kwargs:
             if key == 'private_key':
                 self.private_key = kwargs[key]
@@ -112,6 +114,10 @@ class TpmApi(object):
                 self.password = kwargs[key]
             elif key == 'unlock_reason':
                 self.unlock_reason = kwargs[key]
+            elif key == 'certificate':
+                self.certificate = kwargs[key]
+            elif key == 'certificate_key':
+                self.certificate_key = kwargs[key]
         if self.private_key is not False and self.public_key is not False and\
                 self.username is False and self.password is False:
             log.debug('Using Private/Public Key authentication.')
@@ -164,21 +170,25 @@ class TpmApi(object):
         try:
             if action == 'get':
                 log.debug('GET request %s' % url)
-                self.req = requests.get(url, headers=self.headers, auth=auth,
-                                        verify=False)
+
+                self.req = requests.get(url, headers=self.headers,
+                                        auth=auth, verify=True,
+                                        cert=(self.certificate, self.certificate_key))
             elif action == 'post':
                 log.debug('POST request %s' % url)
-                self.req = requests.post(url, headers=self.headers, auth=auth,
-                                         verify=False, data=data)
+                self.req = requests.post(url, headers=self.headers,
+                                         auth=auth, verify=True, data=data,
+                                         cert=(self.certificate, self.certificate_key))
             elif action == 'put':
                 log.debug('PUT request %s' % url)
                 self.req = requests.put(url, headers=self.headers,
-                                        auth=auth, verify=False,
-                                        data=data)
+                                        auth=auth, verify=True, data=data,
+                                        cert=(self.certificate, self.certificate_key))
             elif action == 'delete':
                 log.debug('DELETE request %s' % url)
                 self.req = requests.delete(url, headers=self.headers,
-                                           verify=False, auth=auth)
+                                           verify=True, auth=auth,
+                                           cert=(self.certificate, self.certificate_key))
 
             if self.req.content == b'':
                 result = None
