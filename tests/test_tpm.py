@@ -855,11 +855,11 @@ class GeneralClientTestCases(unittest.TestCase):
             request_unlock_reason = history[0].headers.get('X-Unlock-Reason')
         self.assertEqual(request_unlock_reason, unlock_reason)
 
-    def test_key_authentciation(self):
-        """Test Key authentication header."""
+    def test_key_authentciation_and_ssl_verification(self):
+        """Test Key authentication header and SSL Verification option."""
         private_key='private_secret'
         public_key='public_secret'
-        client = tpm.TpmApiv4('https://tpm.example.com', private_key=private_key, public_key=public_key)
+        client = tpm.TpmApiv4('https://tpm.example.com', private_key=private_key, public_key=public_key, verify=True)
         path_to_mock = 'version.json'
         request_url = api_url + path_to_mock
         with requests_mock.Mocker() as m:
