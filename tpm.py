@@ -15,6 +15,11 @@ Or with Private/Public Key
     >>> privkey = '87324bedead51af96a45271d217b8ad5ef3f220da6c078a9bce4e4318729189c'
     >>> tpmconn = tpm.TpmApiv4(URL, private_key=privkey, public_key=pubkey)
 
+Optionally, you can specify client side certificates for HTTPS
+    >>> cert = 'path/to/cert'
+    >>> key = 'path/to/key'
+    >>> tpmconn = tpm.TpmApiv4(URL, client_cert=cert, client_key=key, ...
+
 With the connection object you can use all TPM functions, like list all passwords:
     >>> tpmconn.list_passwords()
 
@@ -112,6 +117,10 @@ class TpmApi(object):
                 self.password = kwargs[key]
             elif key == 'unlock_reason':
                 self.unlock_reason = kwargs[key]
+            elif key == 'client_cert':
+                self.client_cert = kwargs[key]
+            elif key == 'client_key':
+                self.client_key = kwargs[key]
         if self.private_key is not False and self.public_key is not False and\
                 self.username is False and self.password is False:
             log.debug('Using Private/Public Key authentication.')
@@ -159,26 +168,33 @@ class TpmApi(object):
         if self.unlock_reason:
             self.headers['X-Unlock-Reason'] = self.unlock_reason
             log.info('Unlock Reason: %s' % self.unlock_reason)
+        # Use client side certificates
+        cert = None
+        if self.client_cert:
+            if self.client_key:
+                cert = (self.client_cert, self.client_key)
+            else:
+                cert = self.client_cert
         url = head + path
         # Try API request and handle Exceptions
         try:
             if action == 'get':
                 log.debug('GET request %s' % url)
                 self.req = requests.get(url, headers=self.headers, auth=auth,
-                                        verify=False)
+                                        verify=False, cert=cert)
             elif action == 'post':
                 log.debug('POST request %s' % url)
                 self.req = requests.post(url, headers=self.headers, auth=auth,
-                                         verify=False, data=data)
+                                         verify=False, cert=cert, data=data)
             elif action == 'put':
                 log.debug('PUT request %s' % url)
                 self.req = requests.put(url, headers=self.headers,
-                                        auth=auth, verify=False,
+                                        auth=auth, verify=False, cert=cert,
                                         data=data)
             elif action == 'delete':
                 log.debug('DELETE request %s' % url)
                 self.req = requests.delete(url, headers=self.headers,
-                                           verify=False, auth=auth)
+                                           verify=False, cert=cert, auth=auth)
 
             if self.req.content == b'':
                 result = None
