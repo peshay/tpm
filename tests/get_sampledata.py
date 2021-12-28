@@ -24,7 +24,7 @@ def safe_open_w(path):
     return open(path, 'w')
 
 # create a object for the connection settings
-URL = "http://localhost:8080/teampasswordmanager"
+URL = "http://localhost:8080"
 USER = 'john'
 PASS = 'demopassword'
 tpmconn = tpm.TpmApiv4(URL, username=USER, password=PASS)
