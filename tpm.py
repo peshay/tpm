@@ -8,12 +8,12 @@ You can authenticate with username and password
     >>> URL = "https://mypasswordmanager.example.com"
     >>> USER = 'MyUser'
     >>> PASS = 'Secret'
-    >>> tpmconn = tpm.TpmApiv4(URL, username=USER, password=PASS)
+    >>> tpmconn = tpm.TpmApiv5(URL, username=USER, password=PASS)
 
 Or with Private/Public Key
     >>> pubkey = '3726d93f2a0e5f0fe2cc3a6e9e3ade964b43b07f897d579466c28b7f8ff51cd0'
     >>> privkey = '87324bedead51af96a45271d217b8ad5ef3f220da6c078a9bce4e4318729189c'
-    >>> tpmconn = tpm.TpmApiv4(URL, private_key=privkey, public_key=pubkey)
+    >>> tpmconn = tpm.TpmApiv5(URL, private_key=privkey, public_key=pubkey)
 
 With the connection object you can use all TPM functions, like list all passwords:
     >>> tpmconn.list_passwords()
@@ -25,7 +25,7 @@ see http://teampasswordmanager.com/docs/api/
 :license: The MIT License (MIT), see LICENSE for more details.
 """
 
-__version__ = '3.6'
+__version__ = '3.7'
 
 import hmac
 import hashlib
