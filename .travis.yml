@@ -1,11 +1,9 @@
 language: python
 python:
-- '2.7'
-- '3.3'
-- '3.4'
-- '3.5'
 - '3.6'
-- 3.7-dev
+- '3.7'
+- '3.8'
+- '3.9'
 - nightly
 - pypy
 install:
@@ -13,7 +11,7 @@ install:
 - pip install -r tests/requirements.txt
 - python setup.py -q install
 script:
-- nosetests -v --with-coverage
+- nose2 -v --with-coverage
 after_success:
 - codecov
 deploy:
@@ -24,7 +22,7 @@ deploy:
     secure: csAkz7o9vKJ5jx0BfNmssMJYBAFe46wabnToxdSrAFfdKqRxsZgThkTPM4dbPT6madUk6usZpCR9IzSpvgPb3PKCRDrb7eEx4xxkHWkO5FZlllL7YSTMa0y5rPrfGCUX5mr2BAEPCnxi2ZIRaFJdkO5lvxFSAk/ji6vvdHS9S+pK875pbnLIUuVItkPKAvewZmzDnVOLWyrnRMdSTRJhik1Q/1xHRLdUa3Y9p55Ujp+0RMXIZYbuIZ9shFNTCn2vxAi8GIPcHStUSE34F+0gI12Abu4yHSuPZfG9Qpldht0IprfIqSd0bdEeONO63KvQBoMNpGoJOJ+5J8Pcd+QUVT5j7YSEH9vdyhTej0dPRIGHu89PqDuFiGLY3SS1Vgk2W+MlMd6gAfnva7LcthCEHv9HQi1WAoCCB6MVBWSl5UW8lvw332ULXvQKXJRx6GFYo5zLyEoU4cwoIZ1nVYgY0rRmJg7LNwMi5S+cASCtz3i4sEJEqFh/dzANto/4IyKkYQuBQyhGjYsJm1G5Oi3OUQ+E0lvqnlVwtSe8Y9sYbZvp4VpBhCZMuf6pHlq+gkvkAzeOHXewl5Wh7IpOZacnCf/q9qiVhpcR+jX92xwF+GiF/fEa8QL9SHoYbnyTld20A9ayTa2SX4JvRp7KrXd2fDv3XFQX9KMPS1RqDizQ1B8=
   on:
     tags: true
-    condition: $TRAVIS_PYTHON_VERSION = "3.6"
+    condition: $TRAVIS_PYTHON_VERSION = "3.9"
 notifications:
   email:
     recipients:
