@@ -636,9 +636,11 @@ class TpmApiv4(TpmApi):
     def list_subprojects(self, ID):
         """List subprojects."""
         # http://teampasswordmanager.com/docs/api-projects/#list_subprojects
+        log.debug('List subprojects of {}'.format(ID))
         return self.collection('projects/%s/subprojects.json' % ID)
 
     def list_subprojects_action(self, ID, action):
         """List subprojects with allowed action."""
+        log.debug('List subprojects of {} with action: {}'.format(ID, action))
         return self.collection('projects/%s/subprojects/%s.json' %
                                (ID, action))
