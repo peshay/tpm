@@ -27,7 +27,7 @@ import tpm
 URL = "https://mypasswordpanager.example.com"
 USER = 'MyUser'
 PASS = 'Secret'
-tpmconn = tpm.TpmApiv4(URL, username=USER, password=PASS)
+tpmconn = tpm.TpmApiv5(URL, username=USER, password=PASS)
 
 # get a dictionary for all password entries
 data = tpmconn.list_passwords()
@@ -43,7 +43,7 @@ import tpm
 URL = "https://mypasswordmanager.example.com"
 pubkey = '3726d93f2a0e5f0fe2cc3a6e9e3ade964b43b07f897d579466c28b7f8ff51cd0'
 privkey = '87324bedead51af96a45271d217b8ad5ef3f220da6c078a9bce4e4318729189c'
-tpmconn = tpm.TpmApiv4(URL, private_key=privkey, public_key=pubkey)
+tpmconn = tpm.TpmApiv5(URL, private_key=privkey, public_key=pubkey)
 
 # get a dictionary for all password entries
 data = tpmconn.list_passwords()
@@ -53,7 +53,7 @@ for item in data:
 ```
 If you always want to unlock entries that are locked, you can specify an unlock reason
 ```python
-tpmconn = tpm.TpmApiv4(URL, username=USER, password=PASS, unlock_reason="Because I can!")
+tpmconn = tpm.TpmApiv5(URL, username=USER, password=PASS, unlock_reason="Because I can!")
 ```
 
 ## Logging
