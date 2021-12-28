@@ -1,0 +1,54 @@
+# Team Password Manager v.7.118.217 Docker Compose file
+# More information: https://teampasswordmanager.com/docs/docker/
+
+version: '3'
+
+services:
+
+  teampasswordmanager:
+    image: teampasswordmanager/teampasswordmanager:latest
+    depends_on:
+      - mysql
+    restart: always
+    ports:
+      - "8080:80"
+      - "8443:443"
+    volumes:
+      - tpm_volume:/var/www/html
+    networks:
+     - tpm_network
+    environment:
+      - TPM_SERVER_TIMEZONE=Etc/UTC
+      - TPM_PHP_TIMEZONE=Etc/UTC
+      - TPM_ENCRYPT_DB_CONFIG=0
+      - TPM_CONFIG_HOSTNAME=mysql
+      - TPM_CONFIG_PORT=3306
+      - TPM_CONFIG_USERNAME=tpm_user
+      - TPM_CONFIG_PASSWORD=tpm_password
+      - TPM_CONFIG_DATABASE=tpm_database
+      - TPM_UPGRADE=0
+
+  mysql:
+    image: mysql:5.7
+    restart: always
+    ports:
+      - "13306:3306"
+    volumes:
+      - tpm_mysqldata:/var/lib/mysql
+    networks:
+     - tpm_network
+    environment:
+      - MYSQL_USER=tpm_user
+      - MYSQL_PASSWORD=tpm_password
+      - MYSQL_DATABASE=tpm_database
+      - MYSQL_ROOT_PASSWORD=password5.7
+
+networks:
+  tpm_network:
+    driver: "bridge"
+
+volumes:
+  tpm_mysqldata:
+    driver: "local"
+  tpm_volume:
+    driver: "local"
