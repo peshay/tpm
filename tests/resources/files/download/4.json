@@ -1,0 +1,29 @@
+{
+    "id": 309,
+    "name": "server specs.pdf",
+    "container": {
+      "type": "password",
+      "id": 9972,
+      "is_linked": false,
+      "source_id": 0
+    },
+    "notes": "Given by the vendor",
+    "size_bytes": 62393,
+    "size_txt": "60.93 kb",
+    "uploaded_on": "2021-09-16 12:32:42",
+    "uploaded_by": {
+      "id": 1570,
+      "username": "johnboss",
+      "email_address": "johnboss@teampasswordmanager.com",
+      "name": "John Boss",
+      "role": "Admin"
+    },
+    "notes_updated_on": "2021-09-16 12:32:42",
+    "notes_updated_by": {
+      "id": 1570,
+      "username": "johnboss",
+      "email_address": "johnboss@teampasswordmanager.com",
+      "name": "John Boss",
+      "role": "Admin"
+    }
+}

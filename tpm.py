@@ -21,11 +21,11 @@ With the connection object you can use all TPM functions, like list all password
 All API functions from Team Password Manager are included.
 see http://teampasswordmanager.com/docs/api/
 
-:copyright: (c) 2019 by Andreas Hubert.
+:copyright: (c) 2021 by Andreas Hubert.
 :license: The MIT License (MIT), see LICENSE for more details.
 """
 
-__version__ = '3.7'
+__version__ = '4.0'
 
 import hmac
 import hashlib
@@ -34,8 +34,8 @@ import requests
 import re
 import json
 import logging
-from future.standard_library import install_aliases
-install_aliases()
+import base64
+import os.path
 
 from urllib.parse import quote_plus
 
@@ -80,21 +80,21 @@ class TpmApi(object):
                    "(?:[/?#]\\S*)?" \
                    "$"
         self.apiurl = 'api/' + api + '/'
-        log.debug('Set as apiurl: %s' % self.apiurl)
+        log.debug('Set as apiurl: {}'.format(self.apiurl))
         self.api = self.apiurl
         # Check if URL is not bullshit
         if re.match(REGEXurl, base_url):
             self.base_url = base_url + '/index.php/'
-            log.debug('Set Base URL to %s' % self.base_url)
+            log.debug('Set Base URL to {}'.format(self.base_url))
             self.url = self.base_url + self.apiurl
-            log.debug('Set URL to %s' % self.url)
+            log.debug('Set URL to {}'.format(self.url))
         else:
-            raise self.ConfigError('Invalid URL: %s' % base_url)
+            raise self.ConfigError('Invalid URL: {}'.format(base_url))
         # set headers
         self.headers = {'Content-Type': 'application/json; charset=utf-8',
                         'User-Agent': 'tpm.py/' + __version__
                         }
-        log.debug('Set header to %s' % self.headers)
+        log.debug('Set header to {}'.format(self.headers))
         # check kwargs for either keys or user credentials
         self.private_key = False
         self.public_key = False
@@ -132,12 +132,12 @@ class TpmApi(object):
             path = quote_plus(path, safe='/')
         if not path.startswith(self.api):
             path = self.api + path
-        log.debug('Using path %s' % path)
+        log.debug('Using path {}'.format(path))
 
         # If we have data, convert to JSON
         if data:
             data = json.dumps(data)
-            log.debug('Data to sent: %s' % data)
+            log.debug('Data to sent: {}'.format(data))
         # In case of key authentication
         if self.private_key and self.public_key:
             timestamp = str(int(time.time()))
@@ -147,7 +147,7 @@ class TpmApi(object):
             self.hash = hmac.new(str.encode(self.private_key),
                                  msg=unhashed.encode('utf-8'),
                                  digestmod=hashlib.sha256).hexdigest()
-            log.debug('Authenticating with hash: %s' % self.hash)
+            log.debug('Authenticating with hash: {}'.format(self.hash))
             self.headers['X-Public-Key'] = self.public_key
             self.headers['X-Request-Hash'] = self.hash
             self.headers['X-Request-Timestamp'] = timestamp
@@ -158,25 +158,25 @@ class TpmApi(object):
         # Set unlock reason
         if self.unlock_reason:
             self.headers['X-Unlock-Reason'] = self.unlock_reason
-            log.info('Unlock Reason: %s' % self.unlock_reason)
+            log.info('Unlock Reason: {}'.format(self.unlock_reason))
         url = head + path
         # Try API request and handle Exceptions
         try:
             if action == 'get':
-                log.debug('GET request %s' % url)
+                log.debug('GET request {}'.format(url))
                 self.req = requests.get(url, headers=self.headers, auth=auth,
                                         verify=False)
             elif action == 'post':
-                log.debug('POST request %s' % url)
+                log.debug('POST request {}'.format(url))
                 self.req = requests.post(url, headers=self.headers, auth=auth,
                                          verify=False, data=data)
             elif action == 'put':
-                log.debug('PUT request %s' % url)
+                log.debug('PUT request {}'.format(url))
                 self.req = requests.put(url, headers=self.headers,
                                         auth=auth, verify=False,
                                         data=data)
             elif action == 'delete':
-                log.debug('DELETE request %s' % url)
+                log.debug('DELETE request {}'.format(url))
                 self.req = requests.delete(url, headers=self.headers,
                                            verify=False, auth=auth)
 
@@ -200,7 +200,7 @@ class TpmApi(object):
                 log.warning(url + " forbidden")
                 raise TPMException(url + " not found")
             else:
-                message = ('%s: %s %s' % (e, self.req.url, self.req.text))
+                message = ('{}: {} {}'.format(e, self.req.url, self.req.text))
                 log.debug(message)
                 raise ValueError(message)
 
@@ -216,7 +216,7 @@ class TpmApi(object):
 
     def put(self, path, data=''):
         """For put based requests."""
-        self.request(path, 'put', data)
+        return self.request(path, 'put', data)
 
     def delete(self, path):
         """For delete based requests."""
@@ -262,72 +262,71 @@ class TpmApi(object):
 
     def list_projects_search(self, searchstring):
         """List projects with searchstring."""
-        log.debug('List all projects with: %s' % searchstring)
-        return self.collection('projects/search/%s.json' %
-                               quote_plus(searchstring))
+        log.debug('List all projects with: {}'.format(searchstring))
+        return self.collection('projects/search/{}.json'.format(quote_plus(searchstring)))
 
     def show_project(self, ID):
         """Show a project."""
         # http://teampasswordmanager.com/docs/api-projects/#show_project
-        log.debug('Show project info: %s' % ID)
-        return self.get('projects/%s.json' % ID)
+        log.debug('Show project info: {}'.format(ID))
+        return self.get('projects/{}.json'.format(ID))
 
     def list_passwords_of_project(self, ID):
         """List passwords of project."""
         # http://teampasswordmanager.com/docs/api-projects/#list_pwds_prj
-        log.debug('List passwords of project: %s' % ID)
-        return self.collection('projects/%s/passwords.json' % ID)
+        log.debug('List passwords of project: {}'.format(ID))
+        return self.collection('projects/{}/passwords.json'.format(ID))
 
     def list_user_access_on_project(self, ID):
         """List users who can access a project."""
         # http://teampasswordmanager.com/docs/api-projects/#list_users_prj
-        log.debug('List User access on project: %s' % ID)
-        return self.collection('projects/%s/security.json' % ID)
+        log.debug('List User access on project: {}'.format(ID))
+        return self.collection('projects/{}/security.json'.format(ID))
 
     def create_project(self, data):
         """Create a project."""
         # http://teampasswordmanager.com/docs/api-projects/#create_project
-        log.info('Create project: %s' % data)
+        log.info('Create project: {}'.format(data))
         NewID = self.post('projects.json', data).get('id')
-        log.info('Project has been created with ID %s' % NewID)
+        log.info('Project has been created with ID {}'.format(NewID))
         return NewID
 
     def update_project(self, ID, data):
         """Update a project."""
         # http://teampasswordmanager.com/docs/api-projects/#update_project
-        log.info('Update project %s with %s' % (ID, data))
-        self.put('projects/%s.json' % ID, data)
+        log.info('Update project {} with {}'.format(ID, data))
+        self.put('projects/{}.json'.format(ID, data))
 
     def change_parent_of_project(self, ID, NewParrentID):
         """Change parent of project."""
         # http://teampasswordmanager.com/docs/api-projects/#change_parent
-        log.info('Change parrent for project %s to %s' % (ID, NewParrentID))
+        log.info('Change parrent for project {} to {}'.format(ID, NewParrentID))
         data = {'parent_id': NewParrentID}
-        self.put('projects/%s/change_parent.json' % ID, data)
+        self.put('projects/{}/change_parent.json'.format(ID, data))
 
     def update_security_of_project(self, ID, data):
         """Update security of project."""
         # http://teampasswordmanager.com/docs/api-projects/#update_project_security
-        log.info('Update project %s security %s' % (ID, data))
-        self.put('projects/%s/security.json' % ID, data)
+        log.info('Update project {} security {}'.format(ID, data))
+        self.put('projects/{}/security.json'.format(ID, data))
 
     def archive_project(self, ID):
         """Archive a project."""
         # http://teampasswordmanager.com/docs/api-projects/#arch_unarch_project
-        log.info('Archive project %s' % ID)
-        self.put('projects/%s/archive.json' % ID)
+        log.info('Archive project {}'.format(ID))
+        self.put('projects/{}/archive.json'.format(ID))
 
     def unarchive_project(self, ID):
         """Un-Archive a project."""
         # http://teampasswordmanager.com/docs/api-projects/#arch_unarch_project
-        log.info('Unarchive project %s' % ID)
-        self.put('projects/%s/unarchive.json' % ID)
+        log.info('Unarchive project {}'.format(ID))
+        self.put('projects/{}/unarchive.json'.format(ID))
 
     def delete_project(self, ID):
         """Delete a project."""
         # http://teampasswordmanager.com/docs/api-projects/#delete_project
-        log.info('Delete project %s' % ID)
-        self.delete('projects/%s.json' % ID)
+        log.info('Delete project {}'.format(ID))
+        self.delete('projects/{}.json'.format(ID))
 
     # http://teampasswordmanager.com/docs/api-passwords/#list_passwords
     def list_passwords(self):
@@ -347,66 +346,65 @@ class TpmApi(object):
 
     def list_passwords_search(self, searchstring):
         """List passwords with searchstring."""
-        log.debug('List all passwords with: %s' % searchstring)
-        return self.collection('passwords/search/%s.json' %
-                               quote_plus(searchstring))
+        log.debug('List all passwords with: {}'.format(searchstring))
+        return self.collection('passwords/search/{}.json'.format(quote_plus(searchstring)))
 
     def show_password(self, ID):
         """Show password."""
         # http://teampasswordmanager.com/docs/api-passwords/#show_password
-        log.info('Show password info: %s' % ID)
-        return self.get('passwords/%s.json' % ID)
+        log.info('Show password info: {}'.format(ID))
+        return self.get('passwords/{}.json'.format(ID))
 
     def list_user_access_on_password(self, ID):
         """List users who can access a password."""
         # http://teampasswordmanager.com/docs/api-passwords/#list_users_pwd
-        log.debug('List user access on password %s' % ID)
-        return self.collection('passwords/%s/security.json' % ID)
+        log.debug('List user access on password {}'.format(ID))
+        return self.collection('passwords/{}/security.json'.format(ID))
 
     def create_password(self, data):
         """Create a password."""
         # http://teampasswordmanager.com/docs/api-passwords/#create_password
-        log.info('Create new password %s' % data)
+        log.info('Create new password {}'.format(data))
         NewID = self.post('passwords.json', data).get('id')
-        log.info('Password has been created with ID %s' % NewID)
+        log.info('Password has been created with ID {}'.format(NewID))
         return NewID
 
     def update_password(self, ID, data):
         """Update a password."""
         # http://teampasswordmanager.com/docs/api-passwords/#update_password
-        log.info('Update Password %s with %s' % (ID, data))
-        self.put('passwords/%s.json' % ID, data)
+        log.info('Update Password {} with {}'.format(ID, data))
+        self.put('passwords/{}.json'.format(ID, data))
 
     def update_security_of_password(self, ID, data):
         """Update security of a password."""
         # http://teampasswordmanager.com/docs/api-passwords/#update_security_password
-        log.info('Update security of password %s with %s' % (ID, data))
-        self.put('passwords/%s/security.json' % ID, data)
+        log.info('Update security of password {} with {}'.format(ID, data))
+        self.put('passwords/{}/security.json'.format(ID, data))
 
     def update_custom_fields_of_password(self, ID, data):
         """Update custom fields definitions of a password."""
         # http://teampasswordmanager.com/docs/api-passwords/#update_cf_password
-        log.info('Update custom fields of password %s with %s' % (ID, data))
-        self.put('passwords/%s/custom_fields.json' % ID, data)
+        log.info('Update custom fields of password {} with {}'.format(ID, data))
+        self.put('passwords/{}/custom_fields.json'.format(ID, data))
 
     def delete_password(self, ID):
         """Delete a password."""
         # http://teampasswordmanager.com/docs/api-passwords/#delete_password
-        log.info('Delete password %s' % ID)
-        self.delete('passwords/%s.json' % ID)
+        log.info('Delete password {}'.format(ID))
+        self.delete('passwords/{}.json'.format(ID))
 
     def lock_password(self, ID):
         """Lock a password."""
         # http://teampasswordmanager.com/docs/api-passwords/#lock_password
-        log.info('Lock password %s' % ID)
-        self.put('passwords/%s/lock.json' % ID)
+        log.info('Lock password {}'.format(ID))
+        self.put('passwords/{}/lock.json'.format(ID))
 
     def unlock_password(self, ID, reason):
         """Unlock a password."""
         # http://teampasswordmanager.com/docs/api-passwords/#unlock_password
-        log.info('Unlock password %s, Reason: %s' % (ID, reason))
+        log.info('Unlock password {}, Reason: {}'.format(ID, reason))
         self.unlock_reason = reason
-        self.put('passwords/%s/unlock.json' % ID)
+        self.put('passwords/{}/unlock.json'.format(ID))
 
     def list_mypasswords(self):
         """List my passwords."""
@@ -417,59 +415,58 @@ class TpmApi(object):
     def list_mypasswords_search(self, searchstring):
         """List my passwords with searchstring."""
         # http://teampasswordmanager.com/docs/api-my-passwords/#list_passwords
-        log.debug('List MyPasswords with %s' % searchstring)
-        return self.collection('my_passwords/search/%s.json' %
-                               quote_plus(searchstring))
+        log.debug('List MyPasswords with {}'.format(searchstring))
+        return self.collection('my_passwords/search/{}.json'.format(quote_plus(searchstring)))
 
     def show_mypassword(self, ID):
         """Show my password."""
         # http://teampasswordmanager.com/docs/api-my-passwords/#show_password
-        log.debug('Show MyPassword %s' % ID)
-        return self.get('my_passwords/%s.json' % ID)
+        log.debug('Show MyPassword {}'.format(ID))
+        return self.get('my_passwords/{}.json'.format(ID))
 
     def create_mypassword(self, data):
         """Create my password."""
         # http://teampasswordmanager.com/docs/api-my-passwords/#create_password
-        log.info('Create MyPassword with %s' % data)
+        log.info('Create MyPassword with {}'.format(data))
         NewID = self.post('my_passwords.json', data).get('id')
-        log.info('MyPassword has been created with %s' % NewID)
+        log.info('MyPassword has been created with {}'.format(NewID))
         return NewID
 
     def update_mypassword(self, ID, data):
         """Update my password."""
         # http://teampasswordmanager.com/docs/api-my-passwords/#update_password
-        log.info('Update MyPassword %s with %s' % (ID, data))
-        self.put('my_passwords/%s.json' % ID, data)
+        log.info('Update MyPassword {} with {}'.format(ID, data))
+        self.put('my_passwords/{}.json'.format(ID, data))
 
     def delete_mypassword(self, ID):
         """Delete my password."""
         # http://teampasswordmanager.com/docs/api-my-passwords/#delete_password
-        log.info('Delete password %s' % ID)
-        self.delete('my_passwords/%s.json' % ID)
+        log.info('Delete password {}'.format(ID))
+        self.delete('my_passwords/{}.json'.format(ID))
 
     def set_favorite_password(self, ID):
         """Set a password as favorite."""
         # http://teampasswordmanager.com/docs/api-favorites/#set_fav
-        log.info('Set password %s as favorite' % ID)
-        self.post('favorite_passwords/%s.json' % ID)
+        log.info('Set password {} as favorite'.format(ID))
+        self.post('favorite_passwords/{}.json'.format(ID))
 
     def unset_favorite_password(self, ID):
         """Unet a password as favorite."""
         # http://teampasswordmanager.com/docs/api-favorites/#del_fav
-        log.info('Unset password %s as favorite' % ID)
-        self.delete('favorite_passwords/%s.json' % ID)
+        log.info('Unset password {} as favorite'.format(ID))
+        self.delete('favorite_passwords/{}.json'.format(ID))
 
     def set_favorite_project(self, ID):
         """Set a project as favorite."""
         # http://teampasswordmanager.com/docs/api-favorites/#set_fav
-        log.info('Set project %s as favorite' % ID)
-        self.post('favorite_project/%s.json' % ID)
+        log.info('Set project {} as favorite'.format(ID))
+        self.post('favorite_project/{}.json'.format(ID))
 
     def unset_favorite_project(self, ID):
         """Unet a project as favorite."""
         # http://teampasswordmanager.com/docs/api-favorites/#del_fav
-        log.info('Unset project %s as favorite' % ID)
-        self.delete('favorite_project/%s.json' % ID)
+        log.info('Unset project {} as favorite'.format(ID))
+        self.delete('favorite_project/{}.json'.format(ID))
 
     def list_users(self):
         """List users."""
@@ -480,8 +477,8 @@ class TpmApi(object):
     def show_user(self, ID):
         """Show a user."""
         # http://teampasswordmanager.com/docs/api-users/#show_user
-        log.debug('Show user %s' % ID)
-        return self.get('users/%s.json' % ID)
+        log.debug('Show user {}'.format(ID))
+        return self.get('users/{}.json'.format(ID))
 
     def show_me(self):
         """Show me."""
@@ -496,52 +493,52 @@ class TpmApi(object):
     def create_user(self, data):
         """Create a User."""
         # http://teampasswordmanager.com/docs/api-users/#create_user
-        log.info('Create user with %s' % data)
+        log.info('Create user with {}'.format(data))
         NewID = self.post('users.json', data).get('id')
-        log.info('User has been created with ID %s' % NewID)
+        log.info('User has been created with ID {}'.format(NewID))
         return NewID
 
     def update_user(self, ID, data):
         """Update a User."""
         # http://teampasswordmanager.com/docs/api-users/#update_user
-        log.info('Update user %s with %s' % (ID, data))
-        self.put('users/%s.json' % ID, data)
+        log.info('Update user {} with {}'.format(ID, data))
+        self.put('users/{}.json'.format(ID, data))
 
     def change_user_password(self, ID, data):
         """Change password of a User."""
         # http://teampasswordmanager.com/docs/api-users/#change_password
-        log.info('Change user %s password' % ID)
-        self.put('users/%s/change_password.json' % ID, data)
+        log.info('Change user {} password'.format(ID))
+        self.put('users/{}/change_password.json'.format(ID, data))
 
     def activate_user(self, ID):
         """Activate a User."""
         # http://teampasswordmanager.com/docs/api-users/#activate_deactivate
-        log.info('Activate user %s' % ID)
-        self.put('users/%s/activate.json' % ID)
+        log.info('Activate user {}'.format(ID))
+        self.put('users/{}/activate.json'.format(ID))
 
     def deactivate_user(self, ID):
         """Dectivate a User."""
         # http://teampasswordmanager.com/docs/api-users/#activate_deactivate
-        log.info('Deactivate user %s' % ID)
-        self.put('users/%s/deactivate.json' % ID)
+        log.info('Deactivate user {}'.format(ID))
+        self.put('users/{}/deactivate.json'.format(ID))
 
     def convert_user_to_ldap(self, ID, DN):
         """Convert a normal user to a LDAP user."""
         # http://teampasswordmanager.com/docs/api-users/#convert_to_ldap
         data = {'login_dn': DN}
-        log.info('Convert User %s to LDAP DN %s' % (ID, DN))
-        self.put('users/%s/convert_to_ldap.json' % ID, data)
+        log.info('Convert User {} to LDAP DN {}'.format(ID, DN))
+        self.put('users/{}/convert_to_ldap.json'.format(ID, data))
 
     def convert_ldap_user_to_normal(self, ID):
         """Convert a LDAP user to a normal user."""
-        log.info('Convert User %s from LDAP to normal user' % ID)
-        self.put('users/%s/convert_to_normal.json' % ID)
+        log.info('Convert User {} from LDAP to normal user'.format(ID))
+        self.put('users/{}/convert_to_normal.json'.format(ID))
 
     def delete_user(self, ID):
         """Delete a user."""
         # http://teampasswordmanager.com/docs/api-users/#delete_user
-        log.info('Delete user %s' % ID)
-        self.delete('users/%s.json' % ID)
+        log.info('Delete user {}'.format(ID))
+        self.delete('users/{}.json'.format(ID))
 
     def list_groups(self):
         """List Groups."""
@@ -552,40 +549,40 @@ class TpmApi(object):
     def show_group(self, ID):
         """Show a Group."""
         # http://teampasswordmanager.com/docs/api-groups/#show_group
-        log.debug('Show group %s' % ID)
-        return self.get('groups/%s.json' % ID)
+        log.debug('Show group {}'.format(ID))
+        return self.get('groups/{}.json'.format(ID))
 
     def create_group(self, data):
         """Create a Group."""
         # http://teampasswordmanager.com/docs/api-groups/#create_group
-        log.info('Create group with %s' % data)
+        log.info('Create group with {}'.format(data))
         NewID = self.post('groups.json', data).get('id')
-        log.info('Group has been created with ID %s' % NewID)
+        log.info('Group has been created with ID {}'.format(NewID))
         return NewID
 
     def update_group(self, ID, data):
         """Update a Group."""
         # http://teampasswordmanager.com/docs/api-groups/#update_group
-        log.info('Update group %s with %s' % (ID, data))
-        self.put('groups/%s.json' % ID, data)
+        log.info('Update group {} with {}'.format(ID, data))
+        self.put('groups/{}.json'.format(ID, data))
 
     def add_user_to_group(self, GroupID, UserID):
         """Add a user to a group."""
         # http://teampasswordmanager.com/docs/api-groups/#add_user
-        log.info('Add User %s to Group %s' % (UserID, GroupID))
-        self.put('groups/%s/add_user/%s.json' % (GroupID, UserID))
+        log.info('Add User {} to Group {}'.format(UserID, GroupID))
+        self.put('groups/{}/add_user/{}.json'.format(GroupID, UserID))
 
     def delete_user_from_group(self, GroupID, UserID):
         """Delete a user from a group."""
         # http://teampasswordmanager.com/docs/api-groups/#del_user
-        log.info('Delete user %s from group %s' % (UserID, GroupID))
-        self.put('groups/%s/delete_user/%s.json' % (GroupID, UserID))
+        log.info('Delete user {} from group {}'.format(UserID, GroupID))
+        self.put('groups/{}/delete_user/{}.json'.format(GroupID, UserID))
 
     def delete_group(self, ID):
         """Delete a group."""
         # http://teampasswordmanager.com/docs/api-groups/#delete_group
-        log.info('Delete group %s' % ID)
-        self.delete('groups/%s.json' % ID)
+        log.info('Delete group {}'.format(ID))
+        self.delete('groups/{}.json'.format(ID))
 
     def generate_password(self):
         """Generate a new random password."""
@@ -637,10 +634,146 @@ class TpmApiv4(TpmApi):
         """List subprojects."""
         # http://teampasswordmanager.com/docs/api-projects/#list_subprojects
         log.debug('List subprojects of {}'.format(ID))
-        return self.collection('projects/%s/subprojects.json' % ID)
+        return self.collection('projects/{}/subprojects.json'.format(ID))
 
     def list_subprojects_action(self, ID, action):
         """List subprojects with allowed action."""
         log.debug('List subprojects of {} with action: {}'.format(ID, action))
-        return self.collection('projects/%s/subprojects/%s.json' %
-                               (ID, action))
+        return self.collection('projects/{}/subprojects/{}.json'.format(ID, action))
+
+class TpmApiv5(TpmApiv4):
+    """API v5 based class."""
+    def __init__(self, url, **kwargs):
+        super(TpmApiv4, self).__init__('v5', url, kwargs)
+    """From now on, Functions that only work with API v5."""
+
+    def list_project_files(self, ID):
+        """List files of a project."""
+        return self.collection('projects/{}/files.json'.format(ID))
+
+    def upload_project_file(self, ID, file, **kwargs):
+        """Upload a file to a project."""
+        if os.path.isfile(file):
+            file_data = open(file, "rb")
+            encoded = base64.b64encode(file_data.read())
+            data = { "file_data_base64": encoded.decode('ascii'),
+                     "file_name": os.path.basename(file)
+            }
+            if 'notes' in kwargs:
+                data['notes'] = kwargs['notes']
+            NewID = self.post('projects/{}/upload.json'.format(ID), data).get('id')
+            log.info('File has been uploaded with ID {}'.format(NewID))
+            return NewID
+        else:
+            raise Exception("File not found: {}".format(file))
+
+    def archive_password(self, ID):
+        """Archive a password."""
+        # http://teampasswordmanager.com/docs/api-passwords/#arch_unarch_password
+        log.info('Archive password {}'.format(ID))
+        self.put('passwords/{}/archive.json'.format(ID))
+
+    def unarchive_password(self, ID):
+        """Un-Archive a project."""
+        # http://teampasswordmanager.com/docs/api-passwords/#arch_unarch_password
+        log.info('Unarchive password {}'.format(ID))
+        self.put('passwords/{}/unarchive.json'.format(ID))
+
+    def move_password(self, ID, PROJECT_ID):
+        """Move a password to another project."""
+        # http://teampasswordmanager.com/docs/api-passwords/#move_password
+        log.info('Move password {} to Project {}'.format(ID, PROJECT_ID))
+        self.put('passwords/{}/move.json'.format(ID), data={ "project_id": PROJECT_ID })
+
+    def list_password_files(self, ID):
+        """List files of a password."""
+        # http://teampasswordmanager.com/docs/api-passwords/#list_files
+        log.info('List files of password: {}'.format(ID))
+        return self.collection('passwords/{}/files.json'.format(ID))
+
+    def upload_password_file(self, ID, file, **kwargs):
+        """Upload a file to a password."""
+        if os.path.isfile(file):
+            file_data = open(file, "rb")
+            encoded = base64.b64encode(file_data.read())
+            data = { "file_data_base64": encoded.decode('ascii'),
+                     "file_name": os.path.basename(file)
+            }
+            if 'notes' in kwargs:
+                data['notes'] = kwargs['notes']
+            NewID = self.post('passwords/{}/upload.json'.format(ID), data).get('id')
+            log.info('File has been uploaded with ID {}'.format(NewID))
+            return NewID
+        else:
+            raise Exception("File not found: {}".format(file))
+
+    def move_mypassword(self, ID, PROJECT_ID):
+        """Move a mypassword to another project."""
+        # https://teampasswordmanager.com/docs/api-my-passwords/#move_password
+        log.info('Move my_password {} to Project {}'.format(ID, PROJECT_ID))
+        return self.put('my_passwords/{}/move.json'.format(ID), data={ "project_id": PROJECT_ID }).get('id')
+
+    def show_file_info(self, ID):
+        """Show info of a file."""
+        # https://teampasswordmanager.com/docs/api-files/#show_file
+        log.info('Show info of file with ID: {}'.format(ID))
+        return self.get('files/{}.json'.format(ID))
+
+    def update_file_notes(self, ID, NOTES):
+        """Update the notes on a file."""
+        # https://teampasswordmanager.com/docs/api-files/#update_file
+        log.info('Update notes on file {} to: {}'.format(ID, NOTES))
+        self.put('files/{}.json'.format(ID), data={ "notes": NOTES })
+
+    def max_upload_file_size(self):
+        """Show max upload file size."""
+        # https://teampasswordmanager.com/docs/api-files/#max_upload_file_size
+        log.info('Show max_upload_file_size')
+        return self.get('files/max_upload_file_size.json')
+
+    def uploads_folder_info(self):
+        """Show uploads folder info."""
+        # https://teampasswordmanager.com/docs/api-files/#uploads_folder
+        log.info('Show uploads_folder_info')
+        return self.get('files/uploads_folder_info.json')
+
+    def download_file(self, ID):
+        """Get the content of a file."""
+        # https://teampasswordmanager.com/docs/api-files/#download_file
+        log.info('Download file with ID: {}'.format(ID))
+        return self.get('files/download/{}.json'.format(ID))
+
+    def delete_file(self, ID):
+        """Delete a file."""
+        # https://teampasswordmanager.com/docs/api-files/#delete_file
+        log.info('Delete file {}'.format(ID))
+        self.delete('files/{}.json'.format(ID))
+
+    def create_user_ldap(self, data):
+        """Create a LDAP User."""
+        # http://teampasswordmanager.com/docs/api-users/#create_user_ldap
+        log.info('Create LDAP user with {}'.format(data))
+        NewID = self.post('users_ldap.json', data).get('id')
+        log.info('LDAP User has been created with ID {}'.format(NewID))
+        return NewID
+
+    def create_user_saml(self, data):
+        """Create a SAML User."""
+        # http://teampasswordmanager.com/docs/api-users/#create_user_saml
+        log.info('Create SAML user with {}'.format(data))
+        NewID = self.post('users_saml.json', data).get('id')
+        log.info('SAML User has been created with ID {}'.format(NewID))
+        return NewID
+
+    def convert_user_to_ldap(self, ID, DN, SERVER_ID):
+        """Convert a normal user to a LDAP user."""
+        # http://teampasswordmanager.com/docs/api-users/#convert_to_ldap
+        data = {'login_dn': DN, "ldap_server_id": SERVER_ID}
+        log.info('Convert User {} to LDAP DN {} at Server {}'.format(ID, DN, SERVER_ID))
+        self.put('users/{}/convert_to_ldap.json'.format(ID), data)
+
+    def convert_user_to_saml(self, ID):
+        """Convert a normal user to a SAML user."""
+        # http://teampasswordmanager.com/docs/api-users/#convert_to_saml
+        log.info('Convert User {} to SAML'.format(ID))
+        self.put('users/{}/convert_to_saml.json'.format(ID))
