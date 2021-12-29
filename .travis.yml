@@ -16,7 +16,7 @@ after_success:
 deploy:
   provider: pypi
   distributions: sdist
-  user: peshay
+  user: __token__
   password:
     secure: CDN1G7r+3QHVRY/KnDauHvH44HX9A8iVJHksJdlLqTsDy+yL/bmxLPKYudhx5WxHpPD6OI/HDD6q/RaJ0259SOU3srX3Q5u7UTo01bsbrcTvpNHG7GDQEo+g8dYvBgS3JkCjR+5DlISZuizYIPQ1wQHqSFUZjboEAwtgwzbac23suD+9ExojLZkvAjdD7RNqd0fpC9zilfa96iN43IJmi32uAbnjP3mGBO9xT3jGKavl98IKVlp8+plGV+Jp4TGrQ6qxAymHyrroPh/p+Aeq2kF0IqeqxKcPBRUAUXpgqa7N463QTkvuT05U2Bh8ml5KMLIZHQ1G/lsu5BpbGuJY7j+Wi8cVFedF3ySaONcrYSeKsO8XbmifJxmUfw+SJwyxVtAAIs/wRTPxo9bcw8W4DUctlJTa6lnIt62/ELRARG7OivTLBNRosd8FPH4ugaJ7QhLPP2QF7he5ptwutq+MvC7t7xREegJ1tk6FIRXDzUX7V+MSF4cktXJoQnyV2jDHOqdwJVrR/er7eVctK6ObBHN7Zu6sr2c61oTgj5tE+W6/BAkj5CxkmaA0ubYNxmfWje7hfaQcDy4aNIvrhUM9+6ycSk2sc78pPR1G4IwKtTYItDgU6tGSthXX1bJwE6MorzpwbiB6zU+4v1GgLBCxyiv4SUzK1sTCx7b+VL/FNjg=
   on:
