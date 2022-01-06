@@ -24,7 +24,7 @@ This is an example how you can use it in a python script
 #! /usr/bin/env python
 import tpm
 # create a object for the connection settings
-URL = "https://mypasswordpanager.example.com"
+URL = "https://mypasswordmanager.example.com"
 USER = 'MyUser'
 PASS = 'Secret'
 tpmconn = tpm.TpmApiv5(URL, username=USER, password=PASS)
