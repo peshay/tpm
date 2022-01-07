@@ -123,9 +123,9 @@ create_project(data)
 
 update_project(ID, data)
 
-#### [Change Parten of Project](http://teampasswordmanager.com/docs/api-projects/#change_parent)
+#### [Change Parent of Project](http://teampasswordmanager.com/docs/api-projects/#change_parent)
 
-change_parent_of_project(ID, NewParrentID)
+change_parent_of_project(ID, NewParentID)
 
 #### [Update Security of Project](http://teampasswordmanager.com/docs/api-projects/#update_project_security)
 
