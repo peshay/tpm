@@ -25,7 +25,7 @@ see http://teampasswordmanager.com/docs/api/
 :license: The MIT License (MIT), see LICENSE for more details.
 """
 
-__version__ = '4.0'
+__version__ = '4.1'
 
 import hmac
 import hashlib
