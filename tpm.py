@@ -295,20 +295,20 @@ class TpmApi(object):
         """Update a project."""
         # http://teampasswordmanager.com/docs/api-projects/#update_project
         log.info('Update project {} with {}'.format(ID, data))
-        self.put('projects/{}.json'.format(ID, data))
+        self.put('projects/{}.json'.format(ID), data)
 
     def change_parent_of_project(self, ID, NewParrentID):
         """Change parent of project."""
         # http://teampasswordmanager.com/docs/api-projects/#change_parent
         log.info('Change parrent for project {} to {}'.format(ID, NewParrentID))
         data = {'parent_id': NewParrentID}
-        self.put('projects/{}/change_parent.json'.format(ID, data))
+        self.put('projects/{}/change_parent.json'.format(ID), data)
 
     def update_security_of_project(self, ID, data):
         """Update security of project."""
         # http://teampasswordmanager.com/docs/api-projects/#update_project_security
         log.info('Update project {} security {}'.format(ID, data))
-        self.put('projects/{}/security.json'.format(ID, data))
+        self.put('projects/{}/security.json'.format(ID), data)
 
     def archive_project(self, ID):
         """Archive a project."""
@@ -373,19 +373,19 @@ class TpmApi(object):
         """Update a password."""
         # http://teampasswordmanager.com/docs/api-passwords/#update_password
         log.info('Update Password {} with {}'.format(ID, data))
-        self.put('passwords/{}.json'.format(ID, data))
+        self.put('passwords/{}.json'.format(ID), data)
 
     def update_security_of_password(self, ID, data):
         """Update security of a password."""
         # http://teampasswordmanager.com/docs/api-passwords/#update_security_password
         log.info('Update security of password {} with {}'.format(ID, data))
-        self.put('passwords/{}/security.json'.format(ID, data))
+        self.put('passwords/{}/security.json'.format(ID), data)
 
     def update_custom_fields_of_password(self, ID, data):
         """Update custom fields definitions of a password."""
         # http://teampasswordmanager.com/docs/api-passwords/#update_cf_password
         log.info('Update custom fields of password {} with {}'.format(ID, data))
-        self.put('passwords/{}/custom_fields.json'.format(ID, data))
+        self.put('passwords/{}/custom_fields.json'.format(ID), data)
 
     def delete_password(self, ID):
         """Delete a password."""
@@ -436,7 +436,7 @@ class TpmApi(object):
         """Update my password."""
         # http://teampasswordmanager.com/docs/api-my-passwords/#update_password
         log.info('Update MyPassword {} with {}'.format(ID, data))
-        self.put('my_passwords/{}.json'.format(ID, data))
+        self.put('my_passwords/{}.json'.format(ID), data)
 
     def delete_mypassword(self, ID):
         """Delete my password."""
@@ -502,13 +502,13 @@ class TpmApi(object):
         """Update a User."""
         # http://teampasswordmanager.com/docs/api-users/#update_user
         log.info('Update user {} with {}'.format(ID, data))
-        self.put('users/{}.json'.format(ID, data))
+        self.put('users/{}.json'.format(ID), data)
 
     def change_user_password(self, ID, data):
         """Change password of a User."""
         # http://teampasswordmanager.com/docs/api-users/#change_password
         log.info('Change user {} password'.format(ID))
-        self.put('users/{}/change_password.json'.format(ID, data))
+        self.put('users/{}/change_password.json'.format(ID), data)
 
     def activate_user(self, ID):
         """Activate a User."""
@@ -527,7 +527,7 @@ class TpmApi(object):
         # http://teampasswordmanager.com/docs/api-users/#convert_to_ldap
         data = {'login_dn': DN}
         log.info('Convert User {} to LDAP DN {}'.format(ID, DN))
-        self.put('users/{}/convert_to_ldap.json'.format(ID, data))
+        self.put('users/{}/convert_to_ldap.json'.format(ID), data)
 
     def convert_ldap_user_to_normal(self, ID):
         """Convert a LDAP user to a normal user."""
@@ -564,7 +564,7 @@ class TpmApi(object):
         """Update a Group."""
         # http://teampasswordmanager.com/docs/api-groups/#update_group
         log.info('Update group {} with {}'.format(ID, data))
-        self.put('groups/{}.json'.format(ID, data))
+        self.put('groups/{}.json'.format(ID), data)
 
     def add_user_to_group(self, GroupID, UserID):
         """Add a user to a group."""
