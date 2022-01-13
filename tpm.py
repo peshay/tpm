@@ -297,11 +297,11 @@ class TpmApi(object):
         log.info('Update project {} with {}'.format(ID, data))
         self.put('projects/{}.json'.format(ID), data)
 
-    def change_parent_of_project(self, ID, NewParrentID):
+    def change_parent_of_project(self, ID, NewParentID):
         """Change parent of project."""
         # http://teampasswordmanager.com/docs/api-projects/#change_parent
-        log.info('Change parrent for project {} to {}'.format(ID, NewParrentID))
-        data = {'parent_id': NewParrentID}
+        log.info('Change parrent for project {} to {}'.format(ID, NewParentID))
+        data = {'parent_id': NewParentID}
         self.put('projects/{}/change_parent.json'.format(ID), data)
 
     def update_security_of_project(self, ID, data):
