@@ -21,11 +21,11 @@ With the connection object you can use all TPM functions, like list all password
 All API functions from Team Password Manager are included.
 see http://teampasswordmanager.com/docs/api/
 
-:copyright: (c) 2021 by Andreas Hubert.
+:copyright: (c) 2022 by Andreas Hubert.
 :license: The MIT License (MIT), see LICENSE for more details.
 """
 
-__version__ = '4.1'
+__version__ = '4.2'
 
 import hmac
 import hashlib
