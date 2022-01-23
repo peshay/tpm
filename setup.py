@@ -2,9 +2,9 @@
 """Setup to install TeamPasswordManager API Python Module."""
 from distutils.core import setup
 setup(name='tpm',
-      version='4.1',
+      version='4.2',
       py_modules=['tpm'],
-      install_requires=['requests', 'future'],
+      install_requires=['requests', 'future', 'urllib3==1.26.4'],
       description='Provides functions to work with TeamPasswordManager API.',
       url='https://github.com/peshay/tpm',
       author='Andreas Hubert',
