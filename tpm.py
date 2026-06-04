@@ -188,21 +188,25 @@ class TpmApi(object):
                 if 'error' in result and result['error']:
                     raise TPMException(result['message'])
 
-        except requests.exceptions.RequestException as e:
-            log.critical("Connection error for " + str(e))
-            raise TPMException("Connection error for " + str(e))
-
+        # ValueError must be handled before RequestException: modern requests
+        # raises requests.exceptions.JSONDecodeError, which subclasses both
+        # ValueError and RequestException. Catching RequestException first would
+        # swallow JSON decode errors and mask the status-code handling below.
         except ValueError as e:
             if self.req.status_code == 403:
                 log.warning(url + " forbidden")
                 raise TPMException(url + " forbidden")
             elif self.req.status_code == 404:
-                log.warning(url + " forbidden")
+                log.warning(url + " not found")
                 raise TPMException(url + " not found")
             else:
                 message = ('{}: {} {}'.format(e, self.req.url, self.req.text))
                 log.debug(message)
                 raise ValueError(message)
+
+        except requests.exceptions.RequestException as e:
+            log.critical("Connection error for " + str(e))
+            raise TPMException("Connection error for " + str(e))
 
         return result
 
