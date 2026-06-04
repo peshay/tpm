@@ -79,24 +79,12 @@ tpmconn = tpm.TpmApiv5(URL, username=USER, password=PASS, verify="/path/to/ca-bu
 ## API v6
 
 Use `tpm.TpmApiv6` to talk to the v6 API. It inherits every function from the
-previous versions and adds the endpoints introduced in v6:
+previous versions and adds the endpoints introduced in v6 (see the
+[Functions explained](#functions-explained) section, marked `(since v6)`):
 
 ```python
 tpmconn = tpm.TpmApiv6(URL, username=USER, password=PASS)
 ```
-
-New v6 functions:
-
-| Function | Endpoint |
-| --- | --- |
-| `list_log()` | `GET log.json` |
-| `list_log_search(searchstring)` | `GET log/search/<search>.json` |
-| `list_user_passwords(ID)` | `GET users/<ID>/passwords.json` (Admin only) |
-| `list_user_projects(ID)` | `GET users/<ID>/projects.json` (Admin only) |
-| `list_mypasswords_archived()` | `GET my_passwords/archived.json` |
-| `list_mypasswords_favorite()` | `GET my_passwords/favorite.json` |
-| `set_favorite_mypassword(ID)` | `POST favorite_my_passwords/<ID>.json` |
-| `unset_favorite_mypassword(ID)` | `DELETE favorite_my_passwords/<ID>.json` |
 
 ### Page size
 
@@ -272,6 +260,14 @@ move_password(ID, PROJECT_ID)
 
 ### [API MyPasswords](http://teampasswordmanager.com/docs/api-my-passwords)
 
+#### (since v6) [List Archived MyPasswords](http://teampasswordmanager.com/docs/api-my-passwords/#list_passwords)
+
+list_mypasswords_archived()
+
+#### (since v6) [List Favorite MyPasswords](http://teampasswordmanager.com/docs/api-my-passwords/#list_passwords)
+
+list_mypasswords_favorite()
+
 #### [List MyPasswords](http://teampasswordmanager.com/docs/api-my-passwords/#list_passwords)
 
 list_mypasswords()
@@ -312,6 +308,14 @@ set_favorite_project(ID)
 
 unset_favorite_project(ID)
 
+#### (since v6) [Set Favorite MyPassword](http://teampasswordmanager.com/docs/api-favorites/#set_fav)
+
+set_favorite_mypassword(ID)
+
+#### (since v6) [Unset Favorite MyPassword](http://teampasswordmanager.com/docs/api-favorites/#del_fav)
+
+unset_favorite_mypassword(ID)
+
 #### [Move MyPassword to a Project](https://teampasswordmanager.com/docs/api-my-passwords/#move_password)
 
 move_mypassword(ID, PROJECT_ID)
@@ -325,6 +329,14 @@ list_users()
 #### [Show User](http://teampasswordmanager.com/docs/api-users/#show_user)
 
 show_user(ID)
+
+#### (since v6) [List Passwords a User can access](http://teampasswordmanager.com/docs/api-users/)
+
+list_user_passwords(ID)
+
+#### (since v6) [List Projects a User can access](http://teampasswordmanager.com/docs/api-users/)
+
+list_user_projects(ID)
 
 #### [Show Me/Who am I?](http://teampasswordmanager.com/docs/api-users/#show_me)
 
@@ -453,6 +465,16 @@ generate_password()
 get_version()
 get_latest_version()
 up_to_date()
+
+### (since v6) [API Log](http://teampasswordmanager.com/docs/api-log/)
+
+#### (since v6) [List Log](http://teampasswordmanager.com/docs/api-log/)
+
+list_log()
+
+#### (since v6) [Search Log](http://teampasswordmanager.com/docs/api-log/)
+
+list_log_search(searchstring)
 
 ## Support
 
