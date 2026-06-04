@@ -12,7 +12,7 @@ Scope: `peshay/tpm`
 
 ## Risks / gaps
 - ~~Packaging path is outdated for current Python tooling.~~ Resolved: migrated to `pyproject.toml`.
-- ~~CI/runtime support matrix is stale and likely misses current supported versions.~~ Resolved: matrix now targets Python 3.10-3.13.
+- ~~CI/runtime support matrix is stale and likely misses current supported versions.~~ Resolved: matrix now targets Python 3.10-3.14 (all non-EOL versions).
 - ~~TLS verification default is unsafe for production use.~~ Resolved: `verify` defaults to `True` and is configurable.
 
 ## Follow-up
