@@ -98,6 +98,16 @@ New v6 functions:
 | `set_favorite_mypassword(ID)` | `POST favorite_my_passwords/<ID>.json` |
 | `unset_favorite_mypassword(ID)` | `DELETE favorite_my_passwords/<ID>.json` |
 
+### Page size
+
+Since v6 you can set the page size for paginated requests via the `X-Page-Size`
+header. Pass `page_size` (an integer between 5 and 1000) when creating the
+client:
+
+```python
+tpmconn = tpm.TpmApiv6(URL, username=USER, password=PASS, page_size=100)
+```
+
 
 ## Development artifact guard
 

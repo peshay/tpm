@@ -187,5 +187,60 @@ class ClientMyPasswordFavoriteTestCase(unittest.TestCase):
         self.assertEqual(response, None)
 
 
+class ClientPageSizeTestCase(unittest.TestCase):
+    """Test cases for the v6 X-Page-Size header option."""
+
+    def test_page_size_header_sent(self):
+        """NEW v6: page_size sets the X-Page-Size header on requests."""
+        client = tpm.TpmApiv6('https://tpm.example.com', username='USER',
+                              password='PASS', page_size=50)
+        path_to_mock = 'log.json'
+        request_url = api_url + path_to_mock
+        data = load_fixture(path_to_mock)
+        with requests_mock.Mocker() as m:
+            # request_headers acts as a matcher: the call only matches if the
+            # X-Page-Size header is present with this value.
+            m.get(request_url, text=json.dumps(data),
+                  request_headers={'X-Page-Size': '50'})
+            response = client.list_log()
+            self.assertEqual('50', m.last_request.headers.get('X-Page-Size'))
+        self.assertEqual(data, response)
+
+    def test_no_page_size_header_by_default(self):
+        """Without page_size no X-Page-Size header is sent."""
+        client = tpm.TpmApiv6('https://tpm.example.com', username='USER', password='PASS')
+        path_to_mock = 'log.json'
+        request_url = api_url + path_to_mock
+        data = load_fixture(path_to_mock)
+        with requests_mock.Mocker() as m:
+            m.get(request_url, text=json.dumps(data))
+            client.list_log()
+            self.assertIsNone(m.last_request.headers.get('X-Page-Size'))
+
+    def test_page_size_too_small_raises(self):
+        """page_size below 5 raises ConfigError."""
+        with self.assertRaises(tpm.TpmApi.ConfigError):
+            tpm.TpmApiv6('https://tpm.example.com', username='USER',
+                         password='PASS', page_size=4)
+
+    def test_page_size_too_large_raises(self):
+        """page_size above 1000 raises ConfigError."""
+        with self.assertRaises(tpm.TpmApi.ConfigError):
+            tpm.TpmApiv6('https://tpm.example.com', username='USER',
+                         password='PASS', page_size=1001)
+
+    def test_page_size_non_integer_raises(self):
+        """A non-integer page_size raises ConfigError."""
+        with self.assertRaises(tpm.TpmApi.ConfigError):
+            tpm.TpmApiv6('https://tpm.example.com', username='USER',
+                         password='PASS', page_size='big')
+
+    def test_page_size_bool_raises(self):
+        """A boolean page_size raises ConfigError."""
+        with self.assertRaises(tpm.TpmApi.ConfigError):
+            tpm.TpmApiv6('https://tpm.example.com', username='USER',
+                         password='PASS', page_size=True)
+
+
 if __name__ == '__main__':
     unittest.main()

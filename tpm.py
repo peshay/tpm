@@ -113,6 +113,15 @@ class TpmApi:
         # TLS certificate verification. Defaults to True; pass verify=False
         # (or a CA bundle path) to override.
         self.verify = kwargs.get('verify', True)
+        # Optional page size (X-Page-Size header, API v6). Must be an integer
+        # between 5 and 1000 if set.
+        self.page_size = kwargs.get('page_size', False)
+        if self.page_size is not False:
+            if isinstance(self.page_size, bool) or \
+                    not isinstance(self.page_size, int) or \
+                    not 5 <= self.page_size <= 1000:
+                raise self.ConfigError(
+                    'page_size must be an integer between 5 and 1000')
         # Reuse a single session for connection pooling.
         self.session = requests.Session()
         if self.private_key is not False and self.public_key is not False and\
@@ -161,6 +170,10 @@ class TpmApi:
         if self.unlock_reason:
             self.headers['X-Unlock-Reason'] = self.unlock_reason
             log.info(f'Unlock Reason: {self.unlock_reason}')
+        # Set page size (API v6)
+        if self.page_size:
+            self.headers['X-Page-Size'] = str(self.page_size)
+            log.debug(f'Page size: {self.page_size}')
         url = head + path
         # Try API request and handle Exceptions
         try:
