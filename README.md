@@ -62,6 +62,20 @@ If you always want to unlock entries that are locked, you can specify an unlock 
 tpmconn = tpm.TpmApiv5(URL, username=USER, password=PASS, unlock_reason="Because I can!")
 ```
 
+### TLS certificate verification
+
+TLS certificates are verified by default (`verify=True`). To connect to a server
+with a self-signed certificate you can disable verification or point to a custom
+CA bundle:
+
+```python
+# disable verification (not recommended)
+tpmconn = tpm.TpmApiv5(URL, username=USER, password=PASS, verify=False)
+
+# or verify against a custom CA bundle
+tpmconn = tpm.TpmApiv5(URL, username=USER, password=PASS, verify="/path/to/ca-bundle.pem")
+```
+
 
 ## Development artifact guard
 

@@ -110,6 +110,9 @@ class TpmApi:
         self.username = kwargs.get('username', False)
         self.password = kwargs.get('password', False)
         self.unlock_reason = kwargs.get('unlock_reason', False)
+        # TLS certificate verification. Defaults to True; pass verify=False
+        # (or a CA bundle path) to override.
+        self.verify = kwargs.get('verify', True)
         # Reuse a single session for connection pooling.
         self.session = requests.Session()
         if self.private_key is not False and self.public_key is not False and\
@@ -163,7 +166,7 @@ class TpmApi:
         try:
             log.debug(f'{action.upper()} request {url}')
             self.req = self.session.request(action, url, headers=self.headers,
-                                            auth=auth, verify=False,
+                                            auth=auth, verify=self.verify,
                                             data=data or None)
 
             if self.req.content == b'':
