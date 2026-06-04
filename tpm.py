@@ -160,7 +160,9 @@ class TpmApi(object):
             self.headers['X-Unlock-Reason'] = self.unlock_reason
             log.info('Unlock Reason: {}'.format(self.unlock_reason))
         url = head + path
-        # Try API request and handle Exceptions
+        # Perform the HTTP request. Connection-level failures (including
+        # requests exceptions that also subclass ValueError, e.g. InvalidHeader)
+        # are raised here, before a response exists, and become TPMExceptions.
         try:
             if action == 'get':
                 log.debug('GET request {}'.format(url))
@@ -179,34 +181,34 @@ class TpmApi(object):
                 log.debug('DELETE request {}'.format(url))
                 self.req = requests.delete(url, headers=self.headers,
                                            verify=False, auth=auth)
-
-            if self.req.content == b'':
-                result = None
-                log.debug('No result returned.')
-            else:
-                result = self.req.json()
-                if 'error' in result and result['error']:
-                    raise TPMException(result['message'])
-
-        # ValueError must be handled before RequestException: modern requests
-        # raises requests.exceptions.JSONDecodeError, which subclasses both
-        # ValueError and RequestException. Catching RequestException first would
-        # swallow JSON decode errors and mask the status-code handling below.
-        except ValueError as e:
-            if self.req.status_code == 403:
-                log.warning(url + " forbidden")
-                raise TPMException(url + " forbidden")
-            elif self.req.status_code == 404:
-                log.warning(url + " not found")
-                raise TPMException(url + " not found")
-            else:
-                message = ('{}: {} {}'.format(e, self.req.url, self.req.text))
-                log.debug(message)
-                raise ValueError(message)
-
         except requests.exceptions.RequestException as e:
             log.critical("Connection error for " + str(e))
             raise TPMException("Connection error for " + str(e))
+
+        # A response was received, so self.req is set. Parse the body. json()
+        # raises a ValueError subclass when the body is not JSON (plain
+        # json.JSONDecodeError on old requests, requests.exceptions.
+        # JSONDecodeError on newer ones); map known status codes to clear errors.
+        if self.req.content == b'':
+            result = None
+            log.debug('No result returned.')
+        else:
+            try:
+                result = self.req.json()
+            except ValueError as e:
+                if self.req.status_code == 403:
+                    log.warning(url + " forbidden")
+                    raise TPMException(url + " forbidden")
+                elif self.req.status_code == 404:
+                    log.warning(url + " not found")
+                    raise TPMException(url + " not found")
+                else:
+                    message = ('{}: {} {}'.format(e, self.req.url,
+                                                  self.req.text))
+                    log.debug(message)
+                    raise ValueError(message)
+            if 'error' in result and result['error']:
+                raise TPMException(result['message'])
 
         return result
 
