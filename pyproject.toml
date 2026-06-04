@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tpm"
+description = "Provides functions to work with TeamPasswordManager API."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Andreas Hubert", email = "anhubert@gmail.com" }]
+keywords = ["TeamPasswordManager", "json", "api"]
+dynamic = ["version"]
+dependencies = [
+    "requests",
+    "urllib3",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+
+[project.urls]
+Homepage = "https://github.com/peshay/tpm"
+Repository = "https://github.com/peshay/tpm"
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "pytest-cov",
+    "requests-mock",
+]
+dev = [
+    "tpm[test]",
+    "ruff",
+    "pre-commit",
+]
+
+[tool.setuptools]
+py-modules = ["tpm"]
+
+[tool.setuptools.dynamic]
+version = { attr = "tpm.__version__" }
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
