@@ -76,6 +76,28 @@ tpmconn = tpm.TpmApiv5(URL, username=USER, password=PASS, verify=False)
 tpmconn = tpm.TpmApiv5(URL, username=USER, password=PASS, verify="/path/to/ca-bundle.pem")
 ```
 
+## API v6
+
+Use `tpm.TpmApiv6` to talk to the v6 API. It inherits every function from the
+previous versions and adds the endpoints introduced in v6:
+
+```python
+tpmconn = tpm.TpmApiv6(URL, username=USER, password=PASS)
+```
+
+New v6 functions:
+
+| Function | Endpoint |
+| --- | --- |
+| `list_log()` | `GET log.json` |
+| `list_log_search(searchstring)` | `GET log/search/<search>.json` |
+| `list_user_passwords(ID)` | `GET users/<ID>/passwords.json` (Admin only) |
+| `list_user_projects(ID)` | `GET users/<ID>/projects.json` (Admin only) |
+| `list_mypasswords_archived()` | `GET my_passwords/archived.json` |
+| `list_mypasswords_favorite()` | `GET my_passwords/favorite.json` |
+| `set_favorite_mypassword(ID)` | `POST favorite_my_passwords/<ID>.json` |
+| `unset_favorite_mypassword(ID)` | `DELETE favorite_my_passwords/<ID>.json` |
+
 
 ## Development artifact guard
 

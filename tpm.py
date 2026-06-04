@@ -772,3 +772,61 @@ class TpmApiv5(TpmApiv4):
         # http://teampasswordmanager.com/docs/api-users/#convert_to_saml
         log.info(f'Convert User {ID} to SAML')
         self.put(f'users/{ID}/convert_to_saml.json')
+
+
+class TpmApiv6(TpmApiv5):
+    """API v6 based class."""
+
+    def __init__(self, url: str, **kwargs):
+        # Deliberately skip the intermediate __init__s to register as 'v6'
+        # on TpmApi (super(TpmApiv4, self) resolves to TpmApi in the MRO).
+        super(TpmApiv4, self).__init__('v6', url, kwargs)
+    """From now on, Functions that only work with API v6."""
+
+    def list_log(self) -> list:
+        """List the log."""
+        # https://teampasswordmanager.com/docs/api-log/
+        log.debug('List log')
+        return self.collection('log.json')
+
+    def list_log_search(self, searchstring: str) -> list:
+        """Search the log."""
+        # https://teampasswordmanager.com/docs/api-log/
+        log.debug(f'Search log with: {searchstring}')
+        return self.collection(f'log/search/{quote_plus(searchstring)}.json')
+
+    def list_user_passwords(self, ID: int) -> list:
+        """List passwords a user can access (Admin only)."""
+        # http://teampasswordmanager.com/docs/api-users/
+        log.debug(f'List passwords accessible by user {ID}')
+        return self.collection(f'users/{ID}/passwords.json')
+
+    def list_user_projects(self, ID: int) -> list:
+        """List projects a user can access (Admin only)."""
+        # http://teampasswordmanager.com/docs/api-users/
+        log.debug(f'List projects accessible by user {ID}')
+        return self.collection(f'users/{ID}/projects.json')
+
+    def list_mypasswords_archived(self) -> list:
+        """List archived my passwords."""
+        # http://teampasswordmanager.com/docs/api-my-passwords/
+        log.debug('List archived MyPasswords')
+        return self.collection('my_passwords/archived.json')
+
+    def list_mypasswords_favorite(self) -> list:
+        """List favorite my passwords."""
+        # http://teampasswordmanager.com/docs/api-my-passwords/
+        log.debug('List favorite MyPasswords')
+        return self.collection('my_passwords/favorite.json')
+
+    def set_favorite_mypassword(self, ID: int) -> None:
+        """Set a my password as favorite."""
+        # http://teampasswordmanager.com/docs/api-favorites/#set_fav
+        log.info(f'Set my_password {ID} as favorite')
+        self.post(f'favorite_my_passwords/{ID}.json')
+
+    def unset_favorite_mypassword(self, ID: int) -> None:
+        """Unset a my password as favorite."""
+        # http://teampasswordmanager.com/docs/api-favorites/#del_fav
+        log.info(f'Unset my_password {ID} as favorite')
+        self.delete(f'favorite_my_passwords/{ID}.json')
