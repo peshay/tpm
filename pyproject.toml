@@ -14,7 +14,7 @@ keywords = ["TeamPasswordManager", "json", "api"]
 dynamic = ["version"]
 dependencies = [
     "requests>=2.33.0",
-    "urllib3>=2.2.2",
+    "urllib3>=2.6.0",
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
