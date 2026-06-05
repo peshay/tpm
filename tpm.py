@@ -34,8 +34,9 @@ import json
 import logging
 import re
 import time
+from collections.abc import Iterator
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any
 from urllib.parse import quote_plus
 
 import requests
@@ -196,19 +197,18 @@ class TpmApi:
         except ValueError as e:
             if self.req.status_code == 403:
                 log.warning(f'{url} forbidden')
-                raise TPMException(f'{url} forbidden')
+                raise TPMException(f'{url} forbidden') from e
             elif self.req.status_code == 404:
                 log.warning(f'{url} not found')
-                raise TPMException(f'{url} not found')
+                raise TPMException(f'{url} not found') from e
             else:
                 message = f'{e}: {self.req.url} {self.req.text}'
                 log.debug(message)
-                raise ValueError(message)
-
+                raise ValueError(message) from e
 
         except requests.exceptions.RequestException as e:
             log.critical(f'Connection error for {e}')
-            raise TPMException(f'Connection error for {e}')
+            raise TPMException(f'Connection error for {e}') from e
 
         return result
 
@@ -613,10 +613,9 @@ class TpmApi:
             log.info('TeamPasswordManager is up-to-date!')
             log.debug(f'Current Version: {LatestVersion} Latest Version: {LatestVersion}')
             return True
-        else:
-            log.warning('TeamPasswordManager is not up-to-date!')
-            log.debug(f'Current Version: {LatestVersion} Latest Version: {LatestVersion}')
-            return False
+        log.warning('TeamPasswordManager is not up-to-date!')
+        log.debug(f'Current Version: {LatestVersion} Latest Version: {LatestVersion}')
+        return False
 
 
 class TpmApiv3(TpmApi):
@@ -662,7 +661,7 @@ class TpmApiv5(TpmApiv4):
         """Base64-encode a local file and upload it to the given API path."""
         path = Path(file)
         if not path.is_file():
-            raise Exception(f'File not found: {file}')
+            raise FileNotFoundError(f'File not found: {file}')
         encoded = base64.b64encode(path.read_bytes())
         data = {
             "file_data_base64": encoded.decode('ascii'),
