@@ -308,6 +308,8 @@ set_favorite_project(ID)
 
 unset_favorite_project(ID)
 
+> Note: `TpmApiv6` overrides these two to use the v6 endpoint `favorite_projects/{ID}.json` (plural); earlier versions use `favorite_project/{ID}.json`.
+
 #### (since v6) [Set Favorite MyPassword](http://teampasswordmanager.com/docs/api-favorites/#set_fav)
 
 set_favorite_mypassword(ID)

@@ -843,3 +843,15 @@ class TpmApiv6(TpmApiv5):
         # http://teampasswordmanager.com/docs/api-favorites/#del_fav
         log.info(f'Unset my_password {ID} as favorite')
         self.delete(f'favorite_my_passwords/{ID}.json')
+
+    def set_favorite_project(self, ID: int) -> None:
+        """Set a project as favorite (v6 uses the plural endpoint)."""
+        # http://teampasswordmanager.com/docs/api-favorites/#set_fav
+        log.info(f'Set project {ID} as favorite')
+        self.post(f'favorite_projects/{ID}.json')
+
+    def unset_favorite_project(self, ID: int) -> None:
+        """Unset a project as favorite (v6 uses the plural endpoint)."""
+        # http://teampasswordmanager.com/docs/api-favorites/#del_fav
+        log.info(f'Unset project {ID} as favorite')
+        self.delete(f'favorite_projects/{ID}.json')

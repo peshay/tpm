@@ -187,6 +187,35 @@ class ClientMyPasswordFavoriteTestCase(unittest.TestCase):
         self.assertEqual(response, None)
 
 
+class ClientProjectFavoriteTestCase(unittest.TestCase):
+    """Test cases for the v6 project favorite override (plural endpoint)."""
+
+    def setUp(self):
+        self.client = tpm.TpmApiv6('https://tpm.example.com', username='USER', password='PASS')
+
+    def test_function_set_favorite_project(self):
+        """NEW v6: set_favorite_project uses the plural favorite_projects endpoint."""
+        path_to_mock = 'favorite_projects/4.json'
+        request_url = api_url + path_to_mock
+        with requests_mock.Mocker() as m:
+            m.post(request_url, status_code=204)
+            response = self.client.set_favorite_project('4')
+            self.assertEqual('POST', m.last_request.method)
+            self.assertTrue(m.last_request.url.endswith('/favorite_projects/4.json'))
+        self.assertEqual(response, None)
+
+    def test_function_unset_favorite_project(self):
+        """NEW v6: unset_favorite_project uses the plural favorite_projects endpoint."""
+        path_to_mock = 'favorite_projects/4.json'
+        request_url = api_url + path_to_mock
+        with requests_mock.Mocker() as m:
+            m.delete(request_url, status_code=204)
+            response = self.client.unset_favorite_project('4')
+            self.assertEqual('DELETE', m.last_request.method)
+            self.assertTrue(m.last_request.url.endswith('/favorite_projects/4.json'))
+        self.assertEqual(response, None)
+
+
 class ClientPageSizeTestCase(unittest.TestCase):
     """Test cases for the v6 X-Page-Size header option."""
 
