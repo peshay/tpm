@@ -3,7 +3,11 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'
+      # Match both the bare-number convention (5.0, 5.0.0) and a v-prefix.
+      - '[0-9]*'
+      - 'v[0-9]*'
+  # Allow manual runs (e.g. to (re)publish the current version on master).
+  workflow_dispatch:
 
 permissions:
   contents: read
