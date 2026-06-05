@@ -198,12 +198,13 @@ class TpmApi:
                 log.warning(f'{url} forbidden')
                 raise TPMException(f'{url} forbidden')
             elif self.req.status_code == 404:
-                log.warning(f'{url} forbidden')
+                log.warning(f'{url} not found')
                 raise TPMException(f'{url} not found')
             else:
                 message = f'{e}: {self.req.url} {self.req.text}'
                 log.debug(message)
                 raise ValueError(message)
+
 
         except requests.exceptions.RequestException as e:
             log.critical(f'Connection error for {e}')
