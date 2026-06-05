@@ -13,7 +13,7 @@ authors = [{ name = "Andreas Hubert", email = "anhubert@gmail.com" }]
 keywords = ["TeamPasswordManager", "json", "api"]
 dynamic = ["version"]
 dependencies = [
-    "requests>=2.32.4",
+    "requests>=2.33.0",
     "urllib3",
 ]
 classifiers = [
