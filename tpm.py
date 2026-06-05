@@ -658,22 +658,25 @@ class TpmApiv5(TpmApiv4):
         """List files of a project."""
         return self.collection(f'projects/{ID}/files.json')
 
+    def _upload_file(self, upload_path: str, file: str, **kwargs) -> Any:
+        """Base64-encode a local file and upload it to the given API path."""
+        path = Path(file)
+        if not path.is_file():
+            raise Exception(f'File not found: {file}')
+        encoded = base64.b64encode(path.read_bytes())
+        data = {
+            "file_data_base64": encoded.decode('ascii'),
+            "file_name": path.name,
+        }
+        if 'notes' in kwargs:
+            data['notes'] = kwargs['notes']
+        NewID = self.post(upload_path, data).get('id')
+        log.info(f'File has been uploaded with ID {NewID}')
+        return NewID
+
     def upload_project_file(self, ID: int, file: str, **kwargs) -> Any:
         """Upload a file to a project."""
-        path = Path(file)
-        if path.is_file():
-            encoded = base64.b64encode(path.read_bytes())
-            data = {
-                "file_data_base64": encoded.decode('ascii'),
-                "file_name": path.name,
-            }
-            if 'notes' in kwargs:
-                data['notes'] = kwargs['notes']
-            NewID = self.post(f'projects/{ID}/upload.json', data).get('id')
-            log.info(f'File has been uploaded with ID {NewID}')
-            return NewID
-        else:
-            raise Exception(f'File not found: {file}')
+        return self._upload_file(f'projects/{ID}/upload.json', file, **kwargs)
 
     def archive_password(self, ID: int) -> None:
         """Archive a password."""
@@ -701,20 +704,7 @@ class TpmApiv5(TpmApiv4):
 
     def upload_password_file(self, ID: int, file: str, **kwargs) -> Any:
         """Upload a file to a password."""
-        path = Path(file)
-        if path.is_file():
-            encoded = base64.b64encode(path.read_bytes())
-            data = {
-                "file_data_base64": encoded.decode('ascii'),
-                "file_name": path.name,
-            }
-            if 'notes' in kwargs:
-                data['notes'] = kwargs['notes']
-            NewID = self.post(f'passwords/{ID}/upload.json', data).get('id')
-            log.info(f'File has been uploaded with ID {NewID}')
-            return NewID
-        else:
-            raise Exception(f'File not found: {file}')
+        return self._upload_file(f'passwords/{ID}/upload.json', file, **kwargs)
 
     def move_mypassword(self, ID: int, PROJECT_ID: int) -> Any:
         """Move a mypassword to another project."""
