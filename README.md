@@ -3,6 +3,7 @@
 > Modern Python SDK groundwork for TeamPasswordManager with safer API boundaries and maintainable packaging.
 
 [![CI](https://github.com/peshay/tpm/actions/workflows/ci.yml/badge.svg)](https://github.com/peshay/tpm/actions/workflows/ci.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=peshay_tpm&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=peshay_tpm)
 [![PyPI version](https://img.shields.io/pypi/v/tpm)](https://pypi.org/project/tpm/)
 [![Python version](https://img.shields.io/pypi/pyversions/tpm)](https://pypi.org/project/tpm/)
 [![License](https://img.shields.io/github/license/peshay/tpm)](LICENSE)
