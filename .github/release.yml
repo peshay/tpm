@@ -1,0 +1,30 @@
+# Configuration for GitHub's automatically generated release notes.
+# Applied when using "Generate release notes" while drafting a release,
+# so future releases get a clean, categorised changelog from PR titles.
+# See: https://docs.github.com/en/repositories/releasing-projects-on-github/automatically-generated-release-notes
+changelog:
+  exclude:
+    labels:
+      - ignore-for-release
+  categories:
+    - title: 🚨 Breaking Changes
+      labels:
+        - breaking
+        - breaking-change
+    - title: ✨ Features & Enhancements
+      labels:
+        - enhancement
+        - feature
+    - title: 🐛 Bug Fixes
+      labels:
+        - bug
+        - fix
+    - title: 🏗️ Tooling, CI & Dependencies
+      labels:
+        - ci
+        - build
+        - dependencies
+        - testing
+    - title: 📝 Other Changes
+      labels:
+        - "*"
