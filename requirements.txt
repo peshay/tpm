@@ -1,2 +1,2 @@
 requests>=2.33.0
-urllib3
+urllib3>=2.2.2
