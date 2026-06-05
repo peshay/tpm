@@ -48,6 +48,13 @@ log = logging.getLogger(__name__)
 # disable unsecure SSL warning
 requests.packages.urllib3.disable_warnings()
 
+# HTTP status codes handled explicitly in error handling.
+HTTP_FORBIDDEN = 403
+HTTP_NOT_FOUND = 404
+# Allowed range for the X-Page-Size header (API v6).
+MIN_PAGE_SIZE = 5
+MAX_PAGE_SIZE = 1000
+
 # Validate the base URL passed to the API client.
 REGEX_URL = re.compile(
     "^"
@@ -117,12 +124,12 @@ class TpmApi:
         # Optional page size (X-Page-Size header, API v6). Must be an integer
         # between 5 and 1000 if set.
         self.page_size = kwargs.get('page_size', False)
-        if self.page_size is not False:
-            if isinstance(self.page_size, bool) or \
-                    not isinstance(self.page_size, int) or \
-                    not 5 <= self.page_size <= 1000:
-                raise self.ConfigError(
-                    'page_size must be an integer between 5 and 1000')
+        if self.page_size is not False and (
+                isinstance(self.page_size, bool)
+                or not isinstance(self.page_size, int)
+                or not MIN_PAGE_SIZE <= self.page_size <= MAX_PAGE_SIZE):
+            raise self.ConfigError(
+                'page_size must be an integer between 5 and 1000')
         # Reuse a single session for connection pooling.
         self.session = requests.Session()
         if self.private_key is not False and self.public_key is not False and\
@@ -135,21 +142,8 @@ class TpmApi:
             raise self.ConfigError('No authentication specified'
                                    ' (user/password or private/public key)')
 
-    def request(self, path: str, action: str, data: Any = '') -> Any:
-        """To make a request to the API."""
-        # Check if the path includes URL or not.
-        head = self.base_url
-        if path.startswith(head):
-            path = path[len(head):]
-            path = quote_plus(path, safe='/')
-        if not path.startswith(self.api):
-            path = self.api + path
-        log.debug(f'Using path {path}')
-
-        # If we have data, convert to JSON
-        if data:
-            data = json.dumps(data)
-            log.debug(f'Data to sent: {data}')
+    def _build_auth(self, path: str, data: Any) -> Any:
+        """Set auth/unlock/page-size headers and return the request auth."""
         auth = None
         # In case of key authentication
         if self.private_key and self.public_key:
@@ -175,6 +169,24 @@ class TpmApi:
         if self.page_size:
             self.headers['X-Page-Size'] = str(self.page_size)
             log.debug(f'Page size: {self.page_size}')
+        return auth
+
+    def request(self, path: str, action: str, data: Any = '') -> Any:
+        """To make a request to the API."""
+        # Check if the path includes URL or not.
+        head = self.base_url
+        if path.startswith(head):
+            path = path[len(head):]
+            path = quote_plus(path, safe='/')
+        if not path.startswith(self.api):
+            path = self.api + path
+        log.debug(f'Using path {path}')
+
+        # If we have data, convert to JSON
+        if data:
+            data = json.dumps(data)
+            log.debug(f'Data to sent: {data}')
+        auth = self._build_auth(path, data)
         url = head + path
         # Try API request and handle Exceptions
         try:
@@ -195,16 +207,15 @@ class TpmApi:
         # requests, response.json() raises requests.exceptions.JSONDecodeError,
         # which subclasses both ValueError and RequestException.
         except ValueError as e:
-            if self.req.status_code == 403:
+            if self.req.status_code == HTTP_FORBIDDEN:
                 log.warning(f'{url} forbidden')
                 raise TPMException(f'{url} forbidden') from e
-            elif self.req.status_code == 404:
+            if self.req.status_code == HTTP_NOT_FOUND:
                 log.warning(f'{url} not found')
                 raise TPMException(f'{url} not found') from e
-            else:
-                message = f'{e}: {self.req.url} {self.req.text}'
-                log.debug(message)
-                raise ValueError(message) from e
+            message = f'{e}: {self.req.url} {self.req.text}'
+            log.debug(message)
+            raise ValueError(message) from e
 
         except requests.exceptions.RequestException as e:
             log.critical(f'Connection error for {e}')
@@ -289,9 +300,9 @@ class TpmApi:
         """Create a project."""
         # http://teampasswordmanager.com/docs/api-projects/#create_project
         log.info(f'Create project: {data}')
-        NewID = self.post('projects.json', data).get('id')
-        log.info(f'Project has been created with ID {NewID}')
-        return NewID
+        new_id = self.post('projects.json', data).get('id')
+        log.info(f'Project has been created with ID {new_id}')
+        return new_id
 
     def update_project(self, ID: int, data: dict) -> None:
         """Update a project."""
@@ -367,9 +378,9 @@ class TpmApi:
         """Create a password."""
         # http://teampasswordmanager.com/docs/api-passwords/#create_password
         log.info(f'Create new password {data}')
-        NewID = self.post('passwords.json', data).get('id')
-        log.info(f'Password has been created with ID {NewID}')
-        return NewID
+        new_id = self.post('passwords.json', data).get('id')
+        log.info(f'Password has been created with ID {new_id}')
+        return new_id
 
     def update_password(self, ID: int, data: dict) -> None:
         """Update a password."""
@@ -430,9 +441,9 @@ class TpmApi:
         """Create my password."""
         # http://teampasswordmanager.com/docs/api-my-passwords/#create_password
         log.info(f'Create MyPassword with {data}')
-        NewID = self.post('my_passwords.json', data).get('id')
-        log.info(f'MyPassword has been created with {NewID}')
-        return NewID
+        new_id = self.post('my_passwords.json', data).get('id')
+        log.info(f'MyPassword has been created with {new_id}')
+        return new_id
 
     def update_mypassword(self, ID: int, data: dict) -> None:
         """Update my password."""
@@ -496,9 +507,9 @@ class TpmApi:
         """Create a User."""
         # http://teampasswordmanager.com/docs/api-users/#create_user
         log.info(f'Create user with {data}')
-        NewID = self.post('users.json', data).get('id')
-        log.info(f'User has been created with ID {NewID}')
-        return NewID
+        new_id = self.post('users.json', data).get('id')
+        log.info(f'User has been created with ID {new_id}')
+        return new_id
 
     def update_user(self, ID: int, data: dict) -> None:
         """Update a User."""
@@ -558,9 +569,9 @@ class TpmApi:
         """Create a Group."""
         # http://teampasswordmanager.com/docs/api-groups/#create_group
         log.info(f'Create group with {data}')
-        NewID = self.post('groups.json', data).get('id')
-        log.info(f'Group has been created with ID {NewID}')
-        return NewID
+        new_id = self.post('groups.json', data).get('id')
+        log.info(f'Group has been created with ID {new_id}')
+        return new_id
 
     def update_group(self, ID: int, data: dict) -> None:
         """Update a Group."""
@@ -606,15 +617,15 @@ class TpmApi:
 
     def up_to_date(self) -> bool:
         """Check if Team Password Manager is up to date."""
-        VersionInfo = self.get_latest_version()
-        CurrentVersion = VersionInfo.get('version')
-        LatestVersion = VersionInfo.get('latest_version')
-        if CurrentVersion == LatestVersion:
+        version_info = self.get_latest_version()
+        current_version = version_info.get('version')
+        latest_version = version_info.get('latest_version')
+        if current_version == latest_version:
             log.info('TeamPasswordManager is up-to-date!')
-            log.debug(f'Current Version: {LatestVersion} Latest Version: {LatestVersion}')
+            log.debug(f'Current Version: {latest_version} Latest Version: {latest_version}')
             return True
         log.warning('TeamPasswordManager is not up-to-date!')
-        log.debug(f'Current Version: {LatestVersion} Latest Version: {LatestVersion}')
+        log.debug(f'Current Version: {latest_version} Latest Version: {latest_version}')
         return False
 
 
@@ -669,9 +680,9 @@ class TpmApiv5(TpmApiv4):
         }
         if 'notes' in kwargs:
             data['notes'] = kwargs['notes']
-        NewID = self.post(upload_path, data).get('id')
-        log.info(f'File has been uploaded with ID {NewID}')
-        return NewID
+        new_id = self.post(upload_path, data).get('id')
+        log.info(f'File has been uploaded with ID {new_id}')
+        return new_id
 
     def upload_project_file(self, ID: int, file: str, **kwargs) -> Any:
         """Upload a file to a project."""
@@ -751,17 +762,17 @@ class TpmApiv5(TpmApiv4):
         """Create a LDAP User."""
         # http://teampasswordmanager.com/docs/api-users/#create_user_ldap
         log.info(f'Create LDAP user with {data}')
-        NewID = self.post('users_ldap.json', data).get('id')
-        log.info(f'LDAP User has been created with ID {NewID}')
-        return NewID
+        new_id = self.post('users_ldap.json', data).get('id')
+        log.info(f'LDAP User has been created with ID {new_id}')
+        return new_id
 
     def create_user_saml(self, data: dict) -> Any:
         """Create a SAML User."""
         # http://teampasswordmanager.com/docs/api-users/#create_user_saml
         log.info(f'Create SAML user with {data}')
-        NewID = self.post('users_saml.json', data).get('id')
-        log.info(f'SAML User has been created with ID {NewID}')
-        return NewID
+        new_id = self.post('users_saml.json', data).get('id')
+        log.info(f'SAML User has been created with ID {new_id}')
+        return new_id
 
     def convert_user_to_ldap(self, ID: int, DN: str, SERVER_ID: int) -> None:
         """Convert a normal user to a LDAP user."""
