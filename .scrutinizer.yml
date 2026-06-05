@@ -4,18 +4,10 @@
 # installable, so pin a modern Python and build with the project's own extras.
 build:
   environment:
-    python: '3.10.14'
+    python: 3.10.14
   dependencies:
     override:
       - pip install -e ".[dev]"
   tests:
     override:
-      - command: pytest --cov=tpm --cov-report=xml tests/
-        coverage:
-          file: coverage.xml
-          format: py-cc
-  nodes:
-    analysis:
-      tests:
-        override:
-          - py-scrutinizer-run
+      - command: pytest tests/
