@@ -28,7 +28,17 @@ def fake_data(url, m, altpath=False):
     with open(resource_file, 'r') as data_file:
         data_txt = data_file.read()
 
-    data = json.loads(data_txt)
+    try:
+        data = json.loads(data_txt)
+    except ValueError:
+        # Issue #14: serve non-JSON content as-is so tpm raises the error
+        # through its own request handling, instead of the test helper
+        # choking on json.loads.
+        clean_url = url.replace(" ", "+")
+        m.get(clean_url, text=data_txt)
+        m.post(clean_url, text=data_txt)
+        m.put(clean_url, text=data_txt)
+        return
     data_len = len(data)
     log.debug('Data length: {}'.format(data_len))
 
@@ -85,6 +95,26 @@ class ClientInitTestCase(unittest.TestCase):
             fake_data(request_url, m)
             response = sorted(client.list_passwords(), key=lambda k: k['id'])
         self.assertEqual(data, response)
+
+
+class MockHelperTestCase(unittest.TestCase):
+    """Issue #14: fake_data serves non-JSON content as-is and lets tpm raise
+    the error through its own request handling, instead of the helper choking
+    on json.loads."""
+
+    def setUp(self):
+        self.client = tpm.TpmApiv6('https://tpm.example.com', username='USER', password='PASS')
+
+    def test_fake_data_non_json_response(self):
+        """fake_data registers a non-JSON fixture without raising itself."""
+        path_to_mock = 'plain.txt'
+        request_url = api_url + path_to_mock
+        with requests_mock.Mocker() as m:
+            # Must not raise here (previously json.loads blew up in the helper).
+            fake_data(request_url, m)
+            # tpm is what surfaces the invalid-JSON response as a ValueError.
+            with self.assertRaises(ValueError):
+                self.client.get(path_to_mock)
 
 
 class ClientLogTestCase(unittest.TestCase):
