@@ -3,6 +3,7 @@
 > Modern Python SDK groundwork for TeamPasswordManager with safer API boundaries and maintainable packaging.
 
 [![CI](https://github.com/peshay/tpm/actions/workflows/ci.yml/badge.svg)](https://github.com/peshay/tpm/actions/workflows/ci.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=peshay_tpm&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=peshay_tpm)
 [![PyPI version](https://img.shields.io/pypi/v/tpm)](https://pypi.org/project/tpm/)
 [![Python version](https://img.shields.io/pypi/pyversions/tpm)](https://pypi.org/project/tpm/)
 [![License](https://img.shields.io/github/license/peshay/tpm)](LICENSE)
@@ -61,6 +62,40 @@ If you always want to unlock entries that are locked, you can specify an unlock 
 
 ```python
 tpmconn = tpm.TpmApiv5(URL, username=USER, password=PASS, unlock_reason="Because I can!")
+```
+
+### TLS certificate verification
+
+TLS certificates are verified by default (`verify=True`). To connect to a server
+with a self-signed certificate you can disable verification or point to a custom
+CA bundle:
+
+```python
+# disable verification (not recommended)
+tpmconn = tpm.TpmApiv5(URL, username=USER, password=PASS, verify=False)
+
+# or verify against a custom CA bundle
+tpmconn = tpm.TpmApiv5(URL, username=USER, password=PASS, verify="/path/to/ca-bundle.pem")
+```
+
+## API v6
+
+Use `tpm.TpmApiv6` to talk to the v6 API. It inherits every function from the
+previous versions and adds the endpoints introduced in v6 (see the
+[Functions explained](#functions-explained) section, marked `(since v6)`):
+
+```python
+tpmconn = tpm.TpmApiv6(URL, username=USER, password=PASS)
+```
+
+### Page size
+
+Since v6 you can set the page size for paginated requests via the `X-Page-Size`
+header. Pass `page_size` (an integer between 5 and 1000) when creating the
+client:
+
+```python
+tpmconn = tpm.TpmApiv6(URL, username=USER, password=PASS, page_size=100)
 ```
 
 
@@ -227,6 +262,14 @@ move_password(ID, PROJECT_ID)
 
 ### [API MyPasswords](http://teampasswordmanager.com/docs/api-my-passwords)
 
+#### (since v6) [List Archived MyPasswords](http://teampasswordmanager.com/docs/api-my-passwords/#list_passwords)
+
+list_mypasswords_archived()
+
+#### (since v6) [List Favorite MyPasswords](http://teampasswordmanager.com/docs/api-my-passwords/#list_passwords)
+
+list_mypasswords_favorite()
+
 #### [List MyPasswords](http://teampasswordmanager.com/docs/api-my-passwords/#list_passwords)
 
 list_mypasswords()
@@ -267,6 +310,16 @@ set_favorite_project(ID)
 
 unset_favorite_project(ID)
 
+> Note: `TpmApiv6` overrides these two to use the v6 endpoint `favorite_projects/{ID}.json` (plural); earlier versions use `favorite_project/{ID}.json`.
+
+#### (since v6) [Set Favorite MyPassword](http://teampasswordmanager.com/docs/api-favorites/#set_fav)
+
+set_favorite_mypassword(ID)
+
+#### (since v6) [Unset Favorite MyPassword](http://teampasswordmanager.com/docs/api-favorites/#del_fav)
+
+unset_favorite_mypassword(ID)
+
 #### [Move MyPassword to a Project](https://teampasswordmanager.com/docs/api-my-passwords/#move_password)
 
 move_mypassword(ID, PROJECT_ID)
@@ -280,6 +333,14 @@ list_users()
 #### [Show User](http://teampasswordmanager.com/docs/api-users/#show_user)
 
 show_user(ID)
+
+#### (since v6) [List Passwords a User can access](http://teampasswordmanager.com/docs/api-users/)
+
+list_user_passwords(ID)
+
+#### (since v6) [List Projects a User can access](http://teampasswordmanager.com/docs/api-users/)
+
+list_user_projects(ID)
 
 #### [Show Me/Who am I?](http://teampasswordmanager.com/docs/api-users/#show_me)
 
@@ -408,6 +469,16 @@ generate_password()
 get_version()
 get_latest_version()
 up_to_date()
+
+### (since v6) [API Log](http://teampasswordmanager.com/docs/api-log/)
+
+#### (since v6) [List Log](http://teampasswordmanager.com/docs/api-log/)
+
+list_log()
+
+#### (since v6) [Search Log](http://teampasswordmanager.com/docs/api-log/)
+
+list_log_search(searchstring)
 
 ## Governance
 

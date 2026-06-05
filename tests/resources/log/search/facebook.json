@@ -1,0 +1,1 @@
+[{"id": 3, "action": "password.show", "object_type": "password", "object_id": 4, "object_name": "facebook", "origin": "api", "ip_address": "10.0.0.5", "created_on": "2024-01-03 10:15:22", "user": {"id": 1, "name": "John Boss", "username": "john"}}]
