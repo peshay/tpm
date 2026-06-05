@@ -30,7 +30,17 @@ def fake_data(url, m, altpath=False):
     with open(resource_file, 'r') as data_file:
         data_txt = data_file.read()
 
-    data = json.loads(data_txt)
+    try:
+        data = json.loads(data_txt)
+    except ValueError:
+        # Issue #14: serve non-JSON content as-is so tpm raises the error
+        # through its own request handling, instead of the test helper
+        # choking on json.loads.
+        clean_url = url.replace(" ", "+")
+        m.get(clean_url, text=data_txt)
+        m.post(clean_url, text=data_txt)
+        m.put(clean_url, text=data_txt)
+        return
     data_len = len(data)
     log.debug('Data length: {}'.format(data_len))
 
