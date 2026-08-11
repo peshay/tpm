@@ -41,7 +41,7 @@ from urllib.parse import quote_plus
 
 import requests
 
-__version__ = '5.0.0'
+__version__ = '5.0'
 
 # set logger
 log = logging.getLogger(__name__)
