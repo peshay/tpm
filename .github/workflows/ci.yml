@@ -38,7 +38,7 @@ jobs:
         run: ruff check tpm.py tests tools
 
       - name: Tests with coverage
-        run: pytest --cov=tpm --cov-report=xml tests/
+        run: pytest --cov=tpm --cov=tools --cov-report=xml tests/
 
       - name: Upload coverage
         if: github.event_name == 'push'
@@ -67,7 +67,7 @@ jobs:
           pip install -e ".[dev]"
 
       - name: Tests with coverage
-        run: pytest --cov=tpm --cov-report=xml tests/
+        run: pytest --cov=tpm --cov=tools --cov-report=xml tests/
 
       - name: SonarQube Cloud scan
         uses: SonarSource/sonarqube-scan-action@v6
