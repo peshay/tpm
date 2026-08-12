@@ -1,9 +1,11 @@
-import requests_mock
-import unittest
-import os.path
-import tpm
 import json
 import logging
+import os.path
+import unittest
+
+import requests_mock
+
+import tpm
 
 log = logging.getLogger(__name__)
 
@@ -24,7 +26,7 @@ def fake_data(url, m, altpath=False):
         path = '/'.join(path_parts)
     else:
         path = altpath
-    resource_file = os.path.normpath('tests/resources/{}'.format(path))
+    resource_file = os.path.normpath(f'tests/resources/{path}')
     with open(resource_file, 'r') as data_file:
         data_txt = data_file.read()
 
@@ -40,7 +42,7 @@ def fake_data(url, m, altpath=False):
         m.put(clean_url, text=data_txt)
         return
     data_len = len(data)
-    log.debug('Data length: {}'.format(data_len))
+    log.debug(f'Data length: {data_len}')
 
     # Must return a json-like object
     header = {}
@@ -52,11 +54,11 @@ def fake_data(url, m, altpath=False):
             returndata_txt = json.dumps(returndata)
             data = data[item_limit:]
             data_txt = json.dumps(data)
-            pageingurl = url.replace('.json', '/page/{}.json'.format(count))
+            pageingurl = url.replace('.json', f'/page/{count}.json')
             m.get(pageingurl.replace(" ", "+"), text=returndata_txt, headers=header.copy())
             m.post(pageingurl.replace(" ", "+"), text=returndata_txt, headers=header.copy())
             m.put(pageingurl.replace(" ", "+"), text=returndata_txt, headers=header.copy())
-            header = {'link': '{}; rel="next"'.format(pageingurl)}
+            header = {'link': f'{pageingurl}; rel="next"'}
             data_len = len(data)
         else:
             m.get(url.replace(" ", "+"), text=data_txt, headers=header.copy())
@@ -136,7 +138,7 @@ class ClientLogTestCase(unittest.TestCase):
     def test_function_list_log_search(self):
         """NEW v6: Test function list_log_search."""
         search = 'facebook'
-        path_to_mock = 'log/search/{}.json'.format(search)
+        path_to_mock = f'log/search/{search}.json'
         request_url = api_url + path_to_mock
         data = load_fixture(path_to_mock)
         with requests_mock.Mocker() as m:

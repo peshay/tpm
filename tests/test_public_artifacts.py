@@ -1,11 +1,12 @@
 """Tests for the public artifact hygiene guard."""
 
+import subprocess
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from tools.check_public_artifacts import check_text
+from tools.check_public_artifacts import check_text, git_files
 
 
 def assert_clean(text):
@@ -41,3 +42,30 @@ def test_secret_assignment_is_blocked():
 
 def test_placeholder_secret_assignment_passes():
     assert_clean("private_key = 'EXAMPLE_PRIVATE_KEY'\n")
+
+
+def test_git_files_lists_tracked_files_and_drops_blank_lines(monkeypatch):
+    def fake_run(cmd, **kwargs):
+        assert cmd == ["git", "ls-files"]
+        assert kwargs["capture_output"] is True
+        assert kwargs["text"] is True
+        return subprocess.CompletedProcess(cmd, 0, stdout="tpm.py\n\nREADME.md\n", stderr="")
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+    assert git_files() == ["tpm.py", "README.md"]
+
+
+def test_git_files_is_empty_when_git_exits_nonzero(monkeypatch):
+    def fake_run(cmd, **kwargs):
+        raise subprocess.CalledProcessError(128, cmd)
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+    assert git_files() == []
+
+
+def test_git_files_is_empty_when_git_is_unavailable(monkeypatch):
+    def fake_run(cmd, **kwargs):
+        raise OSError("git not found")
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+    assert git_files() == []
