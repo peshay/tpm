@@ -1,12 +1,14 @@
-import requests_mock
-import unittest
-import os.path
-import tpm
+import hashlib
+import hmac
 import json
 import logging
-import hmac
-import hashlib
+import os.path
 import time
+import unittest
+
+import requests_mock
+
+import tpm
 
 log = logging.getLogger(__name__)
 
@@ -26,7 +28,7 @@ def fake_data(url, m, altpath=False):
         path = '/'.join(path_parts)
     else:
         path = altpath
-    resource_file = os.path.normpath('tests/resources/{}'.format(path))
+    resource_file = os.path.normpath(f'tests/resources/{path}')
     with open(resource_file, 'r') as data_file:
         data_txt = data_file.read()
 
@@ -42,7 +44,7 @@ def fake_data(url, m, altpath=False):
         m.put(clean_url, text=data_txt)
         return
     data_len = len(data)
-    log.debug('Data length: {}'.format(data_len))
+    log.debug(f'Data length: {data_len}')
 
     # Must return a json-like object
     header = {}
@@ -54,20 +56,20 @@ def fake_data(url, m, altpath=False):
             returndata_txt = json.dumps(returndata)
             data = data[item_limit:]
             data_txt = json.dumps(data)
-            pageingurl = url.replace('.json', '/page/{}.json'.format(count))
-            log.debug("Registering URL: {}".format(pageingurl))
-            log.debug("Registering data: {}".format(returndata_txt))
-            log.debug("Data length: {}".format(len(returndata)))
-            log.debug("Registering header: {}".format(header))
+            pageingurl = url.replace('.json', f'/page/{count}.json')
+            log.debug(f"Registering URL: {pageingurl}")
+            log.debug(f"Registering data: {returndata_txt}")
+            log.debug(f"Data length: {len(returndata)}")
+            log.debug(f"Registering header: {header}")
             m.get(pageingurl.replace(" ", "+"), text=returndata_txt, headers=header.copy())
             m.post(pageingurl.replace(" ", "+"), text=returndata_txt, headers=header.copy())
             m.put(pageingurl.replace(" ", "+"), text=returndata_txt, headers=header.copy())
-            header = { 'link': '{}; rel="next"'.format(pageingurl)}
+            header = { 'link': f'{pageingurl}; rel="next"'}
             data_len = len(data)
         else:
-            log.debug("Registering URL: {}".format(url))
-            log.debug("Registering data: {}".format(data_txt))
-            log.debug("Registering header: {}".format(header))
+            log.debug(f"Registering URL: {url}")
+            log.debug(f"Registering data: {data_txt}")
+            log.debug(f"Registering header: {header}")
             m.get(url.replace(" ", "+"), text=data_txt, headers=header.copy())
             m.post(url.replace(" ", "+"), text=data_txt, headers=header.copy())
             m.put(url.replace(" ", "+"), text=data_txt, headers=header.copy())
@@ -94,8 +96,8 @@ class ClientProjectTestCase(unittest.TestCase):
         request_url = api_url + path_to_mock
         request_path = local_path + path_to_mock
         resource_file = os.path.normpath(request_path)
-        data_file = open(resource_file)
-        data = json.load(data_file)
+        with open(resource_file) as data_file:
+            data = json.load(data_file)
         with requests_mock.Mocker() as m:
             fake_data(request_url, m)
             response = self.client.list_projects()
@@ -108,8 +110,8 @@ class ClientProjectTestCase(unittest.TestCase):
         request_url = api_url + path_to_mock
         request_path = local_path + path_to_mock
         resource_file = os.path.normpath(request_path)
-        data_file = open(resource_file)
-        data = json.load(data_file)
+        with open(resource_file) as data_file:
+            data = json.load(data_file)
         with requests_mock.Mocker() as m:
             fake_data(request_url, m)
             response = self.client.list_projects_archived()
@@ -122,8 +124,8 @@ class ClientProjectTestCase(unittest.TestCase):
         request_url = api_url + path_to_mock
         request_path = local_path + path_to_mock
         resource_file = os.path.normpath(request_path)
-        data_file = open(resource_file)
-        data = json.load(data_file)
+        with open(resource_file) as data_file:
+            data = json.load(data_file)
         with requests_mock.Mocker() as m:
             fake_data(request_url, m)
             response = self.client.list_projects_favorite()
@@ -134,12 +136,12 @@ class ClientProjectTestCase(unittest.TestCase):
         """Test function list_projects_search."""
         searches = ['company', 'internal', 'website', 'search with spaces']
         for search in searches:
-            path_to_mock = 'projects/search/{}.json'.format(search)
+            path_to_mock = f'projects/search/{search}.json'
             request_url = api_url + path_to_mock
             request_path = local_path + path_to_mock
             resource_file = os.path.normpath(request_path)
-            data_file = open(resource_file)
-            data = json.load(data_file)
+            with open(resource_file) as data_file:
+                data = json.load(data_file)
             with requests_mock.Mocker() as m:
                 fake_data(request_url, m)
                 response = self.client.list_projects_search(search)
@@ -150,13 +152,13 @@ class ClientProjectTestCase(unittest.TestCase):
         """Test function show_project."""
         for project in Projects:
             project_id = project.get('id')
-            log.debug("Testing with Project ID: {}".format(project_id))
-            path_to_mock = 'projects/{}.json'.format(project_id)
+            log.debug(f"Testing with Project ID: {project_id}")
+            path_to_mock = f'projects/{project_id}.json'
             request_url = api_url + path_to_mock
             request_path = local_path + path_to_mock
             resource_file = os.path.normpath(request_path)
-            data_file = open(resource_file)
-            data = json.load(data_file)
+            with open(resource_file) as data_file:
+                data = json.load(data_file)
             with requests_mock.Mocker() as m:
                 fake_data(request_url, m)
                 response = self.client.show_project(project_id)
@@ -167,13 +169,13 @@ class ClientProjectTestCase(unittest.TestCase):
         """Test function list_passwords_of_project."""
         for project in Projects:
             project_id = project.get('id')
-            log.debug("Testing with Project ID: {}".format(project_id))
-            path_to_mock = 'projects/{}/passwords.json'.format(project_id)
+            log.debug(f"Testing with Project ID: {project_id}")
+            path_to_mock = f'projects/{project_id}/passwords.json'
             request_url = api_url + path_to_mock
             request_path = local_path + path_to_mock
             resource_file = os.path.normpath(request_path)
-            data_file = open(resource_file)
-            data = json.load(data_file)
+            with open(resource_file) as data_file:
+                data = json.load(data_file)
             with requests_mock.Mocker() as m:
                 fake_data(request_url, m)
                 response = self.client.list_passwords_of_project(project_id)
@@ -184,13 +186,13 @@ class ClientProjectTestCase(unittest.TestCase):
         """Test function list_user_access_on_project."""
         for project in Projects:
             project_id = project.get('id')
-            log.debug("Testing with Project ID: {}".format(project_id))
-            path_to_mock = 'projects/{}/security.json'.format(project_id)
+            log.debug(f"Testing with Project ID: {project_id}")
+            path_to_mock = f'projects/{project_id}/security.json'
             request_url = api_url + path_to_mock
             request_path = local_path + path_to_mock
             resource_file = os.path.normpath(request_path)
-            data_file = open(resource_file)
-            data = json.load(data_file)
+            with open(resource_file) as data_file:
+                data = json.load(data_file)
             with requests_mock.Mocker() as m:
                 fake_data(request_url, m)
                 response = self.client.list_user_access_on_project(project_id)
@@ -267,13 +269,13 @@ class ClientProjectTestCase(unittest.TestCase):
         """Test function list_subprojects."""
         for project in Projects:
             project_id = project.get('id')
-            log.debug("Testing with Project ID: {}".format(project_id))
-            path_to_mock = 'projects/{}/subprojects.json'.format(project_id)
+            log.debug(f"Testing with Project ID: {project_id}")
+            path_to_mock = f'projects/{project_id}/subprojects.json'
             request_url = api_url + path_to_mock
             request_path = local_path + path_to_mock
             resource_file = os.path.normpath(request_path)
-            data_file = open(resource_file)
-            data = json.load(data_file)
+            with open(resource_file) as data_file:
+                data = json.load(data_file)
             with requests_mock.Mocker() as m:
                 fake_data(request_url, m)
                 response = self.client.list_subprojects(project_id)
@@ -285,13 +287,13 @@ class ClientProjectTestCase(unittest.TestCase):
         action = 'new_pwd'
         for project in Projects:
             project_id = project.get('id')
-            log.debug("Testing with Project ID: {}".format(project_id))
-            path_to_mock = 'projects/{}/subprojects/{}.json'.format(project_id, action)
+            log.debug(f"Testing with Project ID: {project_id}")
+            path_to_mock = f'projects/{project_id}/subprojects/{action}.json'
             request_url = api_url + path_to_mock
             request_path = local_path + path_to_mock
             resource_file = os.path.normpath(request_path)
-            data_file = open(resource_file)
-            data = json.load(data_file)
+            with open(resource_file) as data_file:
+                data = json.load(data_file)
             with requests_mock.Mocker() as m:
                 fake_data(request_url, m)
                 response = self.client.list_subprojects_action(project_id, action)
@@ -317,8 +319,8 @@ class ClientPasswordTestCase(unittest.TestCase):
         request_url = api_url + path_to_mock
         request_path = local_path + path_to_mock
         resource_file = os.path.normpath(request_path)
-        data_file = open(resource_file)
-        data = sorted(json.load(data_file), key=lambda k: k['id'])
+        with open(resource_file) as data_file:
+            data = sorted(json.load(data_file), key=lambda k: k['id'])
         with requests_mock.Mocker() as m:
             fake_data(request_url, m)
             response = sorted(self.client.list_passwords(), key=lambda k: k['id'])
@@ -330,8 +332,8 @@ class ClientPasswordTestCase(unittest.TestCase):
         request_url = api_url + path_to_mock
         request_path = local_path + path_to_mock
         resource_file = os.path.normpath(request_path)
-        data_file = open(resource_file)
-        data = sorted(json.load(data_file), key=lambda k: k['id'])
+        with open(resource_file) as data_file:
+            data = sorted(json.load(data_file), key=lambda k: k['id'])
         with requests_mock.Mocker() as m:
             fake_data(request_url, m)
             response = sorted(self.client.list_passwords_archived(), key=lambda k: k['id'])
@@ -343,8 +345,8 @@ class ClientPasswordTestCase(unittest.TestCase):
         request_url = api_url + path_to_mock
         request_path = local_path + path_to_mock
         resource_file = os.path.normpath(request_path)
-        data_file = open(resource_file)
-        data = sorted(json.load(data_file), key=lambda k: k['id'])
+        with open(resource_file) as data_file:
+            data = sorted(json.load(data_file), key=lambda k: k['id'])
         with requests_mock.Mocker() as m:
             fake_data(request_url, m)
             response = sorted(self.client.list_passwords_favorite(), key=lambda k: k['id'])
@@ -354,12 +356,12 @@ class ClientPasswordTestCase(unittest.TestCase):
         """Test function list_passwords_search."""
         searches = ['backup', 'dns', 'facebook', 'firewall', 'reddit', 'test', 'search with spaces']
         for search in searches:
-            path_to_mock = 'passwords/search/{}.json'.format(search)
+            path_to_mock = f'passwords/search/{search}.json'
             request_url = api_url + path_to_mock
             request_path = local_path + path_to_mock
             resource_file = os.path.normpath(request_path)
-            data_file = open(resource_file)
-            data = json.load(data_file)
+            with open(resource_file) as data_file:
+                data = json.load(data_file)
             with requests_mock.Mocker() as m:
                 fake_data(request_url, m)
                 response = self.client.list_passwords_search(search)
@@ -370,13 +372,13 @@ class ClientPasswordTestCase(unittest.TestCase):
         """Test function show_password."""
         for password in Passwords:
             password_id = password.get('id')
-            log.debug("Testing with Password ID: {}".format(password_id))
-            path_to_mock = 'passwords/{}.json'.format(password_id)
+            log.debug(f"Testing with Password ID: {password_id}")
+            path_to_mock = f'passwords/{password_id}.json'
             request_url = api_url + path_to_mock
             request_path = local_path + path_to_mock
             resource_file = os.path.normpath(request_path)
-            data_file = open(resource_file)
-            data = json.load(data_file)
+            with open(resource_file) as data_file:
+                data = json.load(data_file)
             with requests_mock.Mocker() as m:
                 fake_data(request_url, m)
                 response = self.client.show_password(password_id)
@@ -387,13 +389,13 @@ class ClientPasswordTestCase(unittest.TestCase):
         """Test function list_user_access_on_password."""
         for password in Passwords:
             password_id = password.get('id')
-            log.debug("Testing with Password ID: {}".format(password_id))
-            path_to_mock = 'passwords/{}/security.json'.format(password_id)
+            log.debug(f"Testing with Password ID: {password_id}")
+            path_to_mock = f'passwords/{password_id}/security.json'
             request_url = api_url + path_to_mock
             request_path = local_path + path_to_mock
             resource_file = os.path.normpath(request_path)
-            data_file = open(resource_file)
-            data = json.load(data_file)
+            with open(resource_file) as data_file:
+                data = json.load(data_file)
             with requests_mock.Mocker() as m:
                 fake_data(request_url, m)
                 response = self.client.list_user_access_on_password(password_id)
@@ -513,8 +515,8 @@ class ClientMyPasswordTestCase(unittest.TestCase):
         request_url = api_url + path_to_mock
         request_path = local_path + path_to_mock
         resource_file = os.path.normpath(request_path)
-        data_file = open(resource_file)
-        data = json.load(data_file)
+        with open(resource_file) as data_file:
+            data = json.load(data_file)
         with requests_mock.Mocker() as m:
             fake_data(request_url, m)
             response = self.client.list_mypasswords()
@@ -525,12 +527,12 @@ class ClientMyPasswordTestCase(unittest.TestCase):
         """Test function list_mypasswords_search."""
         searches = ['amazon', 'backup', 'facebook', 'john', 'jonny']
         for search in searches:
-            path_to_mock = 'my_passwords/search/{}.json'.format(search)
+            path_to_mock = f'my_passwords/search/{search}.json'
             request_url = api_url + path_to_mock
             request_path = local_path + path_to_mock
             resource_file = os.path.normpath(request_path)
-            data_file = open(resource_file)
-            data = json.load(data_file)
+            with open(resource_file) as data_file:
+                data = json.load(data_file)
             with requests_mock.Mocker() as m:
                 fake_data(request_url, m)
                 response = self.client.list_mypasswords_search(search)
@@ -541,13 +543,13 @@ class ClientMyPasswordTestCase(unittest.TestCase):
         """Test function show_mypassword."""
         for password in MyPasswords:
             password_id = password.get('id')
-            log.debug("Testing with Password ID: {}".format(password_id))
-            path_to_mock = 'my_passwords/{}.json'.format(password_id)
+            log.debug(f"Testing with Password ID: {password_id}")
+            path_to_mock = f'my_passwords/{password_id}.json'
             request_url = api_url + path_to_mock
             request_path = local_path + path_to_mock
             resource_file = os.path.normpath(request_path)
-            data_file = open(resource_file)
-            data = json.load(data_file)
+            with open(resource_file) as data_file:
+                data = json.load(data_file)
             with requests_mock.Mocker() as m:
                 fake_data(request_url, m)
                 response = self.client.show_mypassword(password_id)
@@ -626,8 +628,8 @@ class ClientMyPasswordTestCase(unittest.TestCase):
         request_url = api_url + path_to_mock
         request_path = local_path + path_to_mock
         resource_file = os.path.normpath(request_path)
-        data_file = open(resource_file)
-        data = json.load(data_file)
+        with open(resource_file) as data_file:
+            data = json.load(data_file)
         with requests_mock.Mocker() as m:
             fake_data(request_url, m)
             response = self.client.move_mypassword('4', '5')
@@ -652,8 +654,8 @@ class ClientUsersTestCase(unittest.TestCase):
         request_url = api_url + path_to_mock
         request_path = local_path + path_to_mock
         resource_file = os.path.normpath(request_path)
-        data_file = open(resource_file)
-        data = json.load(data_file)
+        with open(resource_file) as data_file:
+            data = json.load(data_file)
         with requests_mock.Mocker() as m:
             fake_data(request_url, m)
             response = self.client.list_users()
@@ -663,13 +665,13 @@ class ClientUsersTestCase(unittest.TestCase):
         """Test function show_user."""
         for user in Users:
             user_id = user.get('id')
-            log.debug("Testing with Project ID: {}".format(user_id))
-            path_to_mock = 'users/{}.json'.format(user_id)
+            log.debug(f"Testing with Project ID: {user_id}")
+            path_to_mock = f'users/{user_id}.json'
             request_url = api_url + path_to_mock
             request_path = local_path + path_to_mock
             resource_file = os.path.normpath(request_path)
-            data_file = open(resource_file)
-            data = json.load(data_file)
+            with open(resource_file) as data_file:
+                data = json.load(data_file)
             with requests_mock.Mocker() as m:
                 fake_data(request_url, m)
                 response = self.client.show_user(user_id)
@@ -681,8 +683,8 @@ class ClientUsersTestCase(unittest.TestCase):
         request_url = api_url + path_to_mock
         request_path = local_path + path_to_mock
         resource_file = os.path.normpath(request_path)
-        data_file = open(resource_file)
-        data = json.load(data_file)
+        with open(resource_file) as data_file:
+            data = json.load(data_file)
         with requests_mock.Mocker() as m:
             fake_data(request_url, m)
             response = self.client.show_me()
@@ -820,8 +822,8 @@ class ClientGroupsTestCase(unittest.TestCase):
         request_url = api_url + path_to_mock
         request_path = local_path + path_to_mock
         resource_file = os.path.normpath(request_path)
-        data_file = open(resource_file)
-        data = json.load(data_file)
+        with open(resource_file) as data_file:
+            data = json.load(data_file)
         with requests_mock.Mocker() as m:
             fake_data(request_url, m)
             response = self.client.list_groups()
@@ -831,13 +833,13 @@ class ClientGroupsTestCase(unittest.TestCase):
         """Test function show_group."""
         for group in Groups:
             group_id = group.get('id')
-            log.debug("Testing with Project ID: {}".format(group_id))
-            path_to_mock = 'groups/{}.json'.format(group_id)
+            log.debug(f"Testing with Project ID: {group_id}")
+            path_to_mock = f'groups/{group_id}.json'
             request_url = api_url + path_to_mock
             request_path = local_path + path_to_mock
             resource_file = os.path.normpath(request_path)
-            data_file = open(resource_file)
-            data = json.load(data_file)
+            with open(resource_file) as data_file:
+                data = json.load(data_file)
             with requests_mock.Mocker() as m:
                 fake_data(request_url, m)
                 response = self.client.show_group(group_id)
@@ -868,7 +870,7 @@ class ClientGroupsTestCase(unittest.TestCase):
         """Test function add_user_to_group."""
         group_id = '3'
         user_id = '4'
-        path_to_mock = 'groups/{}/add_user/{}.json'.format(group_id, user_id)
+        path_to_mock = f'groups/{group_id}/add_user/{user_id}.json'
         request_url = api_url + path_to_mock
         with requests_mock.Mocker() as m:
             m.put(request_url, status_code=204)
@@ -879,7 +881,7 @@ class ClientGroupsTestCase(unittest.TestCase):
         """Test function delete_user_from_group."""
         group_id = '3'
         user_id = '4'
-        path_to_mock = 'groups/{}/delete_user/{}.json'.format(group_id, user_id)
+        path_to_mock = f'groups/{group_id}/delete_user/{user_id}.json'
         request_url = api_url + path_to_mock
         with requests_mock.Mocker() as m:
             m.put(request_url, status_code=204)
@@ -906,8 +908,8 @@ class GeneralClientTestCases(unittest.TestCase):
         request_url = api_url + path_to_mock
         request_path = local_path + path_to_mock
         resource_file = os.path.normpath(request_path)
-        data_file = open(resource_file)
-        data = json.load(data_file)
+        with open(resource_file) as data_file:
+            data = json.load(data_file)
         with requests_mock.Mocker() as m:
             fake_data(request_url, m)
             response = self.client.list_passwords()
@@ -915,9 +917,9 @@ class GeneralClientTestCases(unittest.TestCase):
         source_items = len(data)
         paging_count = round((source_items / 20) + 0.5)
         response_items = len(response)
-        log.debug("Paging should be {}".format(paging_count))
-        log.debug("Paged {} times".format(m.call_count))
-        log.debug("Source Items: {}; Response Items: {}".format(source_items, response_items))
+        log.debug(f"Paging should be {paging_count}")
+        log.debug(f"Paged {m.call_count} times")
+        log.debug(f"Source Items: {source_items}; Response Items: {response_items}")
         self.assertEqual(paging_count, m.call_count)
         self.assertEqual(source_items, response_items)
 
@@ -927,8 +929,8 @@ class GeneralClientTestCases(unittest.TestCase):
         request_url = api_url + path_to_mock
         request_path = local_path + path_to_mock
         resource_file = os.path.normpath(request_path)
-        data_file = open(resource_file)
-        json.load(data_file)
+        with open(resource_file) as data_file:
+            json.load(data_file)
         unlock_reason = 'because I can'
         client = tpm.TpmApiv5('https://tpm.example.com', username='USER', password='PASS', unlock_reason=unlock_reason)
         with requests_mock.Mocker() as m:
@@ -965,8 +967,8 @@ class GeneralClientTestCases(unittest.TestCase):
         request_url = api_url + path_to_mock
         request_path = local_path + path_to_mock
         resource_file = os.path.normpath(request_path)
-        data_file = open(resource_file)
-        data = json.load(data_file)
+        with open(resource_file) as data_file:
+            data = json.load(data_file)
         with requests_mock.Mocker() as m:
             fake_data(request_url, m)
             response = self.client.generate_password()
@@ -978,8 +980,8 @@ class GeneralClientTestCases(unittest.TestCase):
         request_url = api_url + path_to_mock
         request_path = local_path + path_to_mock
         resource_file = os.path.normpath(request_path)
-        data_file = open(resource_file)
-        data = json.load(data_file)
+        with open(resource_file) as data_file:
+            data = json.load(data_file)
         with requests_mock.Mocker() as m:
             fake_data(request_url, m)
             response = self.client.get_version()
@@ -991,8 +993,8 @@ class GeneralClientTestCases(unittest.TestCase):
         request_url = 'https://tpm.example.com/index.php/api/v3/' + path_to_mock
         request_path = local_path + path_to_mock
         resource_file = os.path.normpath(request_path)
-        data_file = open(resource_file)
-        data = json.load(data_file)
+        with open(resource_file) as data_file:
+            data = json.load(data_file)
         client = tpm.TpmApiv3('https://tpm.example.com', username='USER', password='PASS')
         with requests_mock.Mocker() as m:
             fake_data(request_url, m)
@@ -1005,8 +1007,8 @@ class GeneralClientTestCases(unittest.TestCase):
         request_url = api_url + path_to_mock
         request_path = local_path + path_to_mock
         resource_file = os.path.normpath(request_path)
-        data_file = open(resource_file)
-        data = json.load(data_file)
+        with open(resource_file) as data_file:
+            data = json.load(data_file)
         with requests_mock.Mocker() as m:
             fake_data(request_url, m)
             response = self.client.get_latest_version()
@@ -1018,8 +1020,8 @@ class GeneralClientTestCases(unittest.TestCase):
         request_url = api_url + path_to_mock
         request_path = local_path + path_to_mock
         resource_file = os.path.normpath(request_path)
-        data_file = open(resource_file)
-        json.load(data_file)
+        with open(resource_file) as data_file:
+            json.load(data_file)
         with requests_mock.Mocker() as m:
             fake_data(request_url, m)
             response_up_to_date_true = self.client.up_to_date()
@@ -1041,28 +1043,28 @@ class ExceptionTestCases(unittest.TestCase):
         """Exception if wrong authentication mehtod with username but private_key."""
         with self.assertRaises(tpm.TpmApi.ConfigError) as context:
             tpm.TpmApiv5('https://tpm.example.com', username='USER', private_key='PASS')
-        log.debug("context exception: {}".format(context.exception))
+        log.debug(f"context exception: {context.exception}")
         self.assertEqual("'No authentication specified (user/password or private/public key)'", str(context.exception))
 
     def test_wrong_auth_exception2(self):
         """Exception if wrong authentication mehtod with public key but password."""
         with self.assertRaises(tpm.TpmApi.ConfigError) as context:
             tpm.TpmApiv5('https://tpm.example.com', public_key='USER', password='PASS')
-        log.debug("context exception: {}".format(context.exception))
+        log.debug(f"context exception: {context.exception}")
         self.assertEqual("'No authentication specified (user/password or private/public key)'", str(context.exception))
 
     def test_wrong_auth_exception3(self):
         """Exception if wrong authentication mehtod with username but public_key."""
         with self.assertRaises(tpm.TpmApi.ConfigError) as context:
             tpm.TpmApiv5('https://tpm.example.com', username='USER', public_key='PASS')
-        log.debug("context exception: {}".format(context.exception))
+        log.debug(f"context exception: {context.exception}")
         self.assertEqual("'No authentication specified (user/password or private/public key)'", str(context.exception))
 
     def test_wrong_auth_exception4(self):
         """Exception if wrong authentication mehtod with private key but password."""
         with self.assertRaises(tpm.TpmApi.ConfigError) as context:
             tpm.TpmApiv5('https://tpm.example.com', private_key='USER', password='PASS')
-        log.debug("context exception: {}".format(context.exception))
+        log.debug(f"context exception: {context.exception}")
         self.assertEqual("'No authentication specified (user/password or private/public key)'", str(context.exception))
 
     def test_wrong_url_exception(self):
@@ -1070,8 +1072,8 @@ class ExceptionTestCases(unittest.TestCase):
         wrong_url = 'ftp://tpm.example.com'
         with self.assertRaises(tpm.TpmApiv5.ConfigError) as context:
             tpm.TpmApiv5(wrong_url, username='USER', password='PASS')
-        log.debug("context exception: {}".format(context.exception))
-        self.assertEqual("'Invalid URL: {}'".format(wrong_url), str(context.exception))
+        log.debug(f"context exception: {context.exception}")
+        self.assertEqual(f"'Invalid URL: {wrong_url}'", str(context.exception))
 
 class ExceptionOnRequestsTestCases(unittest.TestCase):
     """Test case for Request based Exceptions."""
@@ -1083,7 +1085,7 @@ class ExceptionOnRequestsTestCases(unittest.TestCase):
         exception_error = "Connection error for "
         with self.assertRaises(tpm.TPMException) as context:
             self.client.list_passwords()
-        log.debug("context exception: {}".format(context.exception))
+        log.debug(f"context exception: {context.exception}")
         self.assertTrue(exception_error in str(context.exception))
 
     def test_value_error_exception(self):
@@ -1092,13 +1094,15 @@ class ExceptionOnRequestsTestCases(unittest.TestCase):
         request_url = api_url + path_to_mock
         exception_error = "No JSON object could be decoded: "
         exception_error3 = "Expecting value: line 1 column 1 (char 0): "
-        resource_file = os.path.normpath('tests/resources/{}'.format(path_to_mock))
-        data = open(resource_file)
-        with self.assertRaises(ValueError) as context:
-            with requests_mock.Mocker() as m:
-                m.get(request_url, text=str(data))
-                self.client.show_password('value_error')
-        log.debug("context exception: {}".format(context.exception))
+        resource_file = os.path.normpath(f'tests/resources/{path_to_mock}')
+        # str() of the open handle is deliberately not valid JSON, which is
+        # what makes the response body fail to decode at position 0.
+        with open(resource_file) as data, \
+                self.assertRaises(ValueError) as context, \
+                requests_mock.Mocker() as m:
+            m.get(request_url, text=str(data))
+            self.client.show_password('value_error')
+        log.debug(f"context exception: {context.exception}")
         self.assertTrue(str(context.exception).startswith(exception_error) or str(context.exception).startswith(exception_error3))
 
     def test_exception_on_error_in_result(self):
@@ -1107,47 +1111,43 @@ class ExceptionOnRequestsTestCases(unittest.TestCase):
         error_json={'error': 'not good', 'message': exception_error}
         path_to_mock = 'passwords/json_error.json'
         request_url = api_url + path_to_mock
-        with self.assertRaises(tpm.TPMException) as context:
-            with requests_mock.Mocker() as m:
-                m.get(request_url, json=error_json)
-                self.client.show_password('json_error')
-        log.debug("context exception: {}".format(context.exception))
+        with self.assertRaises(tpm.TPMException) as context, requests_mock.Mocker() as m:
+            m.get(request_url, json=error_json)
+            self.client.show_password('json_error')
+        log.debug(f"context exception: {context.exception}")
         self.assertTrue(exception_error in str(context.exception))
 
     def test_exception_on_403(self):
         """Exception if 403 forbidden."""
         path_to_mock = 'passwords.json'
         request_url = api_url + path_to_mock
-        exception_error = "{} forbidden".format(request_url)
-        with self.assertRaises(tpm.TPMException) as context:
-            with requests_mock.Mocker() as m:
-                m.get(request_url, text='forbidden', status_code=403)
-                self.client.list_passwords()
-        log.debug("context exception: {}".format(context.exception))
+        exception_error = f"{request_url} forbidden"
+        with self.assertRaises(tpm.TPMException) as context, requests_mock.Mocker() as m:
+            m.get(request_url, text='forbidden', status_code=403)
+            self.client.list_passwords()
+        log.debug(f"context exception: {context.exception}")
         self.assertTrue(exception_error in str(context.exception))
 
     def test_exception_on_404(self):
         """Exception if 404 not found."""
         path_to_mock = 'passwords.json'
         request_url = api_url + path_to_mock
-        exception_error = "{} not found".format(request_url)
-        with self.assertRaises(tpm.TPMException) as context:
-            with requests_mock.Mocker() as m:
-                m.get(request_url, text='not found', status_code=404)
-                self.client.list_passwords()
-        log.debug("context exception: {}".format(context.exception))
+        exception_error = f"{request_url} not found"
+        with self.assertRaises(tpm.TPMException) as context, requests_mock.Mocker() as m:
+            m.get(request_url, text='not found', status_code=404)
+            self.client.list_passwords()
+        log.debug(f"context exception: {context.exception}")
         self.assertTrue(exception_error in str(context.exception))
 
     def test_exception_on_405(self):
         """Exception if 405 Method Not Allowed."""
         path_to_mock = 'passwords.json'
         request_url = api_url + path_to_mock
-        exception_error = "{} Method Not Allowed".format(request_url)
-        with self.assertRaises(ValueError) as context:
-            with requests_mock.Mocker() as m:
-                m.get(request_url, text='Method Not Allowed', status_code=405)
-                self.client.list_passwords()
-        log.debug("context exception: {}".format(context.exception))
+        exception_error = f"{request_url} Method Not Allowed"
+        with self.assertRaises(ValueError) as context, requests_mock.Mocker() as m:
+            m.get(request_url, text='Method Not Allowed', status_code=405)
+            self.client.list_passwords()
+        log.debug(f"context exception: {context.exception}")
         self.assertTrue(str(context.exception).endswith(exception_error))
 
 class ClientFilesTestCase(unittest.TestCase):
@@ -1163,13 +1163,13 @@ class ClientFilesTestCase(unittest.TestCase):
         request_url = api_url + path_to_mock
         request_path = local_path + path_to_mock
         resource_file = os.path.normpath(request_path)
-        data_file = open(resource_file)
-        data = json.load(data_file)
+        with open(resource_file) as data_file:
+            data = json.load(data_file)
         with requests_mock.Mocker() as m:
             fake_data(request_url, m)
             response = self.client.list_password_files('14')
             history = m.request_history
-            log.debug("response: {}".format(history[0].url))
+            log.debug(f"response: {history[0].url}")
         self.assertEqual(data, response)
 
     def test_function_upload_password(self):
@@ -1178,8 +1178,8 @@ class ClientFilesTestCase(unittest.TestCase):
         request_url = api_url + path_to_mock
         request_path = local_path + path_to_mock
         resource_file = os.path.normpath(request_path)
-        data_file = open(resource_file)
-        data = json.load(data_file)
+        with open(resource_file) as data_file:
+            data = json.load(data_file)
         with requests_mock.Mocker() as m:
             fake_data(request_url, m)
             response = self.client.upload_password_file('14', request_path, notes="some notes")
@@ -1191,8 +1191,8 @@ class ClientFilesTestCase(unittest.TestCase):
         request_url = api_url + path_to_mock
         request_path = local_path + path_to_mock
         resource_file = os.path.normpath(request_path)
-        data_file = open(resource_file)
-        data = json.load(data_file)
+        with open(resource_file) as data_file:
+            data = json.load(data_file)
         with requests_mock.Mocker() as m:
             fake_data(request_url, m)
             response = self.client.list_project_files('4')
@@ -1205,8 +1205,8 @@ class ClientFilesTestCase(unittest.TestCase):
         request_url = api_url + path_to_mock
         request_path = local_path + path_to_mock
         resource_file = os.path.normpath(request_path)
-        data_file = open(resource_file)
-        data = json.load(data_file)
+        with open(resource_file) as data_file:
+            data = json.load(data_file)
         with requests_mock.Mocker() as m:
             fake_data(request_url, m)
             response = self.client.upload_project_file('4', request_path, notes="some notes")
@@ -1218,8 +1218,8 @@ class ClientFilesTestCase(unittest.TestCase):
         request_url = api_url + path_to_mock
         request_path = local_path + path_to_mock
         resource_file = os.path.normpath(request_path)
-        data_file = open(resource_file)
-        data = json.load(data_file)
+        with open(resource_file) as data_file:
+            data = json.load(data_file)
         with requests_mock.Mocker() as m:
             fake_data(request_url, m)
             response = self.client.show_file_info('4')
@@ -1241,8 +1241,8 @@ class ClientFilesTestCase(unittest.TestCase):
         request_url = api_url + path_to_mock
         request_path = local_path + path_to_mock
         resource_file = os.path.normpath(request_path)
-        data_file = open(resource_file)
-        data = json.load(data_file)
+        with open(resource_file) as data_file:
+            data = json.load(data_file)
         with requests_mock.Mocker() as m:
             fake_data(request_url, m)
             response = self.client.max_upload_file_size()
@@ -1254,8 +1254,8 @@ class ClientFilesTestCase(unittest.TestCase):
         request_url = api_url + path_to_mock
         request_path = local_path + path_to_mock
         resource_file = os.path.normpath(request_path)
-        data_file = open(resource_file)
-        data = json.load(data_file)
+        with open(resource_file) as data_file:
+            data = json.load(data_file)
         with requests_mock.Mocker() as m:
             fake_data(request_url, m)
             response = self.client.uploads_folder_info()
@@ -1267,8 +1267,8 @@ class ClientFilesTestCase(unittest.TestCase):
         request_url = api_url + path_to_mock
         request_path = local_path + path_to_mock
         resource_file = os.path.normpath(request_path)
-        data_file = open(resource_file)
-        data = json.load(data_file)
+        with open(resource_file) as data_file:
+            data = json.load(data_file)
         with requests_mock.Mocker() as m:
             fake_data(request_url, m)
             response = self.client.download_file("4")

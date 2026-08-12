@@ -1,8 +1,10 @@
 #! /usr/bin/env python
-import tpm
+import errno
 import json
 import os
-import errno
+
+import tpm
+
 
 # Taken from https://stackoverflow.com/a/600612/119527
 def mkdir_p(path):
@@ -17,7 +19,7 @@ def mkdir_p(path):
 def safe_open_w(path):
     ''' Open "path" for writing, creating any parent directories as needed.
     '''
-    path = 'resources/{}'.format(path)
+    path = f'resources/{path}'
     dirpath = os.path.dirname(path)
     if dirpath != '':
         mkdir_p(dirpath)
@@ -77,34 +79,34 @@ with safe_open_w('projects/favorite.json') as outfile:
 
 for search in projsearches:
     data = tpmconn.list_projects_search(search)
-    with safe_open_w('projects/search/{}.json'.format(search)) as outfile:
+    with safe_open_w(f'projects/search/{search}.json') as outfile:
         json.dump(data, outfile)
 
 # subprojects
 for project_id in AllProjectIDs:
     data = tpmconn.list_subprojects(project_id)
-    with safe_open_w('projects/{}/subprojects.json'.format(project_id)) as outfile:
+    with safe_open_w(f'projects/{project_id}/subprojects.json') as outfile:
         json.dump(data, outfile)
 
 for project_id in AllProjectIDs:
     data = tpmconn.list_subprojects_action(project_id, 'new_pwd')
-    with safe_open_w('projects/{}/subprojects/new_pwd.json'.format(project_id)) as outfile:
+    with safe_open_w(f'projects/{project_id}/subprojects/new_pwd.json') as outfile:
         json.dump(data, outfile)
 
 # show project
 for project_id in AllProjectIDs:
     data = tpmconn.show_project(project_id)
-    with safe_open_w('projects/{}.json'.format(project_id)) as outfile:
+    with safe_open_w(f'projects/{project_id}.json') as outfile:
         json.dump(data, outfile)
 
 for project_id in AllProjectIDs:
     data = tpmconn.list_passwords_of_project(project_id)
-    with safe_open_w('projects/{}/passwords.json'.format(project_id)) as outfile:
+    with safe_open_w(f'projects/{project_id}/passwords.json') as outfile:
         json.dump(data, outfile)
 
 for project_id in AllProjectIDs:
     data = tpmconn.list_user_access_on_project(project_id)
-    with safe_open_w('projects/{}/security.json'.format(project_id)) as outfile:
+    with safe_open_w(f'projects/{project_id}/security.json') as outfile:
         json.dump(data, outfile)
 
 ## special cases
@@ -131,17 +133,17 @@ with safe_open_w('passwords/favorite.json') as outfile:
 
 for search in passsearches:
     data = tpmconn.list_passwords_search(search)
-    with safe_open_w('passwords/search/{}.json'.format(search)) as outfile:
+    with safe_open_w(f'passwords/search/{search}.json') as outfile:
         json.dump(data, outfile)
 
 for password_id in AllPasswordIDs:
     data = tpmconn.show_password(password_id)
-    with safe_open_w('passwords/{}.json'.format(password_id)) as outfile:
+    with safe_open_w(f'passwords/{password_id}.json') as outfile:
         json.dump(data, outfile)
 
 for password_id in AllPasswordIDs:
     data = tpmconn.list_user_access_on_password(password_id)
-    with safe_open_w('passwords/{}/security.json'.format(password_id)) as outfile:
+    with safe_open_w(f'passwords/{password_id}/security.json') as outfile:
         json.dump(data, outfile)
 
 ## special cases
@@ -161,12 +163,12 @@ with safe_open_w('my_passwords.json') as outfile:
 
 for search in mypassearches:
     data = tpmconn.list_mypasswords_search(search)
-    with safe_open_w('my_passwords/search/{}.json'.format(search)) as outfile:
+    with safe_open_w(f'my_passwords/search/{search}.json') as outfile:
         json.dump(data, outfile)
 
 for mypassword_id in AllMyPasswordIDs:
     data = tpmconn.show_mypassword(mypassword_id)
-    with safe_open_w('my_passwords/{}.json'.format(mypassword_id)) as outfile:
+    with safe_open_w(f'my_passwords/{mypassword_id}.json') as outfile:
         json.dump(data, outfile)
 
 ## special cases
@@ -190,7 +192,7 @@ with safe_open_w('users.json') as outfile:
 
 for user_id in AllUserIDs:
     data = tpmconn.show_user(user_id)
-    with safe_open_w('users/{}.json'.format(user_id)) as outfile:
+    with safe_open_w(f'users/{user_id}.json') as outfile:
         json.dump(data, outfile)
 
 data = tpmconn.show_me()
@@ -214,7 +216,7 @@ with safe_open_w('groups.json') as outfile:
 
 for group_id in AllGroupIDs:
     data = tpmconn.show_group(group_id)
-    with safe_open_w('groups/{}.json'.format(group_id)) as outfile:
+    with safe_open_w(f'groups/{group_id}.json') as outfile:
         json.dump(data, outfile)
 
 data = tpmconn.show_me()

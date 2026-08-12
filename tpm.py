@@ -1,4 +1,3 @@
-#! /usr/bin/env python
 """Team Password Manager API
 
 To simplify usage of Team Password Manager API.
@@ -200,7 +199,9 @@ class TpmApi:
                 log.debug('No result returned.')
             else:
                 result = self.req.json()
-                if 'error' in result and result['error']:
+                # Collection endpoints return a list, so guard on the type
+                # before treating the payload as an error object.
+                if isinstance(result, dict) and result.get('error'):
                     raise TPMException(result['message'])
 
         # ValueError must be handled before RequestException: in modern

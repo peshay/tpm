@@ -6,8 +6,8 @@ import argparse
 import re
 import subprocess
 import sys
+from collections.abc import Iterable, Sequence
 from pathlib import Path
-from typing import Iterable, Sequence
 
 PUBLIC_TEXT_SUFFIXES = {
     "",
@@ -101,8 +101,7 @@ def git_files() -> list[str]:
         proc = subprocess.run(
             ["git", "ls-files"],
             check=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            capture_output=True,
             text=True,
         )
     except (OSError, subprocess.CalledProcessError):
